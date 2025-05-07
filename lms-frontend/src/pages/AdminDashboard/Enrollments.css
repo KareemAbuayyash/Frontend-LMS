@@ -1,0 +1,166 @@
+/* File: src/pages/AdminDashboard/Enrollments.css */
+
+/* ——— Base page & toolbar ——— */
+.enrollments-page {
+    padding: 1rem;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .search-box {
+    position: relative;
+    flex: 1 1 200px;
+    min-width: 150px;
+  }
+  .search-box .icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .search-box input:focus {
+    border-color: #6a5acd;
+    box-shadow: 0 0 0 3px rgba(106,90,205,.2);
+  }
+  
+  .btn.primary {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .6rem 1rem;
+    border: none;
+    background: linear-gradient(90deg,#6a5acd,#836fff);
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+  .btn.primary:hover {
+    opacity: .9;
+  }
+  
+  /* ——— Table & borders ——— */
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .enrollments-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e0e0e0; /* outer border */
+  }
+  
+  /* Header styles */
+  .enrollments-table thead {
+    background: #5462e7;
+    color: #fff;
+  }
+  .enrollments-table th {
+    padding: .75rem 1rem;
+    border: 1px solid #a39b9b;  /* cell border */
+    text-align: left;
+    user-select: none;
+  }
+  
+  /* Center the “Actions” header */
+  .enrollments-table th.actions-col {
+    text-align: center;
+  }
+  
+  /* Data row styles */
+  .enrollments-table tbody tr {
+    background: #d6d4d4;
+    transition: background .2s;
+  }
+  .enrollments-table tbody tr:hover {
+    background: #8f8b8b;
+  }
+  .enrollments-table td {
+    padding: .75rem 1rem;
+    border: 1px solid #a39b9b;  /* cell border */
+    color: #333;
+  }
+  
+  /* Center the buttons in the actions column */
+  .enrollments-table td.actions-col {
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  /* Icon buttons */
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin: 0 .25rem;
+    color: #4f46e5;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: color .2s;
+  }
+  .icon-btn:hover {
+    color: #6366f1;
+  }
+  .icon-btn.trash:hover {
+    color: tomato;
+  }
+  
+  /* Empty / loading state */
+  .empty td {
+    text-align: center;
+    color: #999;
+  }
+  
+  /* Modal (unchanged) */
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .75rem;
+  }
+  @media (min-width:480px) {
+    .grid2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+  }
+  

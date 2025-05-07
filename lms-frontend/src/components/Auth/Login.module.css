@@ -1,0 +1,180 @@
+/* --------------- page backdrop --------------- */
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0a1929;
+  padding: 1rem;
+  font-family: "Inter", system-ui, sans-serif;
+  color: #e0e5ec;
+}
+
+/* --------------- card --------------- */
+.card {
+  width: 360px;
+  padding: 2.5rem;
+  border-radius: 12px;
+  background: #121e31;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+/* header (logo + word) */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.brand {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+/* big title */
+.title {
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+/* labels + inputs */
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.825rem;
+}
+.input {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid #253352;
+  background: #0e1a2b;
+  border-radius: 6px;
+  color: #e0e5ec;
+}
+.input:focus {
+  outline: 2px solid #556cd6;
+}
+
+/* wrapper for password + toggle */
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.passwordWrapper .input {
+  width: 100%;
+  padding-right: 2.5rem; /* room for the icon */
+}
+
+/* show/hide toggle button */
+.toggleBtn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #e0e5ec;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.toggleBtn:focus {
+  outline: none;
+}
+
+/* remember-me row */
+.rememberRow {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  user-select: none;
+}
+
+/* primary button */
+.primaryBtn {
+  padding: 0.65rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #6366f1, #6d28d9);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.primaryBtn:hover {
+  opacity: 0.9;
+}
+
+/* centred forgot-link */
+.forgot {
+  font-size: 0.8rem;
+  align-self: center;
+  color: #8ab4ff;
+}
+.forgot:hover {
+  text-decoration: underline;
+}
+
+/* divider */
+.divider {
+  position: relative;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #748391;
+  margin-top: 0.25rem;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background: #1e2a3e;
+}
+.divider::before {
+  left: 0;
+}
+.divider::after {
+  right: 0;
+}
+
+/* social buttons */
+.socialBtn {
+  width: 100%;
+  padding: 0.55rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid #253352;
+  background: #0e1a2b;
+  border-radius: 6px;
+  color: #e0e5ec;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.socialBtn:hover {
+  background: #152238;
+}
+
+/* bottom blurb */
+.signup {
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+.signup a {
+  color: #8ab4ff;
+}
+.signup a:hover {
+  text-decoration: underline;
+}

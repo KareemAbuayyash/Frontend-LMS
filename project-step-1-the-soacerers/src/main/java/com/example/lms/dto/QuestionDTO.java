@@ -1,0 +1,25 @@
+package com.example.lms.dto;
+
+import com.example.lms.entity.QuestionType;
+import jakarta.validation.constraints.*;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class QuestionDTO {
+    @Null(message = "id must be null for a new question")
+    private Long id;
+
+    @NotBlank(message = "Question text must not be blank")
+    private String text;
+
+    @NotBlank(message = "Correct answer must not be blank")
+    private String correctAnswer;
+
+    @NotNull(message = "Question type is required")
+    private QuestionType questionType;
+
+    @NotEmpty(message = "Options list must contain at least one entry")
+    private List<@NotBlank(message = "Option must not be blank") String> options;
+}

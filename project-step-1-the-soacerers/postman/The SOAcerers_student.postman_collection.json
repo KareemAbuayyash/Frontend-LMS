@@ -1,0 +1,326 @@
+{
+	"info": {
+		"_postman_id": "2e550e69-06f7-4803-8484-8c76555eba75",
+		"name": "The SOAcerers_student",
+		"description": "Postman collection for student endpoints in the LMS application for group The SOAcerers.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41777866"
+	},
+	"item": [
+		{
+			"name": "6) Login Student",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"student\",\n  \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Students",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/students",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Student By ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/students/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Student",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"grade\": \"A\",\r\n  \"hobbies\": \"Reading, Coding\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/students/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"students",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "content/3",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/content/course/11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"content",
+						"course",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "content/{id}/download",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/content/29/download",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"content",
+						"29",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Assignments for Course",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/assignments/course/11",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"assignments",
+						"course",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit Assignment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"submissionContent\": \"Here is my assignment submission.\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/submissions/assignments/47/students/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"submissions",
+						"assignments",
+						"47",
+						"students",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post submit quiz",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"answers\": [\r\n    \"False\",                          // TRUE_FALSE\r\n    \"Paris\",                          // MULTIPLE_CHOICE_SINGLE\r\n    \"2,3,5\",                          // MULTIPLE_CHOICE_MULTIPLE\r\n    \"H2O\",                            // FILL_IN_THE_BLANK\r\n    \"I\",                              // PATTERN_RECOGNITION\r\n    \"Mercury,Venus,Earth\",            // DRAG_AND_DROP\r\n    \"circle\",                         // IMAGE_PATTERN_RECOGNITION\r\n    \"France:Paris,Germany:Berlin\",    // MATCH_THE_PATTERNS\r\n    \"essay_grading_required\"       // ESSAY\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/submissions/quizzes/16/students/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"submissions",
+						"quizzes",
+						"16",
+						"students",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get My Assignment Submission",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/submissions/assignments/47/students/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"submissions",
+						"assignments",
+						"47",
+						"students",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX1NUVURFTlQiXSwic3ViIjoidXNlcldob0lzTG9nZ2VkSW4iLCJpYXQiOjE3NDMyOTExOTUsImV4cCI6MTc0MzI5Mjk5NX0.QoC8Q1D5qvLQ1RKiMlHYUmvqHg9QQUyY27D9ukmOWfU",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "access_token",
+			"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX1NUVURFTlQiXSwic3ViIjoidXNlcldob0lzTG9nZ2VkSW4iLCJpYXQiOjE3NDMyOTExOTUsImV4cCI6MTc0MzI5Mjk5NX0.QoC8Q1D5qvLQ1RKiMlHYUmvqHg9QQUyY27D9ukmOWfU",
+			"type": "string"
+		}
+	]
+}

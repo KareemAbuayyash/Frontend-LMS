@@ -1,0 +1,346 @@
+{
+	"info": {
+		"_postman_id": "28f29315-4193-4351-8200-d1f4fac50d71",
+		"name": "The SOAcerers_instructor",
+		"description": "Postman collection for instructor endpoints in the LMS application for group The SOAcerers.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41777866"
+	},
+	"item": [
+		{
+			"name": "Login Instructor",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"innnstructor\",\n  \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Content",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "Content Title",
+							"description": "Title of the content",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Content Description",
+							"description": "Description for the content",
+							"type": "text"
+						},
+						{
+							"key": "courseId",
+							"value": "11",
+							"description": "The ID of an existing course",
+							"type": "text"
+						},
+						{
+							"key": "uploadedBy",
+							"value": "1",
+							"description": "The ID of the instructor uploading the content",
+							"type": "text"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": "postman-cloud:///1f00bc93-faf2-43e0-87dd-9ef4d870bc64"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": "postman-cloud:///1f00bae7-9d20-4f30-92f6-ccc3afdde5d4"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/content/upload",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"content",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Instructors",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/instructors",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"instructors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Instructor By ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/instructors/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"instructors",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post quiz",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Comprehensive Quiz\",\r\n  \"questions\": [\r\n    {\r\n      \"text\": \"The sun revolves around the Earth\",\r\n      \"correctAnswer\": \"False\",\r\n      \"questionType\": \"TRUE_FALSE\"\r\n    },\r\n    {\r\n      \"text\": \"What is the capital of France?\",\r\n      \"correctAnswer\": \"Paris\",\r\n      \"questionType\": \"MULTIPLE_CHOICE_SINGLE\",\r\n      \"options\": [\"London\", \"Berlin\", \"Paris\", \"Madrid\"]\r\n    },\r\n    {\r\n      \"text\": \"Select prime numbers\",\r\n      \"correctAnswer\": \"2,3,5\",\r\n      \"questionType\": \"MULTIPLE_CHOICE_MULTIPLE\",\r\n      \"options\": [\"1\", \"2\", \"3\", \"4\", \"5\"]\r\n    },\r\n    {\r\n      \"text\": \"The chemical symbol for water is ___\",\r\n      \"correctAnswer\": \"H2O\",\r\n      \"questionType\": \"FILL_IN_THE_BLANK\"\r\n    },\r\n    {\r\n      \"text\": \"Continue the pattern: A, C, E, G, ___\",\r\n      \"correctAnswer\": \"I\",\r\n      \"questionType\": \"PATTERN_RECOGNITION\"\r\n    },\r\n    {\r\n      \"text\": \"Arrange planets from Sun: Mercury, Venus, Earth\",\r\n      \"correctAnswer\": \"Mercury,Venus,Earth\",\r\n      \"questionType\": \"DRAG_AND_DROP\"\r\n    },\r\n    {\r\n      \"text\": \"Identify the circle pattern (image ID: 123)\",\r\n      \"correctAnswer\": \"circle\",\r\n      \"questionType\": \"IMAGE_PATTERN_RECOGNITION\"\r\n    },\r\n    {\r\n      \"text\": \"Match countries to capitals: France-? Germany-?\",\r\n      \"correctAnswer\": \"France:Paris,Germany:Berlin\",\r\n      \"questionType\": \"MATCH_THE_PATTERNS\"\r\n    },\r\n    {\r\n      \"text\": \"Explain quantum computing basics\",\r\n      \"correctAnswer\": \"essay_grading_required\",\r\n      \"questionType\": \"ESSAY\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/quizzes/course/10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"quizzes",
+						"course",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/submissions/quizzes/{quizId}/submissions/{submissionId}/grade",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"score\": 90\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/submissions/quizzes/8/submissions/14/grade",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"submissions",
+						"quizzes",
+						"8",
+						"submissions",
+						"14",
+						"grade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Instructor",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"graduateDegree\": \"MSc in Computer Science\",\r\n  \"expertise\": \"Machine Learning\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/instructors/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"instructors",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Assignment for Course",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"title\": \"Assignment 1\", \"description\": \"Solve the problems\", \"score\": 0, \"graded\": false, \"totalPoints\": 100,   \"dueDate\": \"2025-03-29T21:44:00\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/assignments/course/11",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"assignments",
+						"course",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Assignments for Course",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/assignments/course/11",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"assignments",
+						"course",
+						"11"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0lOU1RSVUNUT1IiXSwic3ViIjoiaW5ubnN0cnVjdG9yIiwiaWF0IjoxNzQzMjkyNTAwLCJleHAiOjE3NDMyOTQzMDB9.3i3cR9G9WxgayMxAivxPF3LLPrkjCXBiIW1QX7GwD90",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "access_token",
+			"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0lOU1RSVUNUT1IiXSwic3ViIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTc0MzI4NTM5MCwiZXhwIjoxNzQzMjg3MTkwfQ.psfCTyC9nVyxnuhSdqIT95Uy3ckTRQz_O9As7UHMS-A",
+			"type": "string"
+		}
+	]
+}

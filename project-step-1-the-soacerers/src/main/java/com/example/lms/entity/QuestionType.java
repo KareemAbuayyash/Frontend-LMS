@@ -1,0 +1,13 @@
+package com.example.lms.entity;
+
+public enum QuestionType {
+    TRUE_FALSE,
+    MULTIPLE_CHOICE_SINGLE,
+    MULTIPLE_CHOICE_MULTIPLE,
+    FILL_IN_THE_BLANK,
+    PATTERN_RECOGNITION,
+    DRAG_AND_DROP,
+    IMAGE_PATTERN_RECOGNITION,
+    MATCH_THE_PATTERNS,
+    ESSAY
+}

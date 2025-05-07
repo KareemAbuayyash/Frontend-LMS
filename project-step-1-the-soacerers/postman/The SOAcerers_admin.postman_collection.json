@@ -1,0 +1,460 @@
+{
+	"info": {
+		"_postman_id": "b9742c6a-556a-420e-a122-670bbbc38079",
+		"name": "The SOAcerers_admin",
+		"description": "Postman collection for admin endpoints in the LMS application for group The SOAcerers.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41777866"
+	},
+	"item": [
+		{
+			"name": "Get All Admins",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/admins",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admins"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Admin By ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/admins/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admins",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Admin",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"department\": \"New Department\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admins/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admins",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Courses",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/courses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Course",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"courseName\": \"Course 101\", \"courseDescription\": \"Introduction to LMS\", \"courseDuration\": \"3 months\", \"courseInstructor\": \"John Doe\", \"coursePrice\": 100.0, \"courseStartDate\": \"2025-04-01\", \"courseEndDate\": \"2025-07-01\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/courses/newCourse",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"newCourse"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Course",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"courseName\": \"Updated Course 101\", \"courseDescription\": \"Updated course description\", \"courseDuration\": \"4 months\", \"courseInstructor\": \"Jane Doe\", \"coursePrice\": 120.0, \"courseStartDate\": \"2025-04-01\", \"courseEndDate\": \"2025-08-01\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/courses/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Enrollments",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/enrollments",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"enrollments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Enrollment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"studentId\": 1, \"courseIds\": [1, 2], \"completed\": false, \"enrollmentDate\": \"2025-03-30\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/enrollments/newEnrollment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"enrollments",
+						"newEnrollment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Enrollment",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"studentId\": 1, \"courseIds\": [1, 3], \"completed\": true, \"enrollmentDate\": \"2025-03-30\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/enrollments/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"enrollments",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Enrollment",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/enrollments/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"enrollments",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Users",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer <token>",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"newusername\", \"password\": \"newpassword\", \"email\": \"newemail@example.com\", \"role\": \"ADMIN\", \"profile\": \"updated profile\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2) Login Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"admiin\",\n  \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Enrollment Instructor",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses/11/assignInstructor/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"courses",
+						"11",
+						"assignInstructor",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInN1YiI6ImFkbWlpbiIsImlhdCI6MTc0MzI5MzU1NywiZXhwIjoxNzQzMjk1MzU3fQ.7eBPtBnDiqm3-3ntUcg8_d1AbWcplvauMg7LnczlBME",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "access_token",
+			"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInN1YiI6ImFkbWlpaWluIiwiaWF0IjoxNzQzMjg4ODQ2LCJleHAiOjE3NDMyOTA2NDZ9.jPhTqFzxFDLGXkZRceYVuzgF_junfwmbiQCQOVsgE0w",
+			"type": "string"
+		}
+	]
+}
