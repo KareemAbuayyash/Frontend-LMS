@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import api from '../../api/axios';
 import {
   FiTrash2,
@@ -65,8 +65,10 @@ export default function Courses() {
   };
 
   // 4) Helper to display instructor name
-  const getInsName = id =>
-    instructors.find(i => i.id.toString() === id)?.username || '';
+  const getInsName = useCallback(id =>
+    instructors.find(i => i.id.toString() === id)?.username || '',
+    [instructors]
+  );
 
   // 5) Filter / Search / Sort
   const displayed = useMemo(() => {
@@ -108,7 +110,7 @@ export default function Courses() {
     });
 
     return arr;
-  }, [courses, instructorFilter, search, sortField, sortDir, instructors]);
+  }, [courses, instructorFilter, search, sortField, sortDir, getInsName]);
 
   // 6) Add / Edit / Delete handlers
   const openModal  = () => setModalOpen(true);
@@ -161,7 +163,6 @@ export default function Courses() {
 
   return (
     <div className="courses-page">
-      {/* TOOLBAR */}
       <div className="toolbar">
         <div className="search-box">
           <FiSearch className="icon" />
@@ -188,9 +189,8 @@ export default function Courses() {
         </button>
       </div>
 
-      {/* TABLE */}
       <div className="table-container">
-        <table className="courses-table">
+        <table className="courses-table ">
           <thead>
             <tr>
               <th onClick={() => changeSort('courseName')}>
@@ -208,7 +208,7 @@ export default function Courses() {
                 Start{sortField==='start'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th>End</th>
-              <th className="actions-col">Actions</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -238,7 +238,7 @@ export default function Courses() {
                     <td><input className="inline-edit" type="number" value={draft.coursePrice} onChange={e=>setDraft(d=>({...d,coursePrice:e.target.value}))} /></td>
                     <td><input className="inline-edit" type="date"   value={draft.courseStartDate} onChange={e=>setDraft(d=>({...d,courseStartDate:e.target.value}))} /></td>
                     <td><input className="inline-edit" type="date"   value={draft.courseEndDate}   onChange={e=>setDraft(d=>({...d,courseEndDate:e.target.value}))}   /></td>
-                    <td className="actions-col">
+                    <td>
                       <button className="icon-btn" onClick={()=>saveEdit(c.courseId)}><FiCheck/></button>
                       <button className="icon-btn" onClick={cancelEdit}><FiXCircle/></button>
                     </td>
@@ -252,7 +252,7 @@ export default function Courses() {
                     <td>${c.coursePrice}</td>
                     <td>{new Date(c.courseStartDate).toLocaleDateString()}</td>
                     <td>{new Date(c.courseEndDate).toLocaleDateString()}</td>
-                    <td className="actions-col">
+                    <td>
                       <button className="icon-btn" onClick={()=>startEdit(c)}><FiEdit2/></button>
                       <button className="icon-btn trash" onClick={()=>handleDelete(c.courseId)}><FiTrash2/></button>
                     </td>

@@ -1,6 +1,7 @@
 package com.example.lms.controller;
 
 import com.example.lms.dto.UserDTO;
+import com.example.lms.dto.UserUpdateRequest;
 import com.example.lms.entity.User;
 import com.example.lms.service.UserService;
 import org.slf4j.Logger;
@@ -44,14 +45,14 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public ResponseEntity<?> replaceUser(@Valid @RequestBody UserDTO newUser, @PathVariable Long id) {
-        logger.info("Request received to update user with ID: {}", id);
-        ResponseEntity<?> response = userService.save(newUser, id);
-        logger.info("User with ID: {} updated successfully", id);
-        return response;
-    }
+    // @PreAuthorize("hasRole('ADMIN')")
+    // @PutMapping("/{id}")
+    // public ResponseEntity<?> replaceUser(@Valid @RequestBody UserDTO newUser, @PathVariable Long id) {
+    //     logger.info("Request received to update user with ID: {}", id);
+    //     ResponseEntity<?> response = userService.save(newUser, id);
+    //     logger.info("User with ID: {} updated successfully", id);
+    //     return response;
+    // }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
@@ -72,4 +73,21 @@ public class UserController {
         logger.info("Profile updated successfully for user with ID: {}", currentUser.getId());
         return response;
     }
+    @PreAuthorize("hasRole('ADMIN')")
+@PutMapping("/{id}")
+public ResponseEntity<?> updateUser(
+    @Valid @RequestBody UserUpdateRequest req,
+    @PathVariable Long id
+) {
+    UserDTO dto = new UserDTO();
+    dto.setUsername(req.getUsername());
+    dto.setEmail(req.getEmail());
+    dto.setRole(req.getRole());
+    dto.setProfile(req.getProfile());
+    if (req.getPassword()!=null && !req.getPassword().isBlank()) {
+      dto.setPassword(req.getPassword());
+    }
+    return userService.save(dto, id);
+}
+
 }

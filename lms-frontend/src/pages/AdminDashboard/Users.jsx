@@ -11,6 +11,7 @@ import {
 import './Users.css';
 
 export default function Users() {
+  /* ────────────────── state ────────────────── */
   const [users, setUsers]           = useState([]);
   const [loading, setLoading]       = useState(true);
   const [search, setSearch]         = useState('');
@@ -24,7 +25,7 @@ export default function Users() {
     username: '',
     email: '',
     role: 'STUDENT',
-    password: '',
+    password: '',   
     profile: ''
   });
 
@@ -37,6 +38,7 @@ export default function Users() {
     profile: ''
   });
 
+  /* ────────────────── data loading ────────────────── */
   const load = async () => {
     setLoading(true);
     try {
@@ -46,15 +48,13 @@ export default function Users() {
       const list     = rawList.map(item => item.content ?? item);
       setUsers(list);
     } catch (err) {
-      console.error('Failed to load users', err);
+      console.error(err);
     }
     setLoading(false);
   };
+  useEffect(() => { load(); }, []);
 
-  useEffect(() => {
-    load();
-  }, []);
-
+  /* ────────────────── helpers ────────────────── */
   const changeSort = field => {
     if (sortField === field) {
       setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
@@ -66,9 +66,7 @@ export default function Users() {
 
   const displayed = useMemo(() => {
     let list = [...users];
-    if (roleFilter !== 'ALL') {
-      list = list.filter(u => u.role === roleFilter);
-    }
+    if (roleFilter !== 'ALL') list = list.filter(u => u.role === roleFilter);
     if (search) {
       const s = search.toLowerCase();
       list = list.filter(u =>
@@ -81,12 +79,13 @@ export default function Users() {
       const va = (a[sortField] || '').toString().toLowerCase();
       const vb = (b[sortField] || '').toString().toLowerCase();
       if (va < vb) return sortDir === 'asc' ? -1 : 1;
-      if (va > vb) return sortDir === 'asc' ? 1 : -1;
+      if (va > vb) return sortDir === 'asc' ?  1 : -1;
       return 0;
     });
     return list;
   }, [users, roleFilter, search, sortField, sortDir]);
 
+  /* ────────────────── editing ────────────────── */
   const startEdit = u => {
     setEditingId(u.userId);
     setDraft({
@@ -101,23 +100,22 @@ export default function Users() {
 
   const saveEdit = async id => {
     try {
-      await api.put(`/users/${id}`, {
+      const payload = {
         username: draft.username,
         email:    draft.email,
         role:     draft.role,
-        password: draft.password || 'TempPass123!',
         profile:  draft.profile
-      });
+      };
+      if (draft.password) {
+        payload.password = draft.password;
+      }
+  
+      await api.put(`/users/${id}`, payload);
+  
       setUsers(us =>
         us.map(u =>
           u.userId === id
-            ? {
-                ...u,
-                username: draft.username,
-                email:    draft.email,
-                role:     draft.role,
-                profile:  draft.profile
-              }
+            ? { ...u, ...payload }
             : u
         )
       );
@@ -127,22 +125,21 @@ export default function Users() {
       alert(err.response?.data?.details || err.message);
     }
   };
+  
 
+  /* ────────────────── deletion ────────────────── */
   const handleDelete = async id => {
     if (!window.confirm('Really delete this user?')) return;
     try {
       await api.delete(`/users/${id}`);
       setUsers(us => us.filter(u => u.userId !== id));
     } catch (err) {
-      if (err.response?.status === 409) {
-        const msg = err.response.data?.details || err.response.data?.message;
-        alert('Delete failed: ' + msg);
-      } else {
-        console.error('Failed to delete user', err);
-      }
+      console.error(err);
+      alert(err.response?.data?.message || err.message);
     }
   };
 
+  /* ────────────────── create ────────────────── */
   const openModal  = () => setModalOpen(true);
   const closeModal = () => {
     setModalOpen(false);
@@ -159,22 +156,16 @@ export default function Users() {
   const handleAdd = async e => {
     e.preventDefault();
     try {
-      await api.post('/api/auth/register', {
-        username: newUser.username,
-        email:    newUser.email,
-        name:     newUser.name,
-        password: newUser.password,
-        role:     newUser.role,
-        profile:  newUser.profile
-      });
+      await api.post('/api/auth/register', newUser);
       await load();
       closeModal();
     } catch (err) {
-      console.error('Failed to add user', err);
-      alert(err.response?.data?.details || err.message);
+      console.error(err);
+      alert(err.response?.data?.message || err.message);
     }
   };
 
+  /* ────────────────── render ────────────────── */
   return (
     <div className="users-page">
       {/* toolbar */}
@@ -188,10 +179,7 @@ export default function Users() {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <select
-          value={roleFilter}
-          onChange={e => setRoleFilter(e.target.value)}
-        >
+        <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
           <option value="ALL">All Roles</option>
           <option value="ADMIN">ADMIN</option>
           <option value="INSTRUCTOR">INSTRUCTOR</option>
@@ -208,109 +196,104 @@ export default function Users() {
           <thead>
             <tr>
               <th onClick={() => changeSort('username')}>
-                Username{sortField==='username' ? (sortDir==='asc'?' ▲':' ▼') : ''}
+                Username{sortField==='username'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th onClick={() => changeSort('email')}>
-                Email{sortField==='email' ? (sortDir==='asc'?' ▲':' ▼') : ''}
+                Email{sortField==='email'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th onClick={() => changeSort('role')}>
-                Role{sortField==='role' ? (sortDir==='asc'?' ▲':' ▼') : ''}
+                Role{sortField==='role'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th onClick={() => changeSort('profile')}>
-                Name{sortField==='profile' ? (sortDir==='asc'?' ▲':' ▼') : ''}
+                Name{sortField==='profile'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th>Password</th>
-              <th className="actions-col">Actions</th>
+              <th>Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {loading ? (
               <tr className="empty"><td colSpan={6}>Loading…</td></tr>
             ) : displayed.length === 0 ? (
               <tr className="empty"><td colSpan={6}>No users found.</td></tr>
-            ) : (
-              displayed.map(u => (
-                <tr key={u.userId}>
-                  {editingId === u.userId ? (
-                    <>
-                      <td>
-                        <input
-                          className="inline-edit"
-                          value={draft.username}
-                          onChange={e => setDraft(d => ({ ...d, username: e.target.value }))}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          className="inline-edit"
-                          value={draft.email}
-                          onChange={e => setDraft(d => ({ ...d, email: e.target.value }))}
-                        />
-                      </td>
-                      <td>
-                        <select
-                          className="inline-edit"
-                          value={draft.role}
-                          onChange={e => setDraft(d => ({ ...d, role: e.target.value }))}
-                        >
-                          <option value="ADMIN">ADMIN</option>
-                          <option value="INSTRUCTOR">INSTRUCTOR</option>
-                          <option value="STUDENT">STUDENT</option>
-                        </select>
-                      </td>
-                      <td>
-                        <input
-                          className="inline-edit"
-                          value={draft.profile}
-                          onChange={e => setDraft(d => ({ ...d, profile: e.target.value }))}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          className="inline-edit"
-                          type="password"
-                          placeholder="(leave blank to keep)"
-                          value={draft.password}
-                          onChange={e => setDraft(d => ({ ...d, password: e.target.value }))}
-                        />
-                      </td>
-                      <td className="actions-col">
-                        <button className="icon-btn" onClick={() => saveEdit(u.userId)}>
-                          <FiCheck />
-                        </button>
-                        <button className="icon-btn" onClick={cancelEdit}>
-                          <FiXCircle />
-                        </button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td>{u.username}</td>
-                      <td>{u.email}</td>
-                      <td>{u.role}</td>
-                      <td>{u.profile || '-'}</td>
-                      <td><code style={{ fontSize: '0.8em' }}>{u.password}</code></td>
-                      <td className="actions-col">
-                        <button className="icon-btn" onClick={() => startEdit(u)}>
-                          <FiEdit2 />
-                        </button>
-                        <button className="icon-btn trash" onClick={() => handleDelete(u.userId)}>
-                          <FiTrash2 />
-                        </button>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))
-            )}
+            ) : displayed.map(u => (
+              <tr key={u.userId}>
+                {editingId === u.userId ? (
+                  <>
+                    <td>
+                      <input
+                        className="inline-edit"
+                        value={draft.username}
+                        onChange={e=>setDraft(d=>({...d,username:e.target.value}))}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inline-edit"
+                        value={draft.email}
+                        onChange={e=>setDraft(d=>({...d,email:e.target.value}))}
+                      />
+                    </td>
+                    <td>
+                      <select
+                        className="inline-edit"
+                        value={draft.role}
+                        onChange={e=>setDraft(d=>({...d,role:e.target.value}))}
+                      >
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="INSTRUCTOR">INSTRUCTOR</option>
+                        <option value="STUDENT">STUDENT</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        className="inline-edit"
+                        value={draft.profile}
+                        onChange={e=>setDraft(d=>({...d,profile:e.target.value}))}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inline-edit"
+                        type="password"
+                        placeholder="(leave blank)"
+                        value={draft.password}
+                        onChange={e=>setDraft(d=>({...d,password:e.target.value}))}
+                      />
+                    </td>
+                    <td>
+                      <button className="icon-btn" onClick={()=>saveEdit(u.userId)}><FiCheck/></button>
+                      <button className="icon-btn" onClick={cancelEdit}><FiXCircle/></button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>{u.username}</td>
+                    <td>{u.email}</td>
+                    <td>{u.role}</td>
+                    <td>{u.profile || '-'}</td>
+                    <td>
+                      <code style={{fontSize:'0.8em'}}>
+                        {u.password}
+                      </code>
+                    </td>
+                    <td>
+                      <button className="icon-btn" onClick={()=>startEdit(u)}><FiEdit2/></button>
+                      <button className="icon-btn trash" onClick={()=>handleDelete(u.userId)}><FiTrash2/></button>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
-      {/* add-user modal */}
+      {/* modal */}
       {modalOpen && (
         <div className="modal-backdrop" onClick={closeModal}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
             <h3>New User</h3>
             <form onSubmit={handleAdd}>
               <div className="grid2">
@@ -318,14 +301,14 @@ export default function Users() {
                   required
                   placeholder="Username"
                   value={newUser.username}
-                  onChange={e => setNewUser(n => ({ ...n, username: e.target.value }))}
+                  onChange={e=>setNewUser(n=>({...n,username:e.target.value}))}
                 />
                 <input
                   required
                   type="email"
                   placeholder="Email"
                   value={newUser.email}
-                  onChange={e => setNewUser(n => ({ ...n, email: e.target.value }))}
+                  onChange={e=>setNewUser(n=>({...n,email:e.target.value}))}
                 />
               </div>
               <div className="grid2">
@@ -333,21 +316,21 @@ export default function Users() {
                   required
                   placeholder="Name"
                   value={newUser.name}
-                  onChange={e => setNewUser(n => ({ ...n, name: e.target.value }))}
+                  onChange={e=>setNewUser(n=>({...n,name:e.target.value}))}
                 />
                 <input
                   required
                   type="password"
                   placeholder="Password"
                   value={newUser.password}
-                  onChange={e => setNewUser(n => ({ ...n, password: e.target.value }))}
+                  onChange={e=>setNewUser(n=>({...n,password:e.target.value}))}
                 />
               </div>
               <div className="grid2">
                 <select
                   required
                   value={newUser.role}
-                  onChange={e => setNewUser(n => ({ ...n, role: e.target.value }))}
+                  onChange={e=>setNewUser(n=>({...n,role:e.target.value}))}
                 >
                   <option value="ADMIN">ADMIN</option>
                   <option value="INSTRUCTOR">INSTRUCTOR</option>
@@ -356,21 +339,17 @@ export default function Users() {
                 <input
                   placeholder="Profile URL"
                   value={newUser.profile}
-                  onChange={e => setNewUser(n => ({ ...n, profile: e.target.value }))}
+                  onChange={e=>setNewUser(n=>({...n,profile:e.target.value}))}
                 />
               </div>
               <div className="modal-actions">
-                <button type="button" className="btn" onClick={closeModal}>
-                  Cancel
-                </button>
-                <button type="submit" className="btn primary">
-                  Create
-                </button>
+                <button type="button" className="btn" onClick={closeModal}>Cancel</button>
+                <button type="submit" className="btn primary">Create</button>
               </div>
             </form>
           </div>
         </div>
       )}
     </div>
-);
+  );
 }

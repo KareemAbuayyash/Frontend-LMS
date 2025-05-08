@@ -33,16 +33,13 @@ export default function Enrollments() {
       api.get('/courses'),
     ])
       .then(([eRes, sRes, cRes]) => {
-        // unwrap enrollments
         const embedded = eRes.data._embedded || {};
         const key = Object.keys(embedded)[0];
         const raw = key ? embedded[key] : [];
         setEnrollments(raw.map(item => item.content || item));
 
-        // students response is assumed as simple array
         setStudents(sRes.data);
 
-        // courses unwrap
         const cEmbedded = cRes.data._embedded || {};
         const cKey = Object.keys(cEmbedded)[0];
         setCourses(cKey ? cEmbedded[cKey] : []);
@@ -60,7 +57,6 @@ export default function Enrollments() {
     });
   }, [enrollments, students, filter]);
 
-  // open/close modal
   const openModal = () => {
     setEditing(null);
     setForm({ studentId: '', courseIds: [], enrollmentDate: '', completed: false });
@@ -68,7 +64,6 @@ export default function Enrollments() {
   };
   const closeModal = () => setModalOpen(false);
 
-  // save (create or update)
   const handleSave = async e => {
     e.preventDefault();
     try {
@@ -77,8 +72,7 @@ export default function Enrollments() {
       } else {
         await api.post('/enrollments/newEnrollment', form);
       }
-      await Promise.all([]); // just to await 
-      // reload
+      await Promise.all([]); 
       window.location.reload();
     } catch (err) {
       console.error('Save failed', err);
@@ -139,7 +133,7 @@ export default function Enrollments() {
               <th>Courses</th>
               <th>Date</th>
               <th>Completed</th>
-              <th className="actions-col">Actions</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -160,7 +154,7 @@ export default function Enrollments() {
                   <td>{courseNames}</td>
                   <td>{new Date(e.enrollmentDate).toLocaleDateString()}</td>
                   <td>{e.completed ? 'Yes' : 'No'}</td>
-                  <td className="actions-col">
+                  <td>
                     <button className="icon-btn" onClick={() => startEdit(e)}>
                       <FiEdit2 />
                     </button>

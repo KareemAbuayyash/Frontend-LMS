@@ -1,98 +1,64 @@
-// src/App.jsx
-import { Routes, Route, Navigate } from "react-router-dom";
+import React from "react";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+
+// Authentication
 import Login from "./components/Auth/Login";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
-import Courses from "./pages/AdminDashboard/Courses";
-import Instructors from "./pages/AdminDashboard/Instructors";
-import AdminUsers from "./pages/AdminDashboard/Users";
-import Enrollments from "./pages/AdminDashboard/Enrollments";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+// Layouts
 import Layout from "./components/Layout/Layout";
+import StudentLayout from "./components/Layout/StudentLayout";
+
+// Admin pages
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
+import Courses         from "./pages/AdminDashboard/Courses";
+import Instructors     from "./pages/AdminDashboard/Instructors";
+import AdminUsers      from "./pages/AdminDashboard/Users";
+import Enrollments     from "./pages/AdminDashboard/Enrollments";
+
+
+// Error boundary
 import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
   return (
     <Routes>
-      {/* public routes */}
+      {/* Public */}
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/"      element={<Navigate to="/login" replace />} />
 
-      {/* protected user route */}
+      {/* Admin section */}
       <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Layout showSidebar={false}>
-              <Dashboard />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-
-      {/* admin section */}
-      <Route
-        path="/admin"
+        path="/admin/*"
         element={
           <ProtectedRoute requiredRole="ROLE_ADMIN">
             <Layout showSidebar>
-              <AdminDashboard />
+              <Outlet />
             </Layout>
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="courses"     element={<Courses />} />
+        <Route path="instructors" element={
+          <ErrorBoundary>
+            <Instructors />
+          </ErrorBoundary>
+        }/>
+        <Route path="users"       element={
+          <ErrorBoundary>
+            <AdminUsers />
+          </ErrorBoundary>
+        }/>
+        <Route path="enrollments" element={
+          <ErrorBoundary>
+            <Enrollments />
+          </ErrorBoundary>
+        }/>
+        <Route path="*" element={<Navigate to="/admin" replace />} />
+      </Route>
 
-      <Route
-        path="/admin/courses"
-        element={
-          <ProtectedRoute requiredRole="ROLE_ADMIN">
-            <Layout showSidebar>
-              <Courses />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
 
-      <Route
-        path="/admin/instructors"
-        element={
-          <ProtectedRoute requiredRole="ROLE_ADMIN">
-            <ErrorBoundary>
-              <Layout showSidebar>
-                <Instructors />
-              </Layout>
-            </ErrorBoundary>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/users"
-        element={
-          <ProtectedRoute requiredRole="ROLE_ADMIN">
-            <ErrorBoundary>
-              <Layout showSidebar>
-                <AdminUsers />
-              </Layout>
-            </ErrorBoundary>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/enrollments"
-        element={
-          <ProtectedRoute requiredRole="ROLE_ADMIN">
-            <ErrorBoundary>
-              <Layout showSidebar>
-                <Enrollments />
-              </Layout>
-            </ErrorBoundary>
-          </ProtectedRoute>
-        }
-      />
-
-      {/* catch-all to login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

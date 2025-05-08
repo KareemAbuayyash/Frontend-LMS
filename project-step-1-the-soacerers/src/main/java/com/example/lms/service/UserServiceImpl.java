@@ -3,9 +3,13 @@ package com.example.lms.service;
 import com.example.lms.assembler.UserModelAssembler;
 import com.example.lms.dto.RegisterRequest;
 import com.example.lms.dto.UserDTO;
+import com.example.lms.dto.UserUpdateRequest;
 import com.example.lms.entity.*;
 import com.example.lms.mapper.UserMapper;
 import com.example.lms.repository.*;
+
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+
 import com.example.lms.exception.UserAlreadyExistsException;
 import com.example.lms.exception.UserNotFoundException;
 
@@ -104,42 +111,47 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public ResponseEntity<?> save(UserDTO newUser, Long id) {
+public ResponseEntity<?> save(UserDTO newUser, Long id) {
     logger.info("Updating user with ID: {}", id);
-    boolean exists = userRepository.existsById(id);
 
+    // First check for email/username conflicts exactly as before…
     userRepository.findByEmail(newUser.getEmail()).ifPresent(existing -> {
-      if (!existing.getId().equals(id)) {
-        logger.warn("Email already exists: {}", newUser.getEmail());
-        throw new UserAlreadyExistsException("Email already exists: " + newUser.getEmail());
-      }
+        if (!existing.getId().equals(id)) {
+            logger.warn("Email already exists: {}", newUser.getEmail());
+            throw new UserAlreadyExistsException("Email already exists: " + newUser.getEmail());
+        }
     });
-
     userRepository.findByUsername(newUser.getUsername()).ifPresent(existing -> {
-      if (!existing.getId().equals(id)) {
-        logger.warn("Username already exists: {}", newUser.getUsername());
-        throw new UserAlreadyExistsException("Username already exists: " + newUser.getUsername());
-      }
+        if (!existing.getId().equals(id)) {
+            logger.warn("Username already exists: {}", newUser.getUsername());
+            throw new UserAlreadyExistsException("Username already exists: " + newUser.getUsername());
+        }
     });
 
+    // Now fetch & update the user
     User updatedUser = userRepository.findById(id)
         .map(user -> {
-          user.setUsername(newUser.getUsername());
-          user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-          user.setEmail(newUser.getEmail());
-          user.setRole(newUser.getRole());
-          user.setProfile(newUser.getProfile());
-          logger.info("User with ID: {} updated successfully", id);
-          return userRepository.save(user);
+            user.setUsername(newUser.getUsername());
+
+            // Only update password if the admin actually typed one
+            if (newUser.getPassword() != null && !newUser.getPassword().isBlank()) {
+                user.setPassword(passwordEncoder.encode(newUser.getPassword()));
+            }
+
+            user.setEmail(newUser.getEmail());
+            user.setRole(newUser.getRole());
+            user.setProfile(newUser.getProfile());
+            logger.info("User with ID: {} updated successfully", id);
+            return userRepository.save(user);
         })
         .orElseThrow(() -> {
-          logger.error("User with ID: {} not found for update", id);
-          return new UserNotFoundException(id);
+            logger.error("User with ID: {} not found for update", id);
+            return new UserNotFoundException(id);
         });
 
-    HttpStatus status = exists ? HttpStatus.OK : HttpStatus.CREATED;
+    HttpStatus status = userRepository.existsById(id) ? HttpStatus.OK : HttpStatus.CREATED;
     return ResponseEntity.status(status).body(UserMapper.toDTO(updatedUser));
-  }
+}
 
   @Override
   public ResponseEntity<?> deleteById(Long id) {
@@ -238,4 +250,19 @@ public class UserServiceImpl implements UserService {
     user.setPassword(passwordEncoder.encode(rawPassword));
     userRepository.save(user);
   }
+  @PutMapping("/{id}")
+  public ResponseEntity<?> updateUser(
+      @RequestBody @Valid UserUpdateRequest req,
+      @PathVariable Long id
+  ) {
+      UserDTO dto = new UserDTO();
+      dto.setUsername(req.getUsername());
+      dto.setEmail(req.getEmail());
+      dto.setRole(req.getRole());
+      dto.setProfile(req.getProfile());
+      dto.setPassword(req.getPassword());  
+
+      return this.save(dto, id);
+  }
+
 }

@@ -1,7 +1,5 @@
-// src/components/Layout/Layout.jsx
-
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   FiSearch, FiBell, FiMenu, FiX,
   FiUser, FiGrid, FiFileText, FiSettings
@@ -10,30 +8,26 @@ import api from '../../api/axios';
 import './Layout.css';
 
 const SIDEBAR_ITEMS = [
-  { label: 'Dashboard',   to: '/dashboard',        icon: <FiGrid />     },
+  { label: 'Dashboard',   to: '/admin',            icon: <FiGrid />     },
   { label: 'Courses',     to: '/admin/courses',    icon: <FiFileText /> },
   { label: 'Users',       to: '/admin/users',      icon: <FiUser />     },
   { label: 'Instructors', to: '/admin/instructors',icon: <FiUser />     },
   { label: 'Enrollments', to: '/admin/enrollments',icon: <FiFileText /> },
-  { label: 'Content',     to: '/admin/content',    icon: <FiFileText /> },
   { label: 'Permissions', to: '/admin/permissions',icon: <FiSettings /> },
 ];
 
-export default function Layout({ children }) {
+export default function Layout({ showSidebar, children }) {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const username = localStorage.getItem('username') || 'User';
 
-  // Automatically collapse sidebar on screens narrower than 480px
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 600px)');
-    const handleMediaChange = e => setCollapsed(e.matches);
-
-    // set initial state
+    const listener = e => setCollapsed(e.matches);
+    mq.addListener(listener);
     setCollapsed(mq.matches);
-    // listen for changes
-    mq.addListener(handleMediaChange);
-    return () => mq.removeListener(handleMediaChange);
+    return () => mq.removeListener(listener);
   }, []);
 
   const logout = async () => {
@@ -45,37 +39,37 @@ export default function Layout({ children }) {
       // ignore
     } finally {
       localStorage.clear();
-      navigate('/');
+      navigate('/login');
     }
   };
 
   return (
     <div className="layout">
-      {/* SIDEBAR */}
-      <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-        <div className="sidebar-header">
-          {!collapsed && <h2>LMS Admin</h2>}
-          <button onClick={() => setCollapsed(c => !c)}>
-            {collapsed ? <FiMenu size={20}/> : <FiX size={20}/>}
-          </button>
-        </div>
-        <nav className="sidebar-nav">
-          {SIDEBAR_ITEMS.map(item => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={window.location.pathname === item.to ? 'active' : ''}
-            >
-              {item.icon}
-              {!collapsed && <span>{item.label}</span>}
-            </Link>
-          ))}
-        </nav>
-      </aside>
+      {showSidebar && (
+        <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+          <div className="sidebar-header">
+            {!collapsed && <h2>LMS Admin</h2>}
+            <button onClick={() => setCollapsed(c => !c)}>
+              {collapsed ? <FiMenu size={20}/> : <FiX size={20}/>}
+            </button>
+          </div>
+          <nav className="sidebar-nav">
+            {SIDEBAR_ITEMS.map(item => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={location.pathname === item.to ? 'active' : ''}
+              >
+                {item.icon}
+                {!collapsed && <span>{item.label}</span>}
+              </Link>
+            ))}
+          </nav>
+        </aside>
+      )}
 
-      {/* MAIN CONTENT */}
       <div className="main-content">
-        {/* TOP BAR */}
+        {/* top bar */}
         <header className="topbar">
           <div className="search-container">
             <FiSearch />
@@ -95,7 +89,6 @@ export default function Layout({ children }) {
           </div>
         </header>
 
-        {/* PAGE WRAPPER */}
         <div className="page-wrapper">
           {children}
         </div>
