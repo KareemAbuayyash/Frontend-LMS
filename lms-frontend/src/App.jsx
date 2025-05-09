@@ -7,7 +7,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Layouts
 import Layout from "./components/Layout/Layout";
-import StudentLayout from "./components/Layout/StudentLayout";
 
 // Admin pages
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";

@@ -1,154 +1,221 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styles from './AdminDashboard.module.css';
+import {
+  FaUsers,
+  FaBook,
+  FaClipboardList,
+  FaSyncAlt,
+  FaCircle,
+  FaSun,
+  FaMoon,
+  FaChartBar,
+  FaDownload
+} from 'react-icons/fa';
+import html2canvas from 'html2canvas';
+import { saveAs } from 'file-saver';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
 import api from '../../api/axios';
-import { FiUsers, FiBook, FiClock, FiAlertCircle } from 'react-icons/fi';
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeStudents: 0,
-    activeCourses: 0,
-    pendingApprovals: 0,
-  });
+  const [stats, setStats] = useState(null);
   const [recentUsers, setRecentUsers] = useState([]);
-  const [recentCourses, setRecentCourses] = useState([]);
-  const [activityFeed, setActivityFeed] = useState([]);
+  const [search, setSearch] = useState('');
+  const [dark, setDark] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const chartRef = useRef();
+
+  const COLORS = ['#4e79a7', '#f28e2c', '#e15759'];
+
+  const fetchData = async () => {
+    try {
+      const [{ data: s }, { data: u }] = await Promise.all([
+        api.get('/dashboard/stats'),
+        api.get('/dashboard/activity?limit=50')
+      ]);
+      setStats(s);
+      setRecentUsers(u);
+      setLastUpdated(new Date());
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    api.get('/api/dashboard/stats').then(res => setStats(res.data));
-
-    api.get('/api/users?sort=createdAt,desc&size=5')
-       .then(res => setRecentUsers(res.data.content));
-    api.get('/api/courses?sort=createdAt,desc&size=5')
-       .then(res => setRecentCourses(res.data.content));
-
-    api.get('/api/dashboard/activity?limit=5')
-       .then(res => setActivityFeed(res.data));
+    fetchData();
   }, []);
 
+  if (!stats) {
+    return <div className={styles.loading}>Loading dashboard…</div>;
+  }
+
+  const chartData = [
+    { name: 'Users', value: stats.totalUsers },
+    { name: 'Courses', value: stats.totalCourses },
+    { name: 'Enrollments', value: stats.totalEnrollments }
+  ];
+
+  // filter client-side
+  const filtered = recentUsers.filter(u =>
+    u.username.toLowerCase().includes(search.toLowerCase()) ||
+    u.email.toLowerCase().includes(search.toLowerCase())
+  );
+  // only show the last 5
+  const displayedUsers = filtered.slice(0, 5);
+
+  const exportUsersCSV = () => {
+    const header = ['Username', 'Email'];
+    const rows = filtered.map(u => [u.username, u.email]);
+    const csv = [header.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\r\n');
+    saveAs(new Blob([csv], { type: 'text/csv' }), 'recent-users.csv');
+  };
+
+  const exportChartPNG = async () => {
+    if (!chartRef.current) return;
+    const canvas = await html2canvas(chartRef.current);
+    canvas.toBlob(blob => saveAs(blob, 'overview-chart.png'));
+  };
+
   return (
-    <div className={styles.container}>
-      <h1 className={styles.header}>Admin Dashboard</h1>
+    <div className={`${styles.container} ${dark ? styles.dark : ''}`}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Admin Dashboard</h1>
+        <div className={styles.headerControls}>
+          <button
+            onClick={() => setDark(d => !d)}
+            className={styles.iconButton}
+            title="Toggle Dark/Light"
+          >
+            {dark ? <FaSun /> : <FaMoon />}
+          </button>
+          <button onClick={fetchData} className={styles.iconButton} title="Refresh">
+            <FaSyncAlt />
+          </button>
+        </div>
+      </header>
 
-      <div className={styles.cardRow}>
-        <div className={styles.card}>
-          <FiUsers className={styles.icon} />
-          <div>
-            <h3>{stats.totalUsers}</h3>
-            <p>Total Users</p>
-          </div>
+      {lastUpdated && (
+        <div className={styles.subHeader}>
+          Last refreshed: {lastUpdated.toLocaleTimeString()}
         </div>
-        <div className={styles.card}>
-          <FiUsers className={styles.icon} />
-          <div>
-            <h3>{stats.activeStudents}</h3>
-            <p>Active Students</p>
-          </div>
-        </div>
-        <div className={styles.card}>
-          <FiBook className={styles.icon} />
-          <div>
-            <h3>{stats.activeCourses}</h3>
-            <p>Active Courses</p>
-          </div>
-        </div>
-        <div className={styles.card}>
-          <FiClock className={styles.icon} />
-          <div>
-            <h3>{stats.pendingApprovals}</h3>
-            <p>Pending Approvals</p>
-          </div>
-        </div>
-      </div>
+      )}
 
-      <div className={styles.main}>
-        <section className={styles.overview}>
-          <h2>System Overview</h2>
-          <div className={styles.chartPlaceholder}>
-            <p>Chart goes here</p>
+      {/* === YOUR EXISTING “Recent Courses” GOES HERE === */}
+      {/* e.g. <RecentCourses /> or your custom table */}
+
+      {/* === STATS CARDS === */}
+      <section className={styles.statsGrid}>
+        <div className={styles.card}>
+          <FaUsers className={styles.iconUser} />
+          <div>
+            <h2>{stats.totalUsers}</h2>
+            <p>Users</p>
           </div>
-          <div className={styles.usage}>
-            <div><strong>CPU:</strong> 24%</div>
-            <div><strong>Memory:</strong> 3.2 GB</div>
-            <div><strong>Storage:</strong> 42%</div>
+        </div>
+        <div className={styles.card}>
+          <FaBook className={styles.iconCourse} />
+          <div>
+            <h2>{stats.totalCourses}</h2>
+            <p>Courses</p>
+          </div>
+        </div>
+        <div className={styles.card}>
+          <FaClipboardList className={styles.iconEnroll} />
+          <div>
+            <h2>{stats.totalEnrollments}</h2>
+            <p>Enrollments</p>
+          </div>
+        </div>
+      </section>
+
+      {/* === NEW: wrap Overview + Recent Users side-by-side === */}
+      <div className={styles.mainSections}>
+        {/* Overview Chart */}
+        <section className={styles.chartSection}>
+          <div className={styles.listHeader}>
+            <h2 className={styles.sectionTitle}>Overview</h2>
+            <button
+              onClick={exportChartPNG}
+              className={styles.iconButton}
+              title="Download Chart PNG"
+            >
+              <FaChartBar />
+            </button>
+          </div>
+          <div ref={chartRef} style={{ width: '100%', height: 300 }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label
+                >
+                  {chartData.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={v => v.toLocaleString()} />
+                <Legend
+                  icon={<FaCircle />}
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  height={36}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
         </section>
 
-        <aside className={styles.sidebar}>
-          <div className={styles.pending}>
-            <h3>Pending Actions</h3>
-            <ul>
-              <li>
-                <strong>15</strong> User Approvals
-                <button>View →</button>
-              </li>
-              <li>
-                <strong>3</strong> Course Approvals
-                <button>Review →</button>
-              </li>
-              <li className={styles.alert}>
-                <FiAlertCircle /> Database at 80%
-                <button>Settings →</button>
-              </li>
-            </ul>
+        {/* Recently Registered Users */}
+        <section className={styles.listSection}>
+          <div className={styles.listHeader}>
+            <h2 className={styles.sectionTitle}>Recent Users</h2>
+            <div>
+              <input
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className={styles.searchInput}
+              />
+              <button onClick={exportUsersCSV} className={styles.iconButton} title="Export CSV">
+                <FaDownload />
+              </button>
+            </div>
           </div>
 
-          <div className={styles.widget}>
-            <h3>Recent Users</h3>
-            <ul>
-              {recentUsers.map(u => (
-                <li key={u.id}>
-                  <span className={styles.avatar}>{u.username[0]}</span>
-                  <div>
-                    <strong>{u.username}</strong>
-                    <small>{u.email}</small>
+          {displayedUsers.length === 0 ? (
+            <div className={styles.noResults}>No matching users found.</div>
+          ) : (
+            <ul className={styles.userList}>
+              {displayedUsers.map(u => (
+                <li key={u.userId} className={styles.userItem}>
+                  <div className={styles.avatar}>{u.username.charAt(0)}</div>
+                  <div className={styles.userInfo}>
+                    <div className={styles.nameRow}>
+                      <strong className={styles.username}>{u.username}</strong>
+                      <span className={`${styles.roleBadge} ${styles[u.role.toLowerCase()]}`}>
+                        {u.role}
+                      </span>
+                    </div>
+                    <span className={styles.email}>{u.email}</span>
                   </div>
-                  <small className={styles.role}>{u.role}</small>
                 </li>
               ))}
             </ul>
-          </div>
-        </aside>
+          )}
+        </section>
       </div>
-
-      <section className={styles.activity}>
-        <h2>System Activity</h2>
-        <ul>
-          {activityFeed.map(a => (
-            <li key={a.id}>
-              <strong>{a.title}</strong>
-              <p>{a.description}</p>
-              <small>{new Date(a.date).toLocaleDateString()}</small>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className={styles.recentCourses}>
-        <h2>Recent Courses</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Course</th>
-              <th>Instructor</th>
-              <th>Enrolled</th>
-              <th>Status</th>
-              <th>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentCourses.map(c => (
-              <tr key={c.id}>
-                <td>{c.name}</td>
-                <td>{c.instructorName}</td>
-                <td>{c.studentCount}</td>
-                <td>{c.status}</td>
-                <td>{new Date(c.createdAt).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
     </div>
   );
 }

@@ -156,7 +156,7 @@ export default function Users() {
   const handleAdd = async e => {
     e.preventDefault();
     try {
-      await api.post('/api/auth/register', newUser);
+      await api.post('/auth/register', newUser);
       await load();
       closeModal();
     } catch (err) {

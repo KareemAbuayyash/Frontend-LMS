@@ -1,3 +1,4 @@
+// src/components/Auth/Login.jsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
@@ -31,7 +32,8 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
-      const { data } = await api.post('/api/auth/login', { username, password });
+      // ← no leading "/api"
+      const { data } = await api.post('/auth/login', { username, password });
       saveTokens(data.accessToken, data.refreshToken);
       localStorage.setItem('username', username);
 
@@ -111,8 +113,6 @@ export default function Login() {
         <button type="button" className={styles.socialBtn}>
           <FcGoogle size={18} /> Sign in with Google
         </button>
-
-      
       </form>
     </main>
   );
