@@ -16,7 +16,8 @@ export default function Enrollments() {
   const [students, setStudents]       = useState([]);
   const [courses, setCourses]         = useState([]);
   const [loading, setLoading]         = useState(true);
-  const [filter, setFilter]           = useState('');
+  const [studentFilter, setStudentFilter] = useState('');
+  const [courseFilter, setCourseFilter]   = useState('');
   const [modalOpen, setModalOpen]     = useState(false);
   const [editing, setEditing]         = useState(null);
   const [form, setForm]               = useState({
@@ -50,16 +51,25 @@ export default function Enrollments() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Filter by student name
+  // Filter by student or course selection
   const displayed = useMemo(() => {
     return enrollments.filter(e => {
-      if (!filter) return true;
-      const student = students.find(s => s.id === e.studentId);
-      return (student?.username || '')
-        .toLowerCase()
-        .includes(filter.toLowerCase());
+      // student filter
+      if (studentFilter) {
+        const student = students.find(s => s.id === e.studentId);
+        if (!student || !student.username.toLowerCase().includes(studentFilter.toLowerCase())) {
+          return false;
+        }
+      }
+      // course filter (by courseId)
+      if (courseFilter) {
+        if (!e.courseIds.includes(Number(courseFilter))) {
+          return false;
+        }
+      }
+      return true;
     });
-  }, [enrollments, students, filter]);
+  }, [enrollments, students, studentFilter, courseFilter]);
 
   // Export enrollments to CSV
   const exportEnrollmentsCSV = () => {
@@ -133,11 +143,21 @@ export default function Enrollments() {
           <FiSearch className="icon" />
           <input
             type="text"
-            placeholder="Search students…"
-            value={filter}
-            onChange={e => setFilter(e.target.value)}
+            placeholder="Filter by student…"
+            value={studentFilter}
+            onChange={e => setStudentFilter(e.target.value)}
           />
         </div>
+        <select
+          className="search-box"
+          value={courseFilter}
+          onChange={e => setCourseFilter(e.target.value)}
+        >
+          <option value="">All Courses</option>
+          {courses.map(c => (
+            <option key={c.courseId} value={c.courseId}>{c.courseName}</option>
+          ))}
+        </select>
         <button className="btn primary" onClick={openModal}>
           <FiPlus /> New Enrollment
         </button>
