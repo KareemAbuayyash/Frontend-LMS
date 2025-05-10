@@ -11,7 +11,6 @@ import Layout from "./components/Layout/Layout";
 // Admin pages
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import Courses         from "./pages/AdminDashboard/Courses";
-import Instructors     from "./pages/AdminDashboard/Instructors";
 import AdminUsers      from "./pages/AdminDashboard/Users";
 import Enrollments     from "./pages/AdminDashboard/Enrollments";
 
@@ -39,11 +38,7 @@ export default function App() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="courses"     element={<Courses />} />
-        <Route path="instructors" element={
-          <ErrorBoundary>
-            <Instructors />
-          </ErrorBoundary>
-        }/>
+       
         <Route path="users"       element={
           <ErrorBoundary>
             <AdminUsers />

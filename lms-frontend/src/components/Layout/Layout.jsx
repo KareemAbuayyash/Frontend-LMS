@@ -11,9 +11,7 @@ const SIDEBAR_ITEMS = [
   { label: 'Dashboard',   to: '/admin',            icon: <FiGrid />     },
   { label: 'Courses',     to: '/admin/courses',    icon: <FiFileText /> },
   { label: 'Users',       to: '/admin/users',      icon: <FiUser />     },
-  { label: 'Instructors', to: '/admin/instructors',icon: <FiUser />     },
   { label: 'Enrollments', to: '/admin/enrollments',icon: <FiFileText /> },
-  { label: 'Permissions', to: '/admin/permissions',icon: <FiSettings /> },
 ];
 
 export default function Layout({ showSidebar, children }) {
