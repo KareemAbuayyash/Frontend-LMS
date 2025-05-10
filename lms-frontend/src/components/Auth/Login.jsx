@@ -1,26 +1,22 @@
+// src/components/Auth/Login.jsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import styles from './Login.module.css';
-import lmsLogo from '../../assets/react.svg';
+import logo from '../../assets/logo.png';
 import { FcGoogle } from 'react-icons/fc';
-import { FaFacebook } from 'react-icons/fa';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-
-// New imports for auth helpers
 import { saveTokens, getUserRole } from '../../utils/auth';
 
-
 export default function Login() {
-  // Load saved credentials
   const savedUsername = localStorage.getItem('savedUsername') || '';
   const savedPassword = localStorage.getItem('savedPassword') || '';
-  const [username, setUsername] = useState(savedUsername);
-  const [password, setPassword] = useState(savedPassword);
+  const [username, setUsername]     = useState(savedUsername);
+  const [password, setPassword]     = useState(savedPassword);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(Boolean(savedUsername && savedPassword));
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [rememberMe, setRememberMe] = useState(!!savedUsername && !!savedPassword);
+  const [error, setError]           = useState('');
+  const navigate                   = useNavigate();
 
   useEffect(() => {
     if (rememberMe) {
@@ -36,24 +32,13 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
-      const { data } = await api.post('/api/auth/login', {
-        username,
-        password,
-      });
-
-      // store tokens using helper
+      // ← no leading "/api"
+      const { data } = await api.post('/auth/login', { username, password });
       saveTokens(data.accessToken, data.refreshToken);
-
-      // still keep the username for display
       localStorage.setItem('username', username);
 
-      // redirect based on role
       const role = getUserRole();
-      if (role === 'ROLE_ADMIN') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      navigate(role === 'ROLE_ADMIN' ? '/admin' : '/dashboard');
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Login failed');
@@ -64,9 +49,9 @@ export default function Login() {
     <main className={styles.app}>
       <form className={styles.card} onSubmit={handleSubmit}>
         <div className={styles.header}>
-          <img src={lmsLogo} alt="LMS logo" width={28} height={28} />
-          <span className={styles.brand}>LMS</span>
+          <img src={logo} alt="Logo" className={styles.logo} />
         </div>
+
         <h1 className={styles.title}>Sign in</h1>
 
         <label className={styles.label}>
@@ -101,26 +86,25 @@ export default function Login() {
           </div>
         </label>
 
-        {error && (
-          <p style={{ color: 'tomato', textAlign: 'center' }}>{error}</p>
-        )}
+        {error && <p className={styles.error}>{error}</p>}
 
-        <label className={styles.rememberRow}>
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={() => setRememberMe(r => !r)}
-          />
-          Remember me
-        </label>
+        <div className={styles.row}>
+          <label className={styles.rememberRow}>
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={() => setRememberMe(r => !r)}
+            />
+            Remember me
+          </label>
+          <Link to="/forgot-password" className={styles.forgot}>
+            Forgot Password?
+          </Link>
+        </div>
 
         <button type="submit" className={styles.primaryBtn}>
           Sign in
         </button>
-
-        <Link to="/forgot-password" className={styles.forgot}>
-          Forgot your password?
-        </Link>
 
         <div className={styles.divider}>
           <span>or</span>
@@ -129,13 +113,6 @@ export default function Login() {
         <button type="button" className={styles.socialBtn}>
           <FcGoogle size={18} /> Sign in with Google
         </button>
-        <button type="button" className={styles.socialBtn}>
-          <FaFacebook size={18} color="#1877f2" /> Sign in with Facebook
-        </button>
-
-        <p className={styles.signup}>
-          Don’t have an account? <Link to="/register">Sign up</Link>
-        </p>
       </form>
     </main>
   );

@@ -29,7 +29,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid #4338ca;
+  border-bottom: 1px solid #a285a6;
 }
 .sidebar-header h2 {
   font-size: 1.25rem;
@@ -58,7 +58,7 @@
 }
 .sidebar-nav a:hover,
 .sidebar-nav a.active {
-  background-color: #4338ca;
+  background-color: #ab91af;
 }
 .sidebar-nav a svg {
   flex-shrink: 0;

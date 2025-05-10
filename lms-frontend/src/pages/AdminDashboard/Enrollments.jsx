@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
+import { saveAs } from 'file-saver';
 import {
   FiTrash2,
   FiEdit2,
   FiPlus,
   FiCheck,
-  FiSearch
+  FiSearch,
+  FiDownload
 } from 'react-icons/fi';
 import './Enrollments.css';
 
@@ -14,7 +16,8 @@ export default function Enrollments() {
   const [students, setStudents]       = useState([]);
   const [courses, setCourses]         = useState([]);
   const [loading, setLoading]         = useState(true);
-  const [filter, setFilter]           = useState('');
+  const [studentFilter, setStudentFilter] = useState('');
+  const [courseFilter, setCourseFilter]   = useState('');
   const [modalOpen, setModalOpen]     = useState(false);
   const [editing, setEditing]         = useState(null);
   const [form, setForm]               = useState({
@@ -24,7 +27,7 @@ export default function Enrollments() {
     completed: false,
   });
 
-  // 1) load enrollments, students, courses
+  // Load enrollments, students, courses
   useEffect(() => {
     setLoading(true);
     Promise.all([
@@ -33,34 +36,61 @@ export default function Enrollments() {
       api.get('/courses'),
     ])
       .then(([eRes, sRes, cRes]) => {
-        // unwrap enrollments
         const embedded = eRes.data._embedded || {};
-        const key = Object.keys(embedded)[0];
+        const key = Object.keys(embedded)[0] || '';
         const raw = key ? embedded[key] : [];
         setEnrollments(raw.map(item => item.content || item));
 
-        // students response is assumed as simple array
         setStudents(sRes.data);
 
-        // courses unwrap
         const cEmbedded = cRes.data._embedded || {};
-        const cKey = Object.keys(cEmbedded)[0];
+        const cKey = Object.keys(cEmbedded)[0] || '';
         setCourses(cKey ? cEmbedded[cKey] : []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
-  // 2) filter by student name
+  // Filter by student or course selection
   const displayed = useMemo(() => {
     return enrollments.filter(e => {
-      if (!filter) return true;
-      const student = students.find(s => s.id === e.studentId);
-      return (student?.username || '').toLowerCase().includes(filter.toLowerCase());
+      // student filter
+      if (studentFilter) {
+        const student = students.find(s => s.id === e.studentId);
+        if (!student || !student.username.toLowerCase().includes(studentFilter.toLowerCase())) {
+          return false;
+        }
+      }
+      // course filter (by courseId)
+      if (courseFilter) {
+        if (!e.courseIds.includes(Number(courseFilter))) {
+          return false;
+        }
+      }
+      return true;
     });
-  }, [enrollments, students, filter]);
+  }, [enrollments, students, studentFilter, courseFilter]);
 
-  // open/close modal
+  // Export enrollments to CSV
+  const exportEnrollmentsCSV = () => {
+    const header = ['Enrollment ID','Student','Courses','Date','Completed'];
+    const rows = displayed.map(e => {
+      const student = students.find(s => s.id === e.studentId);
+      const studentName = student?.username || e.studentId;
+      const courseNames = e.courseIds
+        .map(id => courses.find(c => c.courseId === id)?.courseName || id)
+        .join('; ');
+      const date = new Date(e.enrollmentDate).toLocaleDateString();
+      const completed = e.completed ? 'Yes' : 'No';
+      return [e.enrollmentId, studentName, courseNames, date, completed];
+    });
+    const csv = [
+      header.join(','),
+      ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
+    ].join('\r\n');
+    saveAs(new Blob([csv], { type: 'text/csv' }), 'enrollments.csv');
+  };
+
   const openModal = () => {
     setEditing(null);
     setForm({ studentId: '', courseIds: [], enrollmentDate: '', completed: false });
@@ -68,7 +98,6 @@ export default function Enrollments() {
   };
   const closeModal = () => setModalOpen(false);
 
-  // save (create or update)
   const handleSave = async e => {
     e.preventDefault();
     try {
@@ -77,8 +106,6 @@ export default function Enrollments() {
       } else {
         await api.post('/enrollments/newEnrollment', form);
       }
-      await Promise.all([]); // just to await 
-      // reload
       window.location.reload();
     } catch (err) {
       console.error('Save failed', err);
@@ -86,7 +113,6 @@ export default function Enrollments() {
     }
   };
 
-  // delete
   const handleDelete = async id => {
     if (!window.confirm('Really delete this enrollment?')) return;
     try {
@@ -97,7 +123,6 @@ export default function Enrollments() {
     }
   };
 
-  // edit
   const startEdit = eItem => {
     setEditing(eItem);
     setForm({
@@ -109,9 +134,7 @@ export default function Enrollments() {
     setModalOpen(true);
   };
 
-  // form helper
-  const handleChange = (field, value) =>
-    setForm(f => ({ ...f, [field]: value }));
+  const handleChange = (field, value) => setForm(f => ({ ...f, [field]: value }));
 
   return (
     <div className="enrollments-page">
@@ -120,13 +143,26 @@ export default function Enrollments() {
           <FiSearch className="icon" />
           <input
             type="text"
-            placeholder="Search students…"
-            value={filter}
-            onChange={e => setFilter(e.target.value)}
+            placeholder="Filter by student…"
+            value={studentFilter}
+            onChange={e => setStudentFilter(e.target.value)}
           />
         </div>
+        <select
+          className="search-box"
+          value={courseFilter}
+          onChange={e => setCourseFilter(e.target.value)}
+        >
+          <option value="">All Courses</option>
+          {courses.map(c => (
+            <option key={c.courseId} value={c.courseId}>{c.courseName}</option>
+          ))}
+        </select>
         <button className="btn primary" onClick={openModal}>
           <FiPlus /> New Enrollment
+        </button>
+        <button className="icon-btn" onClick={exportEnrollmentsCSV} title="Export CSV">
+          <FiDownload />
         </button>
       </div>
 
@@ -139,7 +175,7 @@ export default function Enrollments() {
               <th>Courses</th>
               <th>Date</th>
               <th>Completed</th>
-              <th className="actions-col">Actions</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -152,7 +188,6 @@ export default function Enrollments() {
               const courseNames = e.courseIds
                 .map(id => courses.find(c => c.courseId === id)?.courseName || id)
                 .join(', ');
-
               return (
                 <tr key={e.enrollmentId}>
                   <td>{e.enrollmentId}</td>
@@ -160,13 +195,9 @@ export default function Enrollments() {
                   <td>{courseNames}</td>
                   <td>{new Date(e.enrollmentDate).toLocaleDateString()}</td>
                   <td>{e.completed ? 'Yes' : 'No'}</td>
-                  <td className="actions-col">
-                    <button className="icon-btn" onClick={() => startEdit(e)}>
-                      <FiEdit2 />
-                    </button>
-                    <button className="icon-btn trash" onClick={() => handleDelete(e.enrollmentId)}>
-                      <FiTrash2 />
-                    </button>
+                  <td>
+                    <button className="icon-btn" onClick={() => startEdit(e)}><FiEdit2 /></button>
+                    <button className="icon-btn trash" onClick={() => handleDelete(e.enrollmentId)}><FiTrash2 /></button>
                   </td>
                 </tr>
               );
@@ -196,15 +227,13 @@ export default function Enrollments() {
                   multiple
                   required
                   value={form.courseIds}
-                  onChange={e => {
-                    const opts = Array.from(e.target.selectedOptions, o => Number(o.value));
-                    handleChange('courseIds', opts);
-                  }}
+                  onChange={e => handleChange(
+                    'courseIds',
+                    Array.from(e.target.selectedOptions, o => Number(o.value))
+                  )}
                 >
                   {courses.map(c => (
-                    <option key={c.courseId} value={c.courseId}>
-                      {c.courseName}
-                    </option>
+                    <option key={c.courseId} value={c.courseId}>{c.courseName}</option>
                   ))}
                 </select>
               </div>
@@ -221,16 +250,13 @@ export default function Enrollments() {
                     type="checkbox"
                     checked={form.completed}
                     onChange={e => handleChange('completed', e.target.checked)}
-                  />
-                  Completed
+                  /> Completed
                 </label>
               </div>
 
               <div className="modal-actions">
                 <button type="button" className="btn" onClick={closeModal}>Cancel</button>
-                <button type="submit" className="btn primary">
-                  <FiCheck /> {editing ? 'Update' : 'Create'}
-                </button>
+                <button type="submit" className="btn primary"><FiCheck /> {editing ? 'Update' : 'Create'}</button>
               </div>
             </form>
           </div>

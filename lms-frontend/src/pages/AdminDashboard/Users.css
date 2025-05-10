@@ -1,258 +1,232 @@
 /* ——— Base page & toolbar ——— */
 .users-page {
-    padding: 1rem;
-    font-family: 'Segoe UI', sans-serif;
-    display: flex;
-    flex-direction: column;
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.search-box {
+  position: relative;
+  flex: 1 1 200px;
+  min-width: 150px;
+}
+.search-box .icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+.search-box input {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: border-color .2s, box-shadow .2s;
+}
+.search-box input:focus {
+  border-color: #6a5acd;
+  box-shadow: 0 0 0 3px rgba(106,90,205,.2);
+}
+.toolbar select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  flex: 0 0 160px;
+}
+.btn.primary {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .6rem 1rem;
+  border: none;
+  background: linear-gradient(90deg,#6a5acd,#836fff);
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.btn.primary:hover {
+  opacity: .9;
+}
+
+/* ——— Table & borders ——— */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e0e0e0;
+}
+.users-table thead {
+  background: #672072;
+  color: #fff;
+}
+.users-table th {
+  padding: .75rem 1rem;
+  text-align: left;
+  user-select: none;
+  cursor: pointer;
+  border: 1px solid #a39b9b;
+}
+
+
+/* BODY ROWS & hover */
+.users-table tbody tr {
+  background: #F4E3F6;
+  transition: background .2s;
+}
+.users-table tbody tr:hover {
+  background: #8f8b8b;
+}
+.users-table td {
+  padding: .75rem 1rem;
+  text-align: left;
+  word-break: break-word;
+  border: 1px solid #a39b9b;
+  color: #333;
+}
+
+
+/* Inline edits */
+.inline-edit {
+  width: 100%;
+  padding: .4rem .6rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+/* Icon buttons */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  margin: 0 .25rem;
+  color: #4f46e5;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: color .2s;
+}
+.icon-btn:hover {
+  color: #6366f1;
+}
+.icon-btn.trash:hover {
+  color: tomato;
+}
+
+/* Empty / loading state */
+.empty td {
+  text-align: center;
+  color: #999;
+}
+
+/* ——— Modal ——— */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .75rem;
+}
+@media (min-width: 480px) {
+  .grid2 { grid-template-columns: 1fr 1fr; }
+}
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: #fff;
+  width: 100%;
+  max-width: 500px;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+.modal h3 {
+  margin-bottom: 1rem;
+}
+.modal textarea,
+.modal input,
+.modal select {
+  width: 100%;
+  padding: .5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: .75rem;
+}
+
+/* ——— Responsive: table → cards ——— */
+@media (max-width: 768px) {
+  .table-container { overflow-x: hidden; }
+  .users-table,
+  .users-table thead,
+  .users-table tbody,
+  .users-table th,
+  .users-table td,
+  .users-table tr {
+    display: block;
+    width: 100%;
   }
-  
-  .toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .search-box {
-    position: relative;
-    flex: 1 1 200px;
-    min-width: 150px;
-  }
-  
-  .search-box .icon {
+  .users-table thead tr {
     position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #888;
+    top: -9999px;
+    left: -9999px;
   }
-  
-  .search-box input {
-    width: 100%;
-    padding: 0.5rem 1rem 0.5rem 2.5rem;
-    border-radius: 6px;
+  .users-table tr {
     border: 1px solid #ccc;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  
-  .search-box input:focus {
-    border-color: #6a5acd;
-    box-shadow: 0 0 0 3px rgba(106,90,205,.2);
-  }
-  
-  .toolbar select {
-    padding: 0.5rem;
     border-radius: 6px;
-    border: 1px solid #ccc;
-    background: #fff;
-    flex: 0 0 150px;
-  }
-  
-  .btn.primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.6rem 1rem;
-    border: none;
-    background: linear-gradient(90deg,#6a5acd,#836fff);
-    color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    flex: 0 0 auto;
-  }
-  
-  .btn.primary:hover {
-    opacity: 0.9;
-  }
-  
-  /* ——— Table & borders ——— */
-  .table-container {
-    width: 100%;
-    overflow-x: auto;
-  }
-  
-  .users-table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #e0e0e0; /* outer border */
-  }
-  
-  /* Header styles */
-  .users-table thead {
-    background: #5462e7;
-    color: #fff;
-  }
-  
-  .users-table th {
-    padding: 0.75rem 1rem;
-    border: 1px solid #a39b9b;     /* cell border */
-    text-align: left;
-    user-select: none;
-    cursor: pointer;
-  }
-  
-  /* Data row styles */
-  .users-table tbody tr {
-    background: #d6d4d4;
-    transition: background .2s;
-  }
-  
-  .users-table tbody tr:hover {
-    background: #8f8b8b;
-  }
-  
-  .users-table td {
-    padding: 0.75rem 1rem;
-    border: 1px solid #a39b9b;     /* cell border */
-    color: #333;
-  }
-  
-  /* Actions column centering */
-  .users-table th.actions-col,
-  .users-table td.actions-col {
-    text-align: center;
-  }
-  
-  /* Empty / loading state */
-  .empty td {
-    text-align: center;
-    color: #999;
-  }
-  
-  /* Inline edits */
-  .inline-edit {
-    width: 100%;
-    padding: 0.4rem 0.6rem;
-    border: 1px solid #bbb;
-    border-radius: 4px;
-  }
-  
-  /* Icon buttons */
-  .icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    margin-right: 0.5rem;
-    color: #4f46e5;
-    transition: color .2s;
-  }
-  
-  .icon-btn:hover {
-    color: #6366f1;
-  }
-  
-  .icon-btn.trash:hover {
-    color: tomato;
-  }
-  
-  /* Modal (unchanged) */
-  .modal-backdrop {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .modal {
-    background: #fff;
-    width: 100%;
-    max-width: 500px;
-    padding: 1.5rem;
-    border-radius: 8px;
-  }
-  
-  .modal h3 {
     margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: #fff;
   }
-  
-  .modal .grid2 {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: .75rem;
-    margin-bottom: .75rem;
+  .users-table td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
   }
-  
-  @media (min-width: 480px) {
-    .modal .grid2 {
-      grid-template-columns: 1fr 1fr;
-    }
+  .users-table td:before {
+    position: absolute;
+    top: .75rem;
+    left: 1rem;
+    width: 45%;
+    padding-right: 1rem;
+    white-space: nowrap;
+    font-weight: bold;
+    pointer-events: none;
   }
-  
-  .modal textarea,
-  .modal input,
-  .modal select {
-    width: 100%;
-    padding: .5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .modal-actions {
+  .users-table td:nth-of-type(1):before { content: "Username"; }
+  .users-table td:nth-of-type(2):before { content: "Email"; }
+  .users-table td:nth-of-type(3):before { content: "Role"; }
+  .users-table td:nth-of-type(4):before { content: "Name"; }
+  .users-table td:nth-of-type(5):before { content: "Password"; }
+  .users-table td:nth-of-type(6):before { content: "Actions"; }
+  .users-table td:nth-of-type(6) {
+    padding-left: 1rem;
     display: flex;
     justify-content: flex-end;
-    gap: .75rem;
+    align-items: center;
   }
-  
-  /* Responsive (unchanged) */
-  @media (max-width: 768px) {
-    .table-container { overflow-x: hidden; }
-    .users-table,
-    .users-table thead,
-    .users-table tbody,
-    .users-table th,
-    .users-table td,
-    .users-table tr {
-      display: block;
-      width: 100%;
-    }
-    .users-table thead tr {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-    }
-    .users-table tr {
-      border: 1px solid #2e2a2a;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      padding: 0.75rem 1rem;
-      background: #d6d4d4;
-    }
-    .users-table td {
-      border: none;
-      position: relative;
-      padding-left: 50%;
-      white-space: normal;
-    }
-    .users-table td:before {
-      position: absolute;
-      top: .75rem;
-      left: 1rem;
-      width: 45%;
-      padding-right: 1rem;
-      white-space: nowrap;
-      font-weight: bold;
-      pointer-events: none;
-    }
-    .users-table td:nth-of-type(1):before { content: "Username"; }
-    .users-table td:nth-of-type(2):before { content: "Email"; }
-    .users-table td:nth-of-type(3):before { content: "Role"; }
-    .users-table td:nth-of-type(4):before { content: "Name"; }
-    .users-table td:nth-of-type(5):before { content: "Password"; }
-    .users-table td:nth-of-type(6):before { content: "Actions"; }
-  
-    .users-table td:nth-of-type(6) {
-      padding-left: 1rem;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-    }
-    .users-table td:nth-of-type(6) .icon-btn {
-      position: relative;
-      z-index: 1;
-    }
+  .users-table td:nth-of-type(6) .icon-btn {
+    position: relative;
+    z-index: 1;
   }
-  
+}

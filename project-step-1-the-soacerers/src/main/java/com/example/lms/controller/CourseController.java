@@ -19,12 +19,13 @@ import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.CourseMapper;
 import com.example.lms.repository.CourseRepository;
 import com.example.lms.repository.InstructorRepository;
+import com.example.lms.repository.StudentRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/courses")
+@RequestMapping("/api/courses")
 public class CourseController {
 
     private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
@@ -36,6 +37,9 @@ public class CourseController {
 
     @Autowired
     private InstructorRepository instructorRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -103,5 +107,12 @@ public class CourseController {
 
         return ResponseEntity.ok(CourseMapper.toDTO(updatedCourse));
     }
+
+    @GetMapping("/{courseId}/enrollment-count")
+public ResponseEntity<Long> getEnrollmentCount(@PathVariable Long courseId) {
+    long count = studentRepository.countByEnrolledCourses_Id(courseId);
+    return ResponseEntity.ok(count);
+}
+
 
 }
