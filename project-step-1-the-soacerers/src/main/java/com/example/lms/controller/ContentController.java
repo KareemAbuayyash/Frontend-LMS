@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/content")
+@RequestMapping("/api/content")
 @RequiredArgsConstructor
 public class ContentController {
 

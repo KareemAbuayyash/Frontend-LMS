@@ -1,24 +1,27 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import api from '../../api/axios';
+import { saveAs } from 'file-saver';
 import {
   FiTrash2,
   FiPlus,
   FiSearch,
   FiEdit2,
   FiCheck,
-  FiXCircle
+  FiXCircle,
+  FiDownload
 } from 'react-icons/fi';
 import './Courses.css';
 
 export default function Courses() {
-  const [courses, setCourses]         = useState([]);
+  const [courses, setCourses] = useState([]);
   const [instructors, setInstructors] = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [search, setSearch]           = useState('');
+  const [enrollmentCounts, setEnrollmentCounts] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
   const [instructorFilter, setInstructorFilter] = useState('ALL');
-  const [sortField, setSortField]     = useState('courseName');
-  const [sortDir, setSortDir]         = useState('asc');
-  const [modalOpen, setModalOpen]     = useState(false);
+  const [sortField, setSortField] = useState('courseName');
+  const [sortDir, setSortDir] = useState('asc');
+  const [modalOpen, setModalOpen] = useState(false);
 
   const [newCourse, setNewCourse] = useState({
     courseName: '',
@@ -31,7 +34,7 @@ export default function Courses() {
   });
 
   const [editingId, setEditingId] = useState(null);
-  const [draft, setDraft]         = useState({});
+  const [draft, setDraft] = useState({});
 
   // 1) Load all courses
   useEffect(() => {
@@ -54,7 +57,20 @@ export default function Courses() {
       .catch(console.error);
   }, []);
 
-  // 3) Sort toggler
+  // 3) Load enrollment counts
+  useEffect(() => {
+    api.get('/dashboard/recent-courses?limit=1000')
+      .then(res => {
+        const counts = {};
+        res.data.forEach(c => {
+          counts[c.courseId] = c.enrollmentCount;
+        });
+        setEnrollmentCounts(counts);
+      })
+      .catch(console.error);
+  }, []);
+
+  // Sort toggler
   const changeSort = field => {
     if (sortField === field) {
       setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
@@ -64,13 +80,13 @@ export default function Courses() {
     }
   };
 
-  // 4) Helper to display instructor name
-  const getInsName = useCallback(id =>
-    instructors.find(i => i.id.toString() === id)?.username || '',
+  // Helper: get instructor name
+  const getInsName = useCallback(
+    id => instructors.find(i => i.id.toString() === id)?.username || '',
     [instructors]
   );
 
-  // 5) Filter / Search / Sort
+  // Filter, search, sort
   const displayed = useMemo(() => {
     let arr = [...courses];
 
@@ -79,9 +95,10 @@ export default function Courses() {
     }
     if (search) {
       const s = search.toLowerCase();
-      arr = arr.filter(c =>
-        c.courseName.toLowerCase().includes(s) ||
-        c.courseDescription.toLowerCase().includes(s)
+      arr = arr.filter(
+        c =>
+          c.courseName.toLowerCase().includes(s) ||
+          c.courseDescription.toLowerCase().includes(s)
       );
     }
 
@@ -92,13 +109,17 @@ export default function Courses() {
           va = getInsName(a.courseInstructor).toLowerCase();
           vb = getInsName(b.courseInstructor).toLowerCase();
           break;
+        case 'price':
+          va = Number(a.coursePrice);
+          vb = Number(b.coursePrice);
+          break;
         case 'start':
           va = new Date(a.courseStartDate);
           vb = new Date(b.courseStartDate);
           break;
-        case 'price':
-          va = Number(a.coursePrice);
-          vb = Number(b.coursePrice);
+        case 'enrollmentCount':
+          va = enrollmentCounts[a.courseId] || 0;
+          vb = enrollmentCounts[b.courseId] || 0;
           break;
         default:
           va = a.courseName.toLowerCase();
@@ -110,10 +131,38 @@ export default function Courses() {
     });
 
     return arr;
-  }, [courses, instructorFilter, search, sortField, sortDir, getInsName]);
+  }, [
+    courses,
+    instructorFilter,
+    search,
+    sortField,
+    sortDir,
+    getInsName,
+    enrollmentCounts
+  ]);
 
-  // 6) Add / Edit / Delete handlers
-  const openModal  = () => setModalOpen(true);
+  // Export displayed courses to CSV
+  const exportCoursesCSV = () => {
+    const header = ['Name','Description','Duration','Instructor','Price','Enrolled','Start','End'];
+    const rows = displayed.map(c => [
+      c.courseName,
+      c.courseDescription,
+      c.courseDuration,
+      getInsName(c.courseInstructor),
+      c.coursePrice,
+      enrollmentCounts[c.courseId] || 0,
+      new Date(c.courseStartDate).toLocaleDateString(),
+      new Date(c.courseEndDate).toLocaleDateString()
+    ]);
+    const csv = [
+      header.join(','),
+      ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
+    ].join('\r\n');
+    saveAs(new Blob([csv], { type: 'text/csv' }), 'courses.csv');
+  };
+
+  // Handlers: add, edit, delete
+  const openModal = () => setModalOpen(true);
   const closeModal = () => {
     setModalOpen(false);
     setNewCourse({
@@ -138,15 +187,16 @@ export default function Courses() {
   const startEdit = c => {
     setEditingId(c.courseId);
     setDraft({
-      courseName:        c.courseName,
+      courseName: c.courseName,
       courseDescription: c.courseDescription,
-      courseDuration:    c.courseDuration,
-      courseInstructor:  c.courseInstructor,
-      coursePrice:       c.coursePrice,
-      courseStartDate:   c.courseStartDate.slice(0,10),
-      courseEndDate:     c.courseEndDate.slice(0,10)
+      courseDuration: c.courseDuration,
+      courseInstructor: c.courseInstructor,
+      coursePrice: c.coursePrice,
+      courseStartDate: c.courseStartDate.slice(0,10),
+      courseEndDate: c.courseEndDate.slice(0,10)
     });
   };
+
   const cancelEdit = () => setEditingId(null);
 
   const saveEdit = async id => {
@@ -179,33 +229,37 @@ export default function Courses() {
         >
           <option value="ALL">All Instructors</option>
           {instructors.map(ins => (
-            <option key={ins.id} value={ins.id}>
-              {ins.username}
-            </option>
+            <option key={ins.id} value={ins.id}>{ins.username}</option>
           ))}
         </select>
         <button className="btn primary" onClick={openModal}>
           <FiPlus /> Add Course
         </button>
+        <button className="icon-btn" onClick={exportCoursesCSV} title="Export CSV">
+          <FiDownload />
+        </button>
       </div>
 
       <div className="table-container">
-        <table className="courses-table ">
+        <table className="courses-table">
           <thead>
             <tr>
               <th onClick={() => changeSort('courseName')}>
-                Name{sortField==='courseName'?(sortDir==='asc'?' ▲':' ▼'):''}
+                Name{sortField === 'courseName' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
               </th>
               <th>Description</th>
               <th>Duration</th>
               <th onClick={() => changeSort('instructor')}>
-                Instructor{sortField==='instructor'?(sortDir==='asc'?' ▲':' ▼'):''}
+                Instructor{sortField === 'instructor' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
               </th>
               <th onClick={() => changeSort('price')}>
-                Price{sortField==='price'?(sortDir==='asc'?' ▲':' ▼'):''}
+                Price{sortField === 'price' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
+              </th>
+              <th style={{ textAlign: 'center' }} onClick={() => changeSort('enrollmentCount')}>
+                Enrolled{sortField === 'enrollmentCount' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
               </th>
               <th onClick={() => changeSort('start')}>
-                Start{sortField==='start'?(sortDir==='asc'?' ▲':' ▼'):''}
+                Start{sortField === 'start' ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
               </th>
               <th>End</th>
               <th>Actions</th>
@@ -214,33 +268,79 @@ export default function Courses() {
           <tbody>
             {loading ? (
               <tr className="empty">
-                <td colSpan="8">Loading…</td>
+                <td colSpan="9">Loading…</td>
               </tr>
             ) : displayed.length === 0 ? (
               <tr className="empty">
-                <td colSpan="8">No courses found.</td>
+                <td colSpan="9">No courses found.</td>
               </tr>
             ) : displayed.map(c => (
               <tr key={c.courseId} className="fade-in">
                 {editingId === c.courseId ? (
                   <>
-                    <td><input className="inline-edit" value={draft.courseName}        onChange={e=>setDraft(d=>({...d,courseName:e.target.value}))}        /></td>
-                    <td><input className="inline-edit" value={draft.courseDescription} onChange={e=>setDraft(d=>({...d,courseDescription:e.target.value}))} /></td>
-                    <td><input className="inline-edit" value={draft.courseDuration}    onChange={e=>setDraft(d=>({...d,courseDuration:e.target.value}))}    /></td>
                     <td>
-                      <select className="inline-edit" value={draft.courseInstructor} onChange={e=>setDraft(d=>({...d,courseInstructor:e.target.value}))}>
+                      <input
+                        className="inline-edit"
+                        value={draft.courseName}
+                        onChange={e => setDraft(d => ({ ...d, courseName: e.target.value }))}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inline-edit"
+                        value={draft.courseDescription}
+                        onChange={e => setDraft(d => ({ ...d, courseDescription: e.target.value }))}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inline-edit"
+                        value={draft.courseDuration}
+                        onChange={e => setDraft(d => ({ ...d, courseDuration: e.target.value }))}
+                      />
+                    </td>
+                    <td>
+                      <select
+                        className="inline-edit"
+                        value={draft.courseInstructor}
+                        onChange={e => setDraft(d => ({ ...d, courseInstructor: e.target.value }))}
+                      >
                         <option value="">-- select instructor --</option>
-                        {instructors.map(ins=>(
+                        {instructors.map(ins => (
                           <option key={ins.id} value={ins.id}>{ins.username}</option>
                         ))}
                       </select>
                     </td>
-                    <td><input className="inline-edit" type="number" value={draft.coursePrice} onChange={e=>setDraft(d=>({...d,coursePrice:e.target.value}))} /></td>
-                    <td><input className="inline-edit" type="date"   value={draft.courseStartDate} onChange={e=>setDraft(d=>({...d,courseStartDate:e.target.value}))} /></td>
-                    <td><input className="inline-edit" type="date"   value={draft.courseEndDate}   onChange={e=>setDraft(d=>({...d,courseEndDate:e.target.value}))}   /></td>
                     <td>
-                      <button className="icon-btn" onClick={()=>saveEdit(c.courseId)}><FiCheck/></button>
-                      <button className="icon-btn" onClick={cancelEdit}><FiXCircle/></button>
+                      <input
+                        className="inline-edit"
+                        type="number"
+                        value={draft.coursePrice}
+                        onChange={e => setDraft(d => ({ ...d, coursePrice: e.target.value }))}
+                      />
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      {enrollmentCounts[c.courseId] || 0}
+                    </td>
+                    <td>
+                      <input
+                        className="inline-edit"
+                        type="date"
+                        value={draft.courseStartDate}
+                        onChange={e => setDraft(d => ({ ...d, courseStartDate: e.target.value }))}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inline-edit"
+                        type="date"
+                        value={draft.courseEndDate}
+                        onChange={e => setDraft(d => ({ ...d, courseEndDate: e.target.value }))}
+                      />
+                    </td>
+                    <td>
+                      <button className="icon-btn" onClick={() => saveEdit(c.courseId)}><FiCheck /></button>
+                      <button className="icon-btn" onClick={cancelEdit}><FiXCircle /></button>
                     </td>
                   </>
                 ) : (
@@ -250,11 +350,12 @@ export default function Courses() {
                     <td>{c.courseDuration}</td>
                     <td>{getInsName(c.courseInstructor)}</td>
                     <td>${c.coursePrice}</td>
+                    <td style={{ textAlign: 'center' }}>{enrollmentCounts[c.courseId] || 0}</td>
                     <td>{new Date(c.courseStartDate).toLocaleDateString()}</td>
                     <td>{new Date(c.courseEndDate).toLocaleDateString()}</td>
                     <td>
-                      <button className="icon-btn" onClick={()=>startEdit(c)}><FiEdit2/></button>
-                      <button className="icon-btn trash" onClick={()=>handleDelete(c.courseId)}><FiTrash2/></button>
+                      <button className="icon-btn" onClick={() => startEdit(c)}><FiEdit2 /></button>
+                      <button className="icon-btn trash" onClick={() => handleDelete(c.courseId)}><FiTrash2 /></button>
                     </td>
                   </>
                 )}
@@ -267,44 +368,23 @@ export default function Courses() {
       {/* ADD COURSE MODAL */}
       {modalOpen && (
         <div className="modal-backdrop" onClick={closeModal}>
-          <div className="modal" onClick={e=>e.stopPropagation()}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
             <h3>New Course</h3>
             <form onSubmit={handleAdd}>
               <div className="grid2">
-                <input required placeholder="Name"
-                  value={newCourse.courseName}
-                  onChange={e=>setNewCourse(n=>({...n,courseName:e.target.value}))}
-                />
-                <select required
-                  value={newCourse.courseInstructor}
-                  onChange={e=>setNewCourse(n=>({...n,courseInstructor:e.target.value}))}
-                >
+                <input required placeholder="Name" value={newCourse.courseName} onChange={e => setNewCourse(n => ({ ...n, courseName: e.target.value }))} />
+                <select required value={newCourse.courseInstructor} onChange={e => setNewCourse(n => ({ ...n, courseInstructor: e.target.value }))}>
                   <option value="">-- select instructor --</option>
-                  {instructors.map(ins=>(
+                  {instructors.map(ins => (
                     <option key={ins.id} value={ins.id}>{ins.username}</option>
                   ))}
                 </select>
-                <input required placeholder="Duration"
-                  value={newCourse.courseDuration}
-                  onChange={e=>setNewCourse(n=>({...n,courseDuration:e.target.value}))}
-                />
-                <input required type="number" placeholder="Price"
-                  value={newCourse.coursePrice}
-                  onChange={e=>setNewCourse(n=>({...n,coursePrice:e.target.value}))}
-                />
-                <input required type="date" placeholder="Start Date"
-                  value={newCourse.courseStartDate}
-                  onChange={e=>setNewCourse(n=>({...n,courseStartDate:e.target.value}))}
-                />
-                <input required type="date" placeholder="End Date"
-                  value={newCourse.courseEndDate}
-                  onChange={e=>setNewCourse(n=>({...n,courseEndDate:e.target.value}))}
-                />
+                <input required placeholder="Duration" value={newCourse.courseDuration} onChange={e => setNewCourse(n => ({ ...n, courseDuration: e.target.value }))} />
+                <input required type="number" placeholder="Price" value={newCourse.coursePrice} onChange={e => setNewCourse(n => ({ ...n, coursePrice: e.target.value }))} />
+                <input required type="date" placeholder="Start Date" value={newCourse.courseStartDate} onChange={e => setNewCourse(n => ({ ...n, courseStartDate: e.target.value }))} />
+                <input required type="date" placeholder="End Date" value={newCourse.courseEndDate} onChange={e => setNewCourse(n => ({ ...n, courseEndDate: e.target.value }))} />
               </div>
-              <textarea required placeholder="Description"
-                value={newCourse.courseDescription}
-                onChange={e=>setNewCourse(n=>({...n,courseDescription:e.target.value}))}
-              />
+              <textarea required placeholder="Description" value={newCourse.courseDescription} onChange={e => setNewCourse(n => ({ ...n, courseDescription: e.target.value }))} />
               <div className="modal-actions">
                 <button type="button" className="btn" onClick={closeModal}>Cancel</button>
                 <button type="submit" className="btn primary">Create</button>
@@ -316,3 +396,4 @@ export default function Courses() {
     </div>
   );
 }
+

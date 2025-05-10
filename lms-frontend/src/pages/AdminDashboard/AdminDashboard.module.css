@@ -272,3 +272,40 @@
     width: 100%;
   }
 }
+.listHeaderControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.viewAllBtn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  cursor: pointer;
+}
+/* below existing .noResults */
+.viewAllBtn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+
+.simpleTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+.simpleTable th,
+.simpleTable td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.dark .simpleTable th,
+.dark .simpleTable td {
+  border-color: var(--border-dark);
+}
