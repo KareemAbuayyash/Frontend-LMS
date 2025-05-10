@@ -337,7 +337,7 @@
   flex-direction: column;
   gap: .15rem;
  
-  width: 350px; 
+  width: 300px; 
   line-height: 1.30;
 }
 .notif-item .subject {
@@ -351,3 +351,11 @@
   white-space: normal;
   word-break: break-word;
 }
+.dropdown-menu.notif-menu {
+  max-width: 320px;          
+  max-height: 60vh;          
+  overflow-y: auto;          
+}
+
+.dropdown-menu.notif-menu::-webkit-scrollbar         { width: 6px; }
+.dropdown-menu.notif-menu::-webkit-scrollbar-thumb   { background:#d1d5db; border-radius:3px; }
