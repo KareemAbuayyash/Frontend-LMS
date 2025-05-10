@@ -8,6 +8,7 @@ import com.example.lms.mapper.UserMapper;
 import com.example.lms.repository.CourseRepository;
 import com.example.lms.repository.EnrollmentRepository;
 import com.example.lms.repository.InstructorRepository;
+import com.example.lms.repository.StudentRepository;
 import com.example.lms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,16 @@ public class DashboardController {
     private final CourseRepository       courseRepository;
     private final EnrollmentRepository   enrollmentRepository;
     private final InstructorRepository   instructorRepository;
+    private final StudentRepository      studentRepository;
 
     @GetMapping("/stats")
     public ResponseEntity<DashboardStatsDTO> stats() {
         var dto = new DashboardStatsDTO(
             userRepository.count(),
             courseRepository.count(),
-            enrollmentRepository.count()
+            enrollmentRepository.count(),
+            instructorRepository.count(),   
+            studentRepository.count() 
         );
         return ResponseEntity.ok(dto);
     }
