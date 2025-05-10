@@ -27,24 +27,22 @@ export default function Layout({ showSidebar = true, children }) {
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [connected,     setConnected]     = useState(false);
-  const [hasUnread,     setHasUnread]     = useState(false);
+  const [unreadCount,   setUnreadCount]   = useState(0);
 
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const username  = localStorage.getItem('username') || 'User';
+  const navigate = useNavigate();
+  const location = useLocation();
+  const username = localStorage.getItem('username') || 'User';
 
-  // health‐check
+  // health-check
   useEffect(() => {
     const check = () =>
-      api.get('/health')
-         .then(() => setConnected(true))
-         .catch(() => setConnected(false));
+      api.get('/health').then(() => setConnected(true)).catch(() => setConnected(false));
     check();
     const id = setInterval(check, 10000);
     return () => clearInterval(id);
   }, []);
 
-  // auto‐collapse on small screens
+  // auto-collapse on small screens
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 600px)');
     const onChange = e => setCollapsed(e.matches);
@@ -53,12 +51,12 @@ export default function Layout({ showSidebar = true, children }) {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  // poll unread count
+  // poll *number* of unread notifications
   useEffect(() => {
     const fetchUnread = () =>
       api.get('/notifications/unread-count')
-         .then(res => setHasUnread(Number(res.data) > 0))
-         .catch(()  => {});
+         .then(res => setUnreadCount(Number(res.data)))
+         .catch(() => {});
     fetchUnread();
     const id = setInterval(fetchUnread, 30000);
     return () => clearInterval(id);
@@ -81,14 +79,11 @@ export default function Layout({ showSidebar = true, children }) {
 
     if (opening) {
       try {
-        // fetch all notifications, each item has e.g. { subject, message, read }
         const { data } = await api.get('/notifications');
         setNotifications(data);
-        setHasUnread(false);
-        // mark everything as read on the server
-        api.post('/notifications/mark-as-read').catch(() => {});
-      } catch (e) {
-        console.error('Failed to load notifications', e);
+        setUnreadCount(0);  // clear the badge
+        await api.post('/notifications/mark-as-read');
+      } catch {
         setNotifications([]);
       }
     }
@@ -101,7 +96,7 @@ export default function Layout({ showSidebar = true, children }) {
           <div className="sidebar-header">
             {!collapsed && <h2>LMS Admin</h2>}
             <button onClick={() => setCollapsed(c => !c)}>
-              {collapsed ? <FiMenu size={20} /> : <FiX size={20} />}
+              {collapsed ? <FiMenu size={20}/> : <FiX size={20}/>}
             </button>
           </div>
           <nav className="sidebar-nav">
@@ -130,9 +125,13 @@ export default function Layout({ showSidebar = true, children }) {
               className={`connection-dot ${connected ? 'online' : 'offline'}`}
               title={connected ? 'API: Online' : 'API: Offline'}
             />
+
+            {/* Notification bell + count badge */}
             <button className="icon-btn" onClick={toggleNotifMenu}>
               <FiBell />
-              {hasUnread && <span className="badge-dot" />}
+              {unreadCount > 0 && (
+                <span className="badge-count">{unreadCount}</span>
+              )}
             </button>
             {showNotifMenu && (
               <div className="dropdown-menu notif-menu">
@@ -140,9 +139,7 @@ export default function Layout({ showSidebar = true, children }) {
                   notifications.map((n, i) => (
                     <div
                       key={i}
-                      className={
-                        `dropdown-item notif-item ${!n.read ? 'new-email' : ''}`
-                      }
+                      className={`dropdown-item notif-item ${!n.read ? 'new-email' : ''}`}
                     >
                       <span className="subject">{n.subject}</span>
                       <span className="message">{n.message}</span>
@@ -154,16 +151,14 @@ export default function Layout({ showSidebar = true, children }) {
               </div>
             )}
 
+            {/* Profile */}
             <button className="profile-btn" onClick={toggleUserMenu}>
               <FiUser />
               <span className="user-name">{username}</span>
             </button>
             {showUserMenu && (
               <div className="dropdown-menu user-menu">
-                <button
-                  className="dropdown-item"
-                  onClick={() => navigate('/settings')}
-                >
+                <button className="dropdown-item" onClick={() => navigate('/settings')}>
                   <FiSettings /> Settings
                 </button>
                 <button className="dropdown-item" onClick={logout}>

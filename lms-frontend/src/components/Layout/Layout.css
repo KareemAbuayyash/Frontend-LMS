@@ -698,3 +698,24 @@
 .dropdown-menu.notif-menu .dropdown-item.new-email:hover {
   background-color: #b2ebf2;
 }
+/* ------------------------------------------------------------------
+   BADGE COUNT (unread number)
+-------------------------------------------------------------------*/
+.badge-count {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.65rem;
+  line-height: 1;
+  min-width: 1rem;
+  padding: 0 0.35rem;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+/* (optional) keep the same hover-darker effect on new items */
+.dropdown-menu.notif-menu .dropdown-item.new-email:hover {
+  background-color: #b2ebf2;
+}
