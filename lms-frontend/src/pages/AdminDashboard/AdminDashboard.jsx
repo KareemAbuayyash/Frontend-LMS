@@ -12,7 +12,8 @@ import {
   FaChartBar,
   FaDownload,
   FaChalkboardTeacher,
-  FaUserGraduate
+  FaUserGraduate,
+  FaHistory
 } from 'react-icons/fa';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
@@ -30,7 +31,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const chartRef = useRef();
 
-  // ─── Instructor lookup ────────────────────────────────────────────────────
+  // ─── Instructor lookup ──────────────────────────
   const [instructors, setInstructors] = useState([]);
   useEffect(() => {
     api.get('/instructors')
@@ -42,22 +43,26 @@ export default function AdminDashboard() {
     const ins = instructors.find(i => i.id.toString() === id.toString());
     return ins ? ins.username : '';
   }, [instructors]);
-  // ────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────
 
+  // core stats & lists
   const [stats, setStats]                 = useState(null);
   const [recentUsers, setRecentUsers]     = useState([]);
   const [recentCourses, setRecentCourses] = useState([]);
+  const [systemActivity, setSystemActivity] = useState([]);
 
+  // search & UI state
   const [userSearch, setUserSearch]       = useState('');
   const [courseSearch, setCourseSearch]   = useState('');
+  const [sysSearch, setSysSearch]         = useState('');
   const [dark, setDark]                   = useState(false);
   const [lastUpdated, setLastUpdated]     = useState(null);
 
-  // now using 5 colors
+  // chart colors
   const COLORS = ['#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f'];
 
-  // Fetch stats, users & courses
-  const fetchData = async () => {
+  // ─── Fetch all data ────────────────────────────
+  async function fetchData() {
     try {
       const [{ data: s }, { data: u }, { data: c }] = await Promise.all([
         api.get('/dashboard/stats'),
@@ -71,18 +76,31 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
 
-  // CALL fetchData inside a non-async useEffect
   useEffect(() => {
     fetchData();
   }, []);
+
+  // ─── Fetch system activity ───────────────────────
+  useEffect(() => {
+  async function fetchSystem() {
+    try {
+      const { data } = await api.get('/dashboard/system-activity?limit=50');
+      setSystemActivity(data);
+    } catch { /* … */ }
+  }
+  fetchSystem();
+}, []);
+
+
+  // ─────────────────────────────────────────────────
 
   if (!stats) {
     return <div className={styles.loading}>Loading dashboard…</div>;
   }
 
-  // now five slices
+  // build chart data (now including Instructors & Students)
   const chartData = [
     { name: 'Users',       value: stats.totalUsers },
     { name: 'Courses',     value: stats.totalCourses },
@@ -91,7 +109,7 @@ export default function AdminDashboard() {
     { name: 'Students',    value: stats.totalStudents },
   ];
 
-  // Filter & limit lists to 5
+  // filtered & limited lists
   const filteredUsers = recentUsers
     .filter(u =>
       u.username.toLowerCase().includes(userSearch.toLowerCase()) ||
@@ -106,7 +124,14 @@ export default function AdminDashboard() {
     )
     .slice(0, 5);
 
-  // Export helpers
+  const filteredSystem = systemActivity
+    .filter(e =>
+      e.message.toLowerCase().includes(sysSearch.toLowerCase()) ||
+      e.type.toLowerCase().includes(sysSearch.toLowerCase())
+    )
+    .slice(0, 5);
+
+  // CSV / PNG exports
   const exportUsersCSV = () => {
     const header = ['Username','Email','Role'];
     const rows   = filteredUsers.map(u => [u.username, u.email, u.role]);
@@ -229,27 +254,25 @@ export default function AdminDashboard() {
               </button>
             </div>
           </div>
-
-          {!filteredUsers.length ? (
-            <div className={styles.noResults}>No matching users.</div>
-          ) : (
-            <ul className={styles.userList}>
-              {filteredUsers.map(u=>(
-                <li key={u.userId} className={styles.userItem}>
-                  <div className={styles.avatar}>{u.username.charAt(0)}</div>
-                  <div className={styles.userInfo}>
-                    <div className={styles.nameRow}>
-                      <strong>{u.username}</strong>
-                      <span className={`${styles.roleBadge} ${styles[u.role.toLowerCase()]}`}>
-                        {u.role}
-                      </span>
+          {!filteredUsers.length
+            ? <div className={styles.noResults}>No matching users.</div>
+            : <ul className={styles.userList}>
+                {filteredUsers.map(u=>(
+                  <li key={u.userId} className={styles.userItem}>
+                    <div className={styles.avatar}>{u.username.charAt(0)}</div>
+                    <div className={styles.userInfo}>
+                      <div className={styles.nameRow}>
+                        <strong>{u.username}</strong>
+                        <span className={`${styles.roleBadge} ${styles[u.role.toLowerCase()]}`}>
+                          {u.role}
+                        </span>
+                      </div>
+                      <span className={styles.email}>{u.email}</span>
                     </div>
-                    <span className={styles.email}>{u.email}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                  </li>
+                ))}
+              </ul>
+          }
         </section>
       </div>
 
@@ -277,24 +300,63 @@ export default function AdminDashboard() {
               </button>
             </div>
           </div>
+          {!filteredCourses.length
+            ? <div className={styles.noResults}>No matching courses.</div>
+            : <table className={styles.simpleTable}>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Instructor</th>
+                    <th style={{ textAlign:'center' }}>Enrolled</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCourses.map(c=>(
+                    <tr key={c.courseId}>
+                      <td>{c.courseName}</td>
+                      <td>{getInsName(c.instructorName)}</td>
+                      <td style={{ textAlign:'center' }}>{c.enrollmentCount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+          }
+        </section>
+      </div>
 
-          {!filteredCourses.length ? (
-            <div className={styles.noResults}>No matching courses.</div>
+     {/* System Activity */}
+      <div className={styles.mainSections}>
+        <section className={styles.listSection}>
+          <div className={styles.listHeader}>
+            <h2 className={styles.sectionTitle}><FaHistory style={{marginRight:8}}/> System Activity</h2>
+            <div className={styles.listHeaderControls}>
+              <input
+                type="text"
+                placeholder="Search activity…"
+                value={sysSearch}
+                onChange={e=>setSysSearch(e.target.value)}
+                className={styles.searchInput}
+              />
+            </div>
+          </div>
+
+          {!filteredSystem.length ? (
+            <div className={styles.noResults}>No recent activity.</div>
           ) : (
-            <table className={styles.simpleTable}>
+            <table className={styles.activityTable}>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Instructor</th>
-                  <th style={{ textAlign:'center' }}>Enrolled</th>
+                  <th>Timestamp</th>
+                  <th>Type</th>
+                  <th>Message</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredCourses.map(c=>(
-                  <tr key={c.courseId}>
-                    <td>{c.courseName}</td>
-                    <td>{getInsName(c.instructorName)}</td>
-                    <td style={{ textAlign:'center' }}>{c.enrollmentCount}</td>
+                {filteredSystem.map((evt, idx) => (
+                  <tr key={idx}>
+                    <td>{new Date(evt.timestamp).toLocaleString()}</td>
+                    <td>{evt.type}</td>
+                    <td>{evt.message}</td>
                   </tr>
                 ))}
               </tbody>

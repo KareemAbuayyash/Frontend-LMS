@@ -312,3 +312,52 @@
 .dark .simpleTable td {
   border-color: var(--border-dark);
 }
+/* ------------------------------------------------------------------------ */
+/* New: System Activity Table Styling                                       */
+/* ------------------------------------------------------------------------ */
+.activityTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  background: var(--card-bg);
+  box-shadow: 0 4px 12px var(--card-shadow);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.dark .activityTable {
+  background: var(--card-bg-dark);
+}
+.activityTable th,
+.activityTable td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 0. nine rem;
+}
+.dark .activityTable th,
+.dark .activityTable td {
+  border-color: var(--border-dark);
+}
+.activityTable thead {
+  background: var(--primary);
+}
+.dark .activityTable thead {
+  background: #2a2a3e;
+}
+.activityTable thead th {
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.activityTable tbody tr {
+  transition: background 0.2s;
+}
+.activityTable tbody tr:hover {
+  background: rgba(0,0,0,0.04);
+}
+.dark .activityTable tbody tr:hover {
+  background: rgba(255,255,255,0.05);
+}
+.activityTable tbody tr:last-child td {
+  border-bottom: none;
+}
