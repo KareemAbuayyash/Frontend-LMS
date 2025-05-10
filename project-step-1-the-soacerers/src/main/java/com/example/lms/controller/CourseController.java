@@ -11,6 +11,7 @@ import com.example.lms.service.CourseService;
 
 import jakarta.validation.Valid;
 
+import com.example.lms.audit.SystemActivityService;
 import com.example.lms.dto.CourseDTO;
 import com.example.lms.entity.Course;
 import com.example.lms.entity.Instructor;
@@ -37,6 +38,8 @@ public class CourseController {
 
     @Autowired
     private InstructorRepository instructorRepository;
+    @Autowired
+    private  SystemActivityService systemActivityService;
 
     @Autowired
     private StudentRepository studentRepository;
@@ -50,12 +53,28 @@ public class CourseController {
         return courses;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/newCourse")
-    ResponseEntity<?> newCourse(@Valid @RequestBody CourseDTO newCourse) {
+    public ResponseEntity<?> newCourse(@Valid @RequestBody CourseDTO newCourse) {
         logger.info("Request received to create a new course: {}", newCourse.getCourseName());
+
+        // Delegate to service
         ResponseEntity<?> response = courseService.newCourse(newCourse);
-        logger.info("Course created successfully: {}", newCourse.getCourseName());
+
+        // If creation succeeded, log into system activity
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() instanceof EntityModel) {
+            @SuppressWarnings("unchecked")
+            EntityModel<CourseDTO> model = (EntityModel<CourseDTO>) response.getBody();
+            CourseDTO created = model.getContent();
+            if (created != null && created.getCourseId() != null) {
+                systemActivityService.logEvent(
+                  "COURSE_CREATED",
+                  String.format("Course '%s' (ID: %d) was created", 
+                                created.getCourseName(), created.getCourseId())
+                );
+            }
+        }
+
         return response;
     }
 
