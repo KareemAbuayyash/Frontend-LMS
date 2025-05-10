@@ -27,27 +27,24 @@ export default function Layout({ showSidebar = true, children }) {
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [connected,     setConnected]     = useState(false);
-  const [hasUnread,     setHasUnread]     = useState(false);   // NEW
+  const [hasUnread,     setHasUnread]     = useState(false);
 
   const navigate  = useNavigate();
   const location  = useLocation();
   const username  = localStorage.getItem('username') || 'User';
 
-  /* ------------------------------------------------------------------
-     HEALTH-CHECK ON MOUNT
-  ------------------------------------------------------------------ */
- useEffect(() => {
-  const check = () =>
-    api.get('/health')
-       .then(() => setConnected(true))
-       .catch(() => setConnected(false));
+  // health‐check
+  useEffect(() => {
+    const check = () =>
+      api.get('/health')
+         .then(() => setConnected(true))
+         .catch(() => setConnected(false));
+    check();
+    const id = setInterval(check, 10000);
+    return () => clearInterval(id);
+  }, []);
 
-  check();                      // ✅ run once immediately
-  const id = setInterval(check, 10000);   // 🔄 then keep checking
-  return () => clearInterval(id);
-}, []);
-
-  /* auto-collapse sidebar on ≤600 px */
+  // auto‐collapse on small screens
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 600px)');
     const onChange = e => setCollapsed(e.matches);
@@ -56,23 +53,17 @@ export default function Layout({ showSidebar = true, children }) {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  /* ------------------------------------------------------------------
-     POLL UNREAD NOTIFICATION COUNT  (every 30 s)
-  ------------------------------------------------------------------ */
+  // poll unread count
   useEffect(() => {
     const fetchUnread = () =>
       api.get('/notifications/unread-count')
          .then(res => setHasUnread(Number(res.data) > 0))
-         .catch(()  => {});  // silent fail
-
+         .catch(()  => {});
     fetchUnread();
     const id = setInterval(fetchUnread, 30000);
     return () => clearInterval(id);
   }, []);
 
-  /* ------------------------------------------------------------------
-     HANDLERS
-  ------------------------------------------------------------------ */
   const logout = async () => {
     try     { await api.post('/auth/logout'); }
     finally { localStorage.clear(); navigate('/login'); }
@@ -90,9 +81,11 @@ export default function Layout({ showSidebar = true, children }) {
 
     if (opening) {
       try {
+        // fetch all notifications, each item has e.g. { subject, message, read }
         const { data } = await api.get('/notifications');
         setNotifications(data);
-        setHasUnread(false);                           // clear badge
+        setHasUnread(false);
+        // mark everything as read on the server
         api.post('/notifications/mark-as-read').catch(() => {});
       } catch (e) {
         console.error('Failed to load notifications', e);
@@ -101,14 +94,8 @@ export default function Layout({ showSidebar = true, children }) {
     }
   };
 
-  /* ------------------------------------------------------------------ */
-  /* RENDER                                                             */
-  /* ------------------------------------------------------------------ */
   return (
     <div className="layout">
-      {/* ---------------------------------------------------------------
-         SIDEBAR
-      ---------------------------------------------------------------- */}
       {showSidebar && (
         <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
           <div className="sidebar-header">
@@ -117,7 +104,6 @@ export default function Layout({ showSidebar = true, children }) {
               {collapsed ? <FiMenu size={20} /> : <FiX size={20} />}
             </button>
           </div>
-
           <nav className="sidebar-nav">
             {SIDEBAR_ITEMS.map(item => (
               <Link
@@ -133,42 +119,38 @@ export default function Layout({ showSidebar = true, children }) {
         </aside>
       )}
 
-      {/* ----------------------------------------------------------------
-         MAIN
-      ---------------------------------------------------------------- */}
       <div className="main-content">
-        {/* TOP BAR */}
         <header className="topbar">
-          {/* search */}
           <div className="search-container">
             <FiSearch />
             <input type="text" placeholder="Search anything..." />
           </div>
-
-          {/* right-hand icons */}
           <div className="topbar-icons">
-            {/* connection dot */}
             <span
               className={`connection-dot ${connected ? 'online' : 'offline'}`}
               title={connected ? 'API: Online' : 'API: Offline'}
             />
-
-            {/* notification bell */}
             <button className="icon-btn" onClick={toggleNotifMenu}>
               <FiBell />
               {hasUnread && <span className="badge-dot" />}
             </button>
             {showNotifMenu && (
               <div className="dropdown-menu notif-menu">
-                {notifications.length > 0
-                  ? notifications.map((n, i) => (
-                      <div key={i} className="dropdown-item notif-item">
-                        <span className="subject">{n.subject}</span>
-                        <span className="message">{n.message}</span>
-                      </div>
-                    ))
-                  : <div className="dropdown-item">No notifications</div>
-                }
+                {notifications.length > 0 ? (
+                  notifications.map((n, i) => (
+                    <div
+                      key={i}
+                      className={
+                        `dropdown-item notif-item ${!n.read ? 'new-email' : ''}`
+                      }
+                    >
+                      <span className="subject">{n.subject}</span>
+                      <span className="message">{n.message}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="dropdown-item">No notifications</div>
+                )}
               </div>
             )}
 
@@ -178,8 +160,10 @@ export default function Layout({ showSidebar = true, children }) {
             </button>
             {showUserMenu && (
               <div className="dropdown-menu user-menu">
-                <button className="dropdown-item"
-                        onClick={() => navigate('/settings')}>
+                <button
+                  className="dropdown-item"
+                  onClick={() => navigate('/settings')}
+                >
                   <FiSettings /> Settings
                 </button>
                 <button className="dropdown-item" onClick={logout}>
@@ -190,8 +174,9 @@ export default function Layout({ showSidebar = true, children }) {
           </div>
         </header>
 
-        {/* routed pages */}
-        <div className="page-wrapper">{children}</div>
+        <div className="page-wrapper">
+          {children}
+        </div>
       </div>
     </div>
   );
