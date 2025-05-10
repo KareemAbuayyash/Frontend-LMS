@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
+import { saveAs } from 'file-saver';
 import {
   FiTrash2,
   FiPlus,
   FiSearch,
   FiEdit2,
   FiCheck,
-  FiXCircle
+  FiXCircle,
+  FiDownload
 } from 'react-icons/fi';
 import './Users.css';
 
@@ -25,7 +27,7 @@ export default function Users() {
     username: '',
     email: '',
     role: 'STUDENT',
-    password: '',   
+    password: '',
     profile: ''
   });
 
@@ -85,6 +87,22 @@ export default function Users() {
     return list;
   }, [users, roleFilter, search, sortField, sortDir]);
 
+  /* ────────────────── export CSV ────────────────── */
+  const exportUsersCSV = () => {
+    const header = ['Username','Email','Role','Profile'];
+    const rows = displayed.map(u => [
+      u.username,
+      u.email,
+      u.role,
+      u.profile || ''
+    ]);
+    const csv = [
+      header.join(','),
+      ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
+    ].join('\r\n');
+    saveAs(new Blob([csv], { type: 'text/csv' }), 'users.csv');
+  };
+
   /* ────────────────── editing ────────────────── */
   const startEdit = u => {
     setEditingId(u.userId);
@@ -106,26 +124,15 @@ export default function Users() {
         role:     draft.role,
         profile:  draft.profile
       };
-      if (draft.password) {
-        payload.password = draft.password;
-      }
-  
+      if (draft.password) payload.password = draft.password;
       await api.put(`/users/${id}`, payload);
-  
-      setUsers(us =>
-        us.map(u =>
-          u.userId === id
-            ? { ...u, ...payload }
-            : u
-        )
-      );
+      setUsers(us => us.map(u => u.userId === id ? { ...u, ...payload } : u));
       setEditingId(null);
     } catch (err) {
       console.error('Failed to save user edits', err);
       alert(err.response?.data?.details || err.message);
     }
   };
-  
 
   /* ────────────────── deletion ────────────────── */
   const handleDelete = async id => {
@@ -188,6 +195,9 @@ export default function Users() {
         <button className="btn primary" onClick={openModal}>
           <FiPlus /> Add User
         </button>
+        <button className="icon-btn" onClick={exportUsersCSV} title="Export CSV">
+          <FiDownload />
+        </button>
       </div>
 
       {/* table */}
@@ -205,7 +215,7 @@ export default function Users() {
                 Role{sortField==='role'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th onClick={() => changeSort('profile')}>
-                Name{sortField==='profile'?(sortDir==='asc'?' ▲':' ▼'):''}
+                Profile{sortField==='profile'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th>Password</th>
               <th>Actions</th>
@@ -221,47 +231,11 @@ export default function Users() {
               <tr key={u.userId}>
                 {editingId === u.userId ? (
                   <>
-                    <td>
-                      <input
-                        className="inline-edit"
-                        value={draft.username}
-                        onChange={e=>setDraft(d=>({...d,username:e.target.value}))}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="inline-edit"
-                        value={draft.email}
-                        onChange={e=>setDraft(d=>({...d,email:e.target.value}))}
-                      />
-                    </td>
-                    <td>
-                      <select
-                        className="inline-edit"
-                        value={draft.role}
-                        onChange={e=>setDraft(d=>({...d,role:e.target.value}))}
-                      >
-                        <option value="ADMIN">ADMIN</option>
-                        <option value="INSTRUCTOR">INSTRUCTOR</option>
-                        <option value="STUDENT">STUDENT</option>
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        className="inline-edit"
-                        value={draft.profile}
-                        onChange={e=>setDraft(d=>({...d,profile:e.target.value}))}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="inline-edit"
-                        type="password"
-                        placeholder="(leave blank)"
-                        value={draft.password}
-                        onChange={e=>setDraft(d=>({...d,password:e.target.value}))}
-                      />
-                    </td>
+                    <td><input className="inline-edit" value={draft.username} onChange={e=>setDraft(d=>({...d,username:e.target.value}))} /></td>
+                    <td><input className="inline-edit" value={draft.email}    onChange={e=>setDraft(d=>({...d,email:e.target.value}))} /></td>
+                    <td><select className="inline-edit" value={draft.role} onChange={e=>setDraft(d=>({...d,role:e.target.value}))}><option value="ADMIN">ADMIN</option><option value="INSTRUCTOR">INSTRUCTOR</option><option value="STUDENT">STUDENT</option></select></td>
+                    <td><input className="inline-edit" value={draft.profile} onChange={e=>setDraft(d=>({...d,profile:e.target.value}))} /></td>
+                    <td><input className="inline-edit" type="password" placeholder="(leave blank)" value={draft.password} onChange={e=>setDraft(d=>({...d,password:e.target.value}))} /></td>
                     <td>
                       <button className="icon-btn" onClick={()=>saveEdit(u.userId)}><FiCheck/></button>
                       <button className="icon-btn" onClick={cancelEdit}><FiXCircle/></button>
@@ -273,11 +247,7 @@ export default function Users() {
                     <td>{u.email}</td>
                     <td>{u.role}</td>
                     <td>{u.profile || '-'}</td>
-                    <td>
-                      <code style={{fontSize:'0.8em'}}>
-                        {u.password}
-                      </code>
-                    </td>
+                    <td><code style={{fontSize:'0.8em'}}>{u.password}</code></td>
                     <td>
                       <button className="icon-btn" onClick={()=>startEdit(u)}><FiEdit2/></button>
                       <button className="icon-btn trash" onClick={()=>handleDelete(u.userId)}><FiTrash2/></button>
@@ -297,50 +267,20 @@ export default function Users() {
             <h3>New User</h3>
             <form onSubmit={handleAdd}>
               <div className="grid2">
-                <input
-                  required
-                  placeholder="Username"
-                  value={newUser.username}
-                  onChange={e=>setNewUser(n=>({...n,username:e.target.value}))}
-                />
-                <input
-                  required
-                  type="email"
-                  placeholder="Email"
-                  value={newUser.email}
-                  onChange={e=>setNewUser(n=>({...n,email:e.target.value}))}
-                />
+                <input required placeholder="Username" value={newUser.username} onChange={e=>setNewUser(n=>({...n,username:e.target.value}))} />
+                <input required type="email" placeholder="Email" value={newUser.email} onChange={e=>setNewUser(n=>({...n,email:e.target.value}))} />
               </div>
               <div className="grid2">
-                <input
-                  required
-                  placeholder="Name"
-                  value={newUser.name}
-                  onChange={e=>setNewUser(n=>({...n,name:e.target.value}))}
-                />
-                <input
-                  required
-                  type="password"
-                  placeholder="Password"
-                  value={newUser.password}
-                  onChange={e=>setNewUser(n=>({...n,password:e.target.value}))}
-                />
+                <input required placeholder="Name" value={newUser.name} onChange={e=>setNewUser(n=>({...n,name:e.target.value}))} />
+                <input required type="password" placeholder="Password" value={newUser.password} onChange={e=>setNewUser(n=>({...n,password:e.target.value}))} />
               </div>
               <div className="grid2">
-                <select
-                  required
-                  value={newUser.role}
-                  onChange={e=>setNewUser(n=>({...n,role:e.target.value}))}
-                >
+                <select required value={newUser.role} onChange={e=>setNewUser(n=>({...n,role:e.target.value}))}>
                   <option value="ADMIN">ADMIN</option>
                   <option value="INSTRUCTOR">INSTRUCTOR</option>
                   <option value="STUDENT">STUDENT</option>
                 </select>
-                <input
-                  placeholder="Profile URL"
-                  value={newUser.profile}
-                  onChange={e=>setNewUser(n=>({...n,profile:e.target.value}))}
-                />
+                <input placeholder="Profile URL" value={newUser.profile} onChange={e=>setNewUser(n=>({...n,profile:e.target.value}))} />
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn" onClick={closeModal}>Cancel</button>
