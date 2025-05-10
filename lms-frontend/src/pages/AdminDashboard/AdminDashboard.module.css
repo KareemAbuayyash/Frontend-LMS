@@ -101,6 +101,8 @@
   margin: 4px 0 0;
   color: var(--text-light);
 }
+
+/* Icons */
 .iconUser {
   color: var(--primary);
   font-size: 2.5rem;
@@ -113,6 +115,16 @@
 }
 .iconEnroll {
   color: var(--accent);
+  font-size: 2.5rem;
+  margin-right: 16px;
+}
+.iconInstructor {
+  color: #76b7b2;
+  font-size: 2.5rem;
+  margin-right: 16px;
+}
+.iconStudent {
+  color: #59a14f;
   font-size: 2.5rem;
   margin-right: 16px;
 }
@@ -217,9 +229,6 @@
   align-items: center;
   gap: 0.5rem;
 }
-.username {
-  font-size: 1rem;
-}
 .roleBadge {
   padding: 0.15rem 0.5rem;
   border-radius: 0.75rem;
@@ -286,14 +295,8 @@
   border-radius: 4px;
   cursor: pointer;
 }
-/* below existing .noResults */
-.viewAllBtn {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.9rem;
-  border: 1px solid currentColor;
-  border-radius: 4px;
-}
 
+/* simple table for courses */
 .simpleTable {
   width: 100%;
   border-collapse: collapse;

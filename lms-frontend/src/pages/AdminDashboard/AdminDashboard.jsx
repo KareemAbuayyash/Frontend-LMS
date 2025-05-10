@@ -10,7 +10,9 @@ import {
   FaSun,
   FaMoon,
   FaChartBar,
-  FaDownload
+  FaDownload,
+  FaChalkboardTeacher,
+  FaUserGraduate
 } from 'react-icons/fa';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
@@ -51,7 +53,8 @@ export default function AdminDashboard() {
   const [dark, setDark]                   = useState(false);
   const [lastUpdated, setLastUpdated]     = useState(null);
 
-  const COLORS = ['#4e79a7', '#f28e2c', '#e15759'];
+  // now using 5 colors
+  const COLORS = ['#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f'];
 
   // Fetch stats, users & courses
   const fetchData = async () => {
@@ -70,6 +73,7 @@ export default function AdminDashboard() {
     }
   };
 
+  // CALL fetchData inside a non-async useEffect
   useEffect(() => {
     fetchData();
   }, []);
@@ -78,11 +82,13 @@ export default function AdminDashboard() {
     return <div className={styles.loading}>Loading dashboard…</div>;
   }
 
-  // Pie chart data
+  // now five slices
   const chartData = [
     { name: 'Users',       value: stats.totalUsers },
     { name: 'Courses',     value: stats.totalCourses },
-    { name: 'Enrollments', value: stats.totalEnrollments }
+    { name: 'Enrollments', value: stats.totalEnrollments },
+    { name: 'Instructors', value: stats.totalInstructors },
+    { name: 'Students',    value: stats.totalStudents },
   ];
 
   // Filter & limit lists to 5
@@ -156,6 +162,14 @@ export default function AdminDashboard() {
         <div className={styles.card}>
           <FaClipboardList className={styles.iconEnroll}/>
           <div><h2>{stats.totalEnrollments}</h2><p>Enrollments</p></div>
+        </div>
+        <div className={styles.card}>
+          <FaChalkboardTeacher className={styles.iconInstructor}/>
+          <div><h2>{stats.totalInstructors}</h2><p>Instructors</p></div>
+        </div>
+        <div className={styles.card}>
+          <FaUserGraduate className={styles.iconStudent}/>
+          <div><h2>{stats.totalStudents}</h2><p>Students</p></div>
         </div>
       </section>
 

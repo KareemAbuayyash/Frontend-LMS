@@ -4360,3 +4360,288 @@ Unconditional classes:
 2025-05-11T00:46:48.371+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
 2025-05-11T00:46:48.371+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[RecentCourseDTO(courseId=19, courseName=ggg, instructorName=3, enrollmentCount=0), RecentCourseDTO( (truncated)...]
 2025-05-11T00:46:48.372+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:46:58.326+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T00:46:58.330+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T00:46:58.333+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-6] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:46:58.334+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:46:58.338+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T00:46:58.338+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T00:46:58.339+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T00:46:58.339+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T00:46:58.340+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-10T21:46:58.339918300Z"]
+2025-05-11T00:46:58.340+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:02.090+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/instructors
+2025-05-11T00:47:02.091+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/dashboard/stats
+2025-05-11T00:47:02.091+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/dashboard/activity?limit=50
+2025-05-11T00:47:02.091+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/dashboard/recent-courses?limit=50
+2025-05-11T00:47:02.093+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/dashboard/activity?limit=50
+2025-05-11T00:47:02.093+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/dashboard/recent-courses?limit=50
+2025-05-11T00:47:02.093+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/dashboard/stats
+2025-05-11T00:47:02.093+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/instructors
+2025-05-11T00:47:02.096+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-1] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:02.096+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-7] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:02.096+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.096+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-3] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:02.096+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-2] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:02.097+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.097+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.097+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.102+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/instructors
+2025-05-11T00:47:02.102+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/dashboard/stats
+2025-05-11T00:47:02.102+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/dashboard/stats", parameters={}
+2025-05-11T00:47:02.102+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/dashboard/activity?limit=50
+2025-05-11T00:47:02.102+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/instructors", parameters={}
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/dashboard/recent-courses?limit=50
+2025-05-11T00:47:02.102+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.DashboardController#stats()
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/dashboard/recent-courses?limit=50", parameters={masked}
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/dashboard/activity?limit=50", parameters={masked}
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.controller.InstructorController#getAllInstructors()
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.DashboardController#recentCourses(int)
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.DashboardController#recentUsers(int)
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(1081434576<open>)] for JPA transaction
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public java.util.List com.example.lms.controller.InstructorController.getAllInstructors(); target is of class [com.example.lms.controller.InstructorController]
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:02.103+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@511295144 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec] read-only
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(1830599435<open>)] for JPA transaction
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public java.util.List com.example.lms.controller.InstructorController.getAllInstructors(); target is of class [com.example.lms.controller.InstructorController]
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@1396715512 wrapping com.mysql.cj.jdbc.ConnectionImpl@1b5e0e5f] read-only
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(428389460<open>)] for JPA transaction
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@65733628 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1] read-only
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@79e0dba0]
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(1135645248<open>)] for JPA transaction
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@20e81d45]
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@849775058 wrapping com.mysql.cj.jdbc.ConnectionImpl@6d49c6a8] read-only
+2025-05-11T00:47:02.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@6eb1c8f4]
+2025-05-11T00:47:02.105+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@5a5a3491]
+2025-05-11T00:47:02.105+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:02.105+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(1081434576<open>)]
+2025-05-11T00:47:02.106+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@511295144 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec]
+2025-05-11T00:47:02.106+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(1081434576<open>)] after transaction
+2025-05-11T00:47:02.106+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:02.106+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(2055671020<open>)] for JPA transaction
+2025-05-11T00:47:02.106+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:02.107+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@395915225 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec] read-only
+2025-05-11T00:47:02.107+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(428389460<open>)]
+2025-05-11T00:47:02.107+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@1594e052]
+2025-05-11T00:47:02.107+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@65733628 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1]
+2025-05-11T00:47:02.107+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:02.108+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(428389460<open>)] after transaction
+2025-05-11T00:47:02.108+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(1830599435<open>)]
+2025-05-11T00:47:02.108+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:02.108+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@1396715512 wrapping com.mysql.cj.jdbc.ConnectionImpl@1b5e0e5f]
+2025-05-11T00:47:02.108+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:02.108+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(1830599435<open>)] after transaction
+2025-05-11T00:47:02.108+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[UserDTO(userId=20, username=ka, password=$2a$10$GT4swsXQ9L/Tn6.o.DlPpeNSraljJBeViqa2SjIArD5h4vmGtO5 (truncated)...]
+2025-05-11T00:47:02.109+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(2055671020<open>)]
+2025-05-11T00:47:02.109+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.109+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@395915225 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec]
+2025-05-11T00:47:02.109+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:02.109+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(2055671020<open>)] after transaction
+2025-05-11T00:47:02.110+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:02.110+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(295010931<open>)] for JPA transaction
+2025-05-11T00:47:02.110+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.110+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@2037452816 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec] read-only
+2025-05-11T00:47:02.111+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@47ba5529]
+2025-05-11T00:47:02.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:02.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(295010931<open>)]
+2025-05-11T00:47:02.113+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@2037452816 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec]
+2025-05-11T00:47:02.113+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(295010931<open>)] after transaction
+2025-05-11T00:47:02.113+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:02.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(916411704<open>)] for JPA transaction
+2025-05-11T00:47:02.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@1290692087 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec] read-only
+2025-05-11T00:47:02.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@57491402]
+2025-05-11T00:47:02.115+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.115+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:02.115+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(916411704<open>)]
+2025-05-11T00:47:02.115+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:02.115+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(1135645248<open>)]
+2025-05-11T00:47:02.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@1290692087 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec]
+2025-05-11T00:47:02.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(916411704<open>)] after transaction
+2025-05-11T00:47:02.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:02.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@849775058 wrapping com.mysql.cj.jdbc.ConnectionImpl@6d49c6a8]
+2025-05-11T00:47:02.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(1387268501<open>)] for JPA transaction
+2025-05-11T00:47:02.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(1135645248<open>)] after transaction
+2025-05-11T00:47:02.117+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@2114407331 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec] read-only
+2025-05-11T00:47:02.117+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:02.117+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@4bf0d96a]
+2025-05-11T00:47:02.117+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.117+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [[InstructorSummaryDTO(id=1, username=kg), InstructorSummaryDTO(id=3, username=ff), InstructorSummary (truncated)...]
+2025-05-11T00:47:02.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:02.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:02.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(1387268501<open>)]
+2025-05-11T00:47:02.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@2114407331 wrapping com.mysql.cj.jdbc.ConnectionImpl@5f7702ec]
+2025-05-11T00:47:02.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(1387268501<open>)] after transaction
+2025-05-11T00:47:02.120+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:02.120+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [DashboardStatsDTO(totalUsers=14, totalCourses=11, totalEnrollments=12, totalInstructors=5, totalStud (truncated)...]
+2025-05-11T00:47:02.120+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.121+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:02.122+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.124+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:02.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:02.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[RecentCourseDTO(courseId=19, courseName=ggg, instructorName=3, enrollmentCount=0), RecentCourseDTO( (truncated)...]
+2025-05-11T00:47:02.129+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:08.098+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/instructors
+2025-05-11T00:47:08.099+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/dashboard/stats
+2025-05-11T00:47:08.099+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/dashboard/recent-courses?limit=50
+2025-05-11T00:47:08.099+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/dashboard/activity?limit=50
+2025-05-11T00:47:08.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/dashboard/stats
+2025-05-11T00:47:08.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/instructors
+2025-05-11T00:47:08.104+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/dashboard/recent-courses?limit=50
+2025-05-11T00:47:08.105+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/dashboard/activity?limit=50
+2025-05-11T00:47:08.106+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-10] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:08.106+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-1] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:08.106+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-9] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:08.106+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.107+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.107+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-3] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:08.107+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.108+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.111+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/dashboard/stats
+2025-05-11T00:47:08.111+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/dashboard/stats", parameters={}
+2025-05-11T00:47:08.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/instructors
+2025-05-11T00:47:08.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.DashboardController#stats()
+2025-05-11T00:47:08.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/instructors", parameters={}
+2025-05-11T00:47:08.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/dashboard/recent-courses?limit=50
+2025-05-11T00:47:08.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/dashboard/activity?limit=50
+2025-05-11T00:47:08.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:08.113+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/dashboard/activity?limit=50", parameters={masked}
+2025-05-11T00:47:08.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.controller.InstructorController#getAllInstructors()
+2025-05-11T00:47:08.112+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/dashboard/recent-courses?limit=50", parameters={masked}
+2025-05-11T00:47:08.113+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(192675603<open>)] for JPA transaction
+2025-05-11T00:47:08.113+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.DashboardController#recentUsers(int)
+2025-05-11T00:47:08.113+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public java.util.List com.example.lms.controller.InstructorController.getAllInstructors(); target is of class [com.example.lms.controller.InstructorController]
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.DashboardController#recentCourses(int)
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@822474316 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1] read-only
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public java.util.List com.example.lms.controller.InstructorController.getAllInstructors(); target is of class [com.example.lms.controller.InstructorController]
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.findAll]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(1117889979<open>)] for JPA transaction
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@46092bec]
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(807318921<open>)] for JPA transaction
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(822475921<open>)] for JPA transaction
+2025-05-11T00:47:08.114+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@1614288390 wrapping com.mysql.cj.jdbc.ConnectionImpl@1dd44289] read-only
+2025-05-11T00:47:08.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@1891194842 wrapping com.mysql.cj.jdbc.ConnectionImpl@1b5e0e5f] read-only
+2025-05-11T00:47:08.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@604213603 wrapping com.mysql.cj.jdbc.ConnectionImpl@6d49c6a8] read-only
+2025-05-11T00:47:08.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@28b7ea22]
+2025-05-11T00:47:08.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@596e4d94]
+2025-05-11T00:47:08.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@1821e6d7]
+2025-05-11T00:47:08.116+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:08.117+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(192675603<open>)]
+2025-05-11T00:47:08.117+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@822474316 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1]
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(192675603<open>)] after transaction
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(822475921<open>)]
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(1355169509<open>)] for JPA transaction
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@1241589415 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1] read-only
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@3bcc7a43]
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@604213603 wrapping com.mysql.cj.jdbc.ConnectionImpl@6d49c6a8]
+2025-05-11T00:47:08.118+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:08.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(822475921<open>)] after transaction
+2025-05-11T00:47:08.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(807318921<open>)]
+2025-05-11T00:47:08.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:08.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@1891194842 wrapping com.mysql.cj.jdbc.ConnectionImpl@1b5e0e5f]
+2025-05-11T00:47:08.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:08.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[UserDTO(userId=20, username=ka, password=$2a$10$GT4swsXQ9L/Tn6.o.DlPpeNSraljJBeViqa2SjIArD5h4vmGtO5 (truncated)...]
+2025-05-11T00:47:08.119+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(807318921<open>)] after transaction
+2025-05-11T00:47:08.120+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(1355169509<open>)]
+2025-05-11T00:47:08.120+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.120+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@1241589415 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1]
+2025-05-11T00:47:08.120+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:08.120+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(1355169509<open>)] after transaction
+2025-05-11T00:47:08.121+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:08.121+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(1741782280<open>)] for JPA transaction
+2025-05-11T00:47:08.121+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@2059477894 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1] read-only
+2025-05-11T00:47:08.122+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@7431073]
+2025-05-11T00:47:08.122+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.123+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:08.123+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.123+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(1741782280<open>)]
+2025-05-11T00:47:08.124+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@2059477894 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1]
+2025-05-11T00:47:08.124+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(1741782280<open>)] after transaction
+2025-05-11T00:47:08.124+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:08.124+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(4322108<open>)] for JPA transaction
+2025-05-11T00:47:08.124+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.124+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@729280821 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1] read-only
+2025-05-11T00:47:08.124+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@44f1ce3f]
+2025-05-11T00:47:08.126+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:08.126+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:08.126+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.126+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(1117889979<open>)]
+2025-05-11T00:47:08.126+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(4322108<open>)]
+2025-05-11T00:47:08.126+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@1614288390 wrapping com.mysql.cj.jdbc.ConnectionImpl@1dd44289]
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@729280821 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1]
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(1117889979<open>)] after transaction
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(4322108<open>)] after transaction
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [org.springframework.data.jpa.repository.support.SimpleJpaRepository.count]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT,readOnly
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(2134068242<open>)] for JPA transaction
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Setting JDBC Connection [HikariProxyConnection@1970665088 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1] read-only
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [[InstructorSummaryDTO(id=1, username=kg), InstructorSummaryDTO(id=3, username=ff), InstructorSummary (truncated)...]
+2025-05-11T00:47:08.127+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.128+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@4ea29bcb]
+2025-05-11T00:47:08.128+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:08.129+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2025-05-11T00:47:08.129+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(2134068242<open>)]
+2025-05-11T00:47:08.129+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.130+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.jdbc.datasource.DataSourceUtils      : Resetting read-only flag of JDBC Connection [HikariProxyConnection@1970665088 wrapping com.mysql.cj.jdbc.ConnectionImpl@28e4e1e1]
+2025-05-11T00:47:08.130+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(2134068242<open>)] after transaction
+2025-05-11T00:47:08.130+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:08.130+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.131+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [DashboardStatsDTO(totalUsers=14, totalCourses=11, totalEnrollments=12, totalInstructors=5, totalStud (truncated)...]
+2025-05-11T00:47:08.131+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:08.132+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.133+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.134+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.135+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:08.135+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[RecentCourseDTO(courseId=19, courseName=ggg, instructorName=3, enrollmentCount=0), RecentCourseDTO( (truncated)...]
+2025-05-11T00:47:08.136+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:08.325+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T00:47:08.328+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T00:47:08.329+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-2] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:08.331+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:08.334+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T00:47:08.334+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T00:47:08.334+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T00:47:08.335+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T00:47:08.335+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-10T21:47:08.335185600Z"]
+2025-05-11T00:47:08.335+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:18.326+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T00:47:18.326+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/notifications/unread-count
+2025-05-11T00:47:18.329+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications/unread-count
+2025-05-11T00:47:18.329+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T00:47:18.330+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-4] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:18.330+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-8] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:18.330+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:18.331+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:18.335+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T00:47:18.335+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T00:47:18.336+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T00:47:18.336+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications/unread-count
+2025-05-11T00:47:18.336+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/notifications/unread-count", parameters={}
+2025-05-11T00:47:18.337+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T00:47:18.337+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.notification.NotificationController#unreadCount()
+2025-05-11T00:47:18.337+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-10T21:47:18.336349700Z"]
+2025-05-11T00:47:18.338+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:18.338+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:18.341+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T00:47:18.341+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [0]
+2025-05-11T00:47:18.342+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T00:47:28.325+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T00:47:28.328+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T00:47:28.329+03:00  INFO 20876 --- [lms] [http-nio-8080-exec-1] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T00:47:28.329+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T00:47:28.332+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T00:47:28.333+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T00:47:28.333+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T00:47:28.334+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T00:47:28.334+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-10T21:47:28.333196600Z"]
+2025-05-11T00:47:28.335+03:00 DEBUG 20876 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
