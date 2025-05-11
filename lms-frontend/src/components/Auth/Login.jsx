@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import styles from './Login.module.css';
-import logo from '../../assets/logo.png';
 import { FcGoogle } from 'react-icons/fc';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { saveTokens, getUserRole } from '../../utils/auth';
+import logo from '../../assets/log.png';
 
 export default function Login() {
   const savedUsername = localStorage.getItem('savedUsername') || '';
