@@ -84,23 +84,20 @@ export default function AdminDashboard() {
 
   // ─── Fetch system activity ───────────────────────
   useEffect(() => {
-  async function fetchSystem() {
-    try {
-      const { data } = await api.get('/dashboard/system-activity?limit=50');
-      setSystemActivity(data);
-    } catch { /* … */ }
-  }
-  fetchSystem();
-}, []);
-
-
-  // ─────────────────────────────────────────────────
+    async function fetchSystem() {
+      try {
+        const { data } = await api.get('/dashboard/system-activity?limit=50');
+        setSystemActivity(data);
+      } catch { /* … */ }
+    }
+    fetchSystem();
+  }, []);
 
   if (!stats) {
     return <div className={styles.loading}>Loading dashboard…</div>;
   }
 
-  // build chart data (now including Instructors & Students)
+  // build chart data
   const chartData = [
     { name: 'Users',       value: stats.totalUsers },
     { name: 'Courses',     value: stats.totalCourses },
@@ -131,7 +128,7 @@ export default function AdminDashboard() {
     )
     .slice(0, 5);
 
-  // CSV / PNG exports
+  // CSV / PNG exports (same as before)
   const exportUsersCSV = () => {
     const header = ['Username','Email','Role'];
     const rows   = filteredUsers.map(u => [u.username, u.email, u.role]);
@@ -220,9 +217,7 @@ export default function AdminDashboard() {
                   outerRadius={80}
                   label
                 >
-                  {chartData.map((_,i)=>(
-                    <Cell key={i} fill={COLORS[i % COLORS.length]}/>
-                  ))}
+                  {chartData.map((_,i)=>(<Cell key={i} fill={COLORS[i % COLORS.length]}/>))}
                 </Pie>
                 <Tooltip formatter={v=>v.toLocaleString()}/>
                 <Legend icon={<FaCircle/>} verticalAlign="bottom" height={36}/>
@@ -302,29 +297,32 @@ export default function AdminDashboard() {
           </div>
           {!filteredCourses.length
             ? <div className={styles.noResults}>No matching courses.</div>
-            : <table className={styles.simpleTable}>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Instructor</th>
-                    <th style={{ textAlign:'center' }}>Enrolled</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredCourses.map(c=>(
-                    <tr key={c.courseId}>
-                      <td>{c.courseName}</td>
-                      <td>{getInsName(c.instructorName)}</td>
-                      <td style={{ textAlign:'center' }}>{c.enrollmentCount}</td>
+            : (
+              <div className={styles.tableWrapper}>
+                <table className={styles.simpleTable}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Instructor</th>
+                      <th style={{ textAlign:'center' }}>Enrolled</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-          }
+                  </thead>
+                  <tbody>
+                    {filteredCourses.map(c=>(
+                      <tr key={c.courseId}>
+                        <td>{c.courseName}</td>
+                        <td>{getInsName(c.instructorName)}</td>
+                        <td style={{ textAlign:'center' }}>{c.enrollmentCount}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
         </section>
       </div>
 
-     {/* System Activity */}
+      {/* System Activity */}
       <div className={styles.mainSections}>
         <section className={styles.listSection}>
           <div className={styles.listHeader}>
@@ -343,24 +341,26 @@ export default function AdminDashboard() {
           {!filteredSystem.length ? (
             <div className={styles.noResults}>No recent activity.</div>
           ) : (
-            <table className={styles.activityTable}>
-              <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>Type</th>
-                  <th>Message</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredSystem.map((evt, idx) => (
-                  <tr key={idx}>
-                    <td>{new Date(evt.timestamp).toLocaleString()}</td>
-                    <td>{evt.type}</td>
-                    <td>{evt.message}</td>
+            <div className={styles.tableWrapper}>
+              <table className={styles.activityTable}>
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Type</th>
+                    <th>Message</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredSystem.map((evt, idx) => (
+                    <tr key={idx}>
+                      <td>{new Date(evt.timestamp).toLocaleString()}</td>
+                      <td>{evt.type}</td>
+                      <td>{evt.message}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
       </div>
