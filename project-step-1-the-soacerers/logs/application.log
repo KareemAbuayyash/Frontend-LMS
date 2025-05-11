@@ -16796,3 +16796,75 @@ org.springframework.mail.MailSendException: Failed messages: jakarta.mail.SendFa
 2025-05-11T14:14:28.851+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
 2025-05-11T14:14:28.851+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [0]
 2025-05-11T14:14:28.852+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T14:14:38.836+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T14:14:38.837+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T14:14:38.837+03:00  INFO 4728 --- [lms] [http-nio-8080-exec-10] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T14:14:38.838+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:14:38.840+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T14:14:38.840+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T14:14:38.840+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T14:14:38.840+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T14:14:38.840+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-11T11:14:38.840411900Z"]
+2025-05-11T14:14:38.840+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T14:14:48.833+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-12] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T14:14:48.834+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T14:14:48.835+03:00  INFO 4728 --- [lms] [http-nio-8080-exec-1] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T14:14:48.835+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-1] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:14:48.837+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T14:14:48.837+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T14:14:48.837+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T14:14:48.838+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T14:14:48.838+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-11T11:14:48.838382Z"]
+2025-05-11T14:14:48.838+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T14:14:58.833+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/notifications/unread-count
+2025-05-11T14:14:58.833+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T14:14:58.835+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T14:14:58.835+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications/unread-count
+2025-05-11T14:14:58.836+03:00  INFO 4728 --- [lms] [http-nio-8080-exec-9] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T14:14:58.836+03:00  INFO 4728 --- [lms] [http-nio-8080-exec-4] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T14:14:58.836+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:14:58.836+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-4] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:14:58.839+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications/unread-count
+2025-05-11T14:14:58.850+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/notifications/unread-count", parameters={}
+2025-05-11T14:14:58.850+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T14:14:58.850+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.notification.NotificationController#unreadCount()
+2025-05-11T14:14:58.850+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T14:14:58.850+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T14:14:58.850+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:14:58.851+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T14:14:58.851+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-11T11:14:58.850270100Z"]
+2025-05-11T14:14:58.851+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T14:14:58.852+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T14:14:58.852+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [0]
+2025-05-11T14:14:58.853+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T14:15:07.751+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T14:15:07.751+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/notifications/unread-count
+2025-05-11T14:15:07.753+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T14:15:07.753+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications/unread-count
+2025-05-11T14:15:07.754+03:00  INFO 4728 --- [lms] [http-nio-8080-exec-10] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T14:15:07.754+03:00  INFO 4728 --- [lms] [http-nio-8080-exec-3] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T14:15:07.755+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:15:07.755+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications/unread-count
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/notifications/unread-count", parameters={}
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.notification.NotificationController#unreadCount()
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:15:07.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-11T11:15:07.757257500Z"]
+2025-05-11T14:15:07.758+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T14:15:07.758+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/yaml]
+2025-05-11T14:15:07.759+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [0]
+2025-05-11T14:15:07.759+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2025-05-11T14:15:17.757+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/health
+2025-05-11T14:15:17.759+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/health
+2025-05-11T14:15:17.760+03:00  INFO 4728 --- [lms] [http-nio-8080-exec-7] c.example.lms.service.UserServiceImpl    : Loading user by username: admin
+2025-05-11T14:15:17.761+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2025-05-11T14:15:17.763+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/health
+2025-05-11T14:15:17.763+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/health", parameters={}
+2025-05-11T14:15:17.764+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.example.lms.api.HealthController#health()
+2025-05-11T14:15:17.764+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2025-05-11T14:15:17.764+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["OK 2025-05-11T11:15:17.764064700Z"]
+2025-05-11T14:15:17.765+03:00 DEBUG 4728 --- [lms] [http-nio-8080-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK

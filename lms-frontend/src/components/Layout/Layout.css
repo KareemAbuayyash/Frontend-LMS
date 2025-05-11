@@ -32,7 +32,7 @@
 .sidebar-title      { font-size:1.1rem; font-weight:600; text-align:center; color:#eef2ff; }
 
 /* collapsed brand */
-.sidebar.collapsed .sidebar-logo  {top:1.75rem; width:40px; height:40px; }
+.sidebar.collapsed .sidebar-logo  { width:40px; height:40px; }
 .sidebar.collapsed .sidebar-title { display:none; }
 
 /* toggle (X / ☰) */
@@ -50,9 +50,9 @@
 /* expanded: top-right; collapsed: centred beneath the logo */
 .sidebar-header .toggle-btn       { top:1.75rem; right:.75rem; }
 .sidebar.collapsed .toggle-btn    {
-  top:1.35rem;                       /* override */
+  top:.35rem;                       /* override */
   bottom:auto;
-  right:1.35rem;
+  right:.35rem;
   left:auto;
   transform:none;
   z-index:3;
