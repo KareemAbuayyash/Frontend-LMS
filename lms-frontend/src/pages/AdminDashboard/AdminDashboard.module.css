@@ -1,3 +1,6 @@
+/* src/components/AdminDashboard/AdminDashboard.module.css */
+/* (all of your existing styles from before) */
+
 :root {
   --bg: #f5f7fa;
   --bg-dark: #1e1e2f;
@@ -15,14 +18,14 @@
   --border-dark: #444;
 }
 
-/* 1) Prevent horizontal scroll on small viewports */
+/* Prevent horizontal scroll on small viewports */
 html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
 }
 
-/* Container & dark‐mode */
+/* Container & dark mode */
 .container {
   background: var(--bg);
   color: var(--text);
@@ -30,31 +33,13 @@ html, body {
   min-height: 100vh;
   transition: background 0.3s, color 0.3s;
 }
-.dark {
-  background: var(--bg-dark);
-  color: #ddd;
-}
+.dark { background: var(--bg-dark); color: #ddd; }
 
 /* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.title {
-  margin: 0;
-  font-size: 1.8rem;
-}
-.headerControls {
-  display: flex;
-  align-items: center;
-}
-.subHeader {
-  margin-top: 8px;
-  font-size: 0.9rem;
-  color: var(--text-light);
-}
+.header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.title { margin: 0; font-size: 1.8rem; }
+.headerControls { display: flex; align-items: center; }
+.subHeader { margin-top: 8px; font-size: 0.9rem; color: var(--text-light); }
 
 /* Icon buttons */
 .iconButton {
@@ -66,22 +51,12 @@ html, body {
   color: var(--primary);
   transition: color 0.2s, transform 0.2s;
 }
-.iconButton:hover {
-  color: var(--secondary);
-  transform: scale(1.1);
-}
-.dark .iconButton {
-  color: #aaa;
-}
-.dark .iconButton:hover {
-  color: var(--accent);
-}
+.iconButton:hover { color: var(--secondary); transform: scale(1.1); }
+.dark .iconButton { color: #aaa; }
+.dark .iconButton:hover { color: var(--accent); }
 
-/* Loading state */
-.loading {
-  text-align: center;
-  padding: 100px;
-}
+/* Loading */
+.loading { text-align: center; padding: 100px; }
 
 /* Stats grid */
 .statsGrid {
@@ -99,30 +74,23 @@ html, body {
   align-items: center;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px var(--card-shadow);
-}
-.dark .card {
-  background: var(--card-bg-dark);
-}
-.card h2 {
-  margin: 0;
-  font-size: 1.6rem;
-}
-.card p {
-  margin: 4px 0 0;
-  color: var(--text-light);
-}
+.card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px var(--card-shadow); }
+.dark .card { background: var(--card-bg-dark); }
+.card h2 { margin: 0; font-size: 1.6rem; }
+.card p { margin: 4px 0 0; color: var(--text-light); }
 
 /* Stats icons */
-.iconUser { color: var(--primary);      font-size:2.5rem; margin-right:12px; }
-.iconCourse { color: var(--secondary);  font-size:2.5rem; margin-right:12px; }
-.iconEnroll { color: var(--accent);     font-size:2.5rem; margin-right:12px; }
-.iconInstructor { color: #76b7b2;       font-size:2.5rem; margin-right:12px; }
-.iconStudent { color: #59a14f;          font-size:2.5rem; margin-right:12px; }
+.iconUser, .iconCourse, .iconEnroll, .iconInstructor, .iconStudent {
+  font-size: 2.5rem;
+  margin-right: 12px;
+}
+.iconUser       { color: var(--primary); }
+.iconCourse     { color: var(--secondary); }
+.iconEnroll     { color: var(--accent); }
+.iconInstructor { color: #76b7b2; }
+.iconStudent    { color: #59a14f; }
 
-/* Two-column layout for chart+list */
+/* Two‐column layout for chart+list */
 .mainSections {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -140,19 +108,11 @@ html, body {
   transition: background 0.3s;
 }
 .dark .chartSection,
-.dark .listSection {
-  background: var(--card-bg-dark);
-}
-.sectionTitle {
-  margin: 0;
-  font-size: 1.3rem;
-}
+.dark .listSection { background: var(--card-bg-dark); }
+.sectionTitle { margin: 0; font-size: 1.3rem; }
 
 /* Chart wrapper */
-.chartWrapper {
-  width: 100%;
-  height: 300px;
-}
+.chartWrapper { width: 100%; height: 300px; }
 
 /* List header & controls */
 .listHeader {
@@ -197,13 +157,14 @@ html, body {
 .viewAllBtn:hover {
   background: var(--secondary);
   transform: translateY(-1px);
+  color: aliceblue;
 }
 .viewAllBtn:focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Recent Users list */
+/* Recent Users */
 .userList {
   list-style: none;
   margin: 0;
@@ -218,15 +179,9 @@ html, body {
   border-bottom: 1px solid var(--border);
   transition: background 0.2s;
 }
-.dark .userItem {
-  border-color: var(--border-dark);
-}
-.userItem:hover {
-  background: rgba(0,0,0,0.03);
-}
-.dark .userItem:hover {
-  background: rgba(255,255,255,0.05);
-}
+.dark .userItem { border-color: var(--border-dark); }
+.userItem:hover { background: rgba(0,0,0,0.03); }
+.dark .userItem:hover { background: rgba(255,255,255,0.05); }
 .avatar {
   background: var(--primary);
   color: #fff;
@@ -251,9 +206,9 @@ html, body {
   font-size: 0.7rem;
   text-transform: uppercase;
 }
-.student   { background: #d4f5d4; color: #2f8f2f; }
-.instructor{ background: #d4e8f5; color: #2f4e8f; }
-.admin     { background: #eed4f5; color: #7f2f8f; }
+.student    { background: #d4f5d4; color: #2f8f2f; }
+.instructor { background: #d4e8f5; color: #2f4e8f; }
+.admin       { background: #eed4f5; color: #7f2f8f; }
 .email {
   display: block;
   font-size: 0.85rem;
@@ -265,28 +220,14 @@ html, body {
   color: var(--text-light);
 }
 
-/* ─── TABLE CARD STYLING ───────────────────────────────────── */
-
-/* Wrap the table in a “card” shell */
-.tableWrapper {
-  background: var(--card-bg);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px var(--card-shadow);
-  overflow-x: auto;
-  margin-top: 16px;
-  padding: 8px;
-}
-
-/* Shared table styles */
+/* Tables */
 .simpleTable,
 .activityTable {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 8px;  /* gutter between rows */
+  border-spacing: 0 8px;
   table-layout: fixed;
 }
-
-/* Break long words to avoid overflow */
 .simpleTable th,
 .simpleTable td,
 .activityTable th,
@@ -294,8 +235,6 @@ html, body {
   word-wrap: break-word;
   white-space: normal;
 }
-
-/* Header row */
 .simpleTable thead th,
 .activityTable thead th {
   background: var(--primary);
@@ -305,8 +244,9 @@ html, body {
   padding: 12px 16px;
   border: none;
 }
-
-/* Body cells as mini-cards */
+.simpleTable td:nth-child(3) {
+  text-align: center;
+}
 .simpleTable tbody tr td,
 .activityTable tbody tr td {
   background: var(--card-bg);
@@ -327,29 +267,43 @@ html, body {
   background: rgba(255,255,255,0.05);
 }
 
-/* Remove extra spacing under last row */
-.simpleTable tbody tr:last-child td,
-.activityTable tbody tr:last-child td {
-  border-bottom: none;
+/* Recent Courses & Calendar Layout */
+.recentCoursesContainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.calendarSection {
+  background: var(--card-bg);
+  box-shadow: 0 4px 12px var(--card-shadow);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.calendarSection .clock {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+.calendarSection iframe {
+  width: 100%;
+  height: 300px;
+  border: none;
+  border-radius: 8px;
 }
 
-/* Center the “Enrolled” column */
-.simpleTable td:nth-child(3) {
-  text-align: center;
-}
-
-/* ==== RESPONSIVE TWEAKS ==== */
-/* Collapse two‐col layout at tablets */
+/* Responsive tweaks */
 @media (max-width: 768px) {
-  .mainSections {
+  .mainSections,
+  .recentCoursesContainer {
     grid-template-columns: 1fr;
   }
 }
-/* Shrink tables on phones */
 @media (max-width: 600px) {
   .simpleTable,
   .activityTable {
-    min-width: auto;
     font-size: 0.8rem;
   }
 }
