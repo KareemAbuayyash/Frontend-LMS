@@ -1,97 +1,96 @@
-// ─────────────────────────────────────────────────────────────
-// Full file: src/components/Auth/Login.jsx
-// ─────────────────────────────────────────────────────────────
-import { useState, useEffect } from 'react';
-import { Link, useNavigate }   from 'react-router-dom';
-import api                     from '../../api/axios';
-import { saveTokens, getUserRole } from '../../utils/auth';
+import { useState, useEffect } from "react";
+import { Link, useNavigate }    from "react-router-dom";
+import api                      from "../../api/axios";
+import { saveTokens, getUserRole } from "../../utils/auth";
 
-import styles                  from './Login.module.css';
-import logo                    from '../../assets/log.png';
-import { FiEye, FiEyeOff }     from 'react-icons/fi';
-import { FcGoogle }            from 'react-icons/fc';
+import styles                   from "./Login.module.css";
+import logo                     from "../../assets/log.png";
+import { FiEye, FiEyeOff }      from "react-icons/fi";
+import { FcGoogle }             from "react-icons/fc";
+import { toast }                from "../../utils/toast";   // ✅ NEW
 
-/* key used to persist credentials */
-const LS_KEY = 'savedCreds';   // { username, password }
+const LS_KEY = "savedCreds";
 
 export default function Login() {
-  /* ── 1. Bootstrap from localStorage ─────────────────────── */
-  let initCreds = { username: '', password: '' };
-  try {
-    initCreds = JSON.parse(localStorage.getItem(LS_KEY)) || initCreds;
-  } catch {/* ignore bad JSON */}
+  /* ───────────────────────── bootstrap ───────────────────────── */
+  let boot = { username: "", password: "" };
+  try { boot = JSON.parse(localStorage.getItem(LS_KEY)) || boot; } catch (err) {
+    console.error("Error parsing localStorage data:", err);
+  }
 
-  /* ── 2. State ───────────────────────────────────────────── */
   const [form, setForm] = useState({
-    username: initCreds.username,
-    password: initCreds.password,
-    remember: !!initCreds.username         // checkbox pre-checked if creds exist
+    username: boot.username,
+    password: boot.password,
+    remember: !!boot.username,
   });
-  const [showPwd, setShowPwd] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState('');
+  const [showPwd, setShowPwd]   = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [error,   setError]     = useState("");
 
   const navigate = useNavigate();
 
-  /* ── 3. Persist / clear creds whenever form changes ─────── */
+  /* remember-me persistence */
   useEffect(() => {
     if (form.remember) {
-      localStorage.setItem(
-        LS_KEY,
-        JSON.stringify({ username: form.username, password: form.password })
-      );
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        username: form.username,
+        password: form.password,
+      }));
     } else {
       localStorage.removeItem(LS_KEY);
     }
-  }, [form.remember, form.username, form.password]);
+  }, [form]);
 
-  /* ── 4. Input handler (checkbox + text inputs) ──────────── */
-  const handleChange = e => {
+  /* ───────────────────────── handlers ────────────────────────── */
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm(f => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
+    setForm(f => ({ ...f, [name]: type === "checkbox" ? checked : value }));
   };
 
-  /* ── 5. Submit handler ──────────────────────────────────── */
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const { data } = await api.post('/auth/login', {
-        username: form.username,
-        password: form.password
-      });
+      /* skipToast ➜ don't show the generic 401 toast here */
+      const { data } = await api.post(
+        "/auth/login",
+        { username: form.username, password: form.password },
+        { skipToast: true }
+      );
 
-      /* JWT storage: localStorage↔sessionStorage based on remember flag */
       saveTokens(data.accessToken, data.refreshToken, form.remember);
+      localStorage.setItem("username", form.username);
 
-      /* name for top-bar */
-      localStorage.setItem('username', form.username);
+      toast("Login successful", "success");           // ✅ NEW
 
-      /* route by role */
-      const role = getUserRole();
-      navigate(role === 'ROLE_ADMIN' ? '/admin' : '/dashboard');
+      navigate(getUserRole() === "ROLE_ADMIN" ? "/admin" : "/dashboard");
+
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Login failed');
+      setError(
+        err.response?.data?.message ??
+        err.response?.data?.errorMessage ??
+        "Login failed"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  /* ── 6. UI ──────────────────────────────────────────────── */
+  /* ─────────────────────────── UI ────────────────────────────── */
   return (
     <main className={styles.app}>
       <form className={styles.card} onSubmit={handleSubmit}>
-        {/* ——— Logo ——— */}
+
         <div className={styles.header}>
           <img src={logo} alt="Logo" className={styles.logo} />
         </div>
 
         <h1 className={styles.title}>Sign in</h1>
 
-        {/* ——— Username ——— */}
+        {/* Username */}
         <label className={styles.label}>
           Username
           <input
@@ -105,13 +104,13 @@ export default function Login() {
           />
         </label>
 
-        {/* ——— Password ——— */}
+        {/* Password */}
         <label className={styles.label}>
           Password
           <div className={styles.passwordWrapper}>
             <input
               className={styles.input}
-              type={showPwd ? 'text' : 'password'}
+              type={showPwd ? "text" : "password"}
               name="password"
               value={form.password}
               onChange={handleChange}
@@ -122,7 +121,7 @@ export default function Login() {
               type="button"
               className={styles.toggleBtn}
               onClick={() => setShowPwd(p => !p)}
-              aria-label={showPwd ? 'Hide password' : 'Show password'}
+              aria-label={showPwd ? "Hide password" : "Show password"}
             >
               {showPwd ? <FiEyeOff /> : <FiEye />}
             </button>
@@ -131,7 +130,7 @@ export default function Login() {
 
         {error && <p className={styles.error}>{error}</p>}
 
-        {/* ——— Remember / Forgot row ——— */}
+        {/* Remember / Forgot */}
         <div className={styles.row}>
           <label className={styles.rememberRow}>
             <input
@@ -139,7 +138,7 @@ export default function Login() {
               name="remember"
               checked={form.remember}
               onChange={handleChange}
-            />
+            />{" "}
             Remember me
           </label>
 
@@ -148,21 +147,21 @@ export default function Login() {
           </Link>
         </div>
 
-        {/* ——— Sign-in button ——— */}
+        {/* Sign-in */}
         <button
           type="submit"
           className={styles.primaryBtn}
           disabled={loading}
         >
-          {loading ? 'Signing in…' : 'Sign in'}
+          {loading ? "Signing in…" : "Sign in"}
         </button>
 
-        {/* ——— Divider & Google placeholder ——— */}
+        {/* Divider & Google */}
         <div className={styles.divider}><span>or</span></div>
         <button
           type="button"
           className={styles.socialBtn}
-          onClick={() => alert('Google OAuth coming soon!')}
+          onClick={() => alert("Google OAuth coming soon!")}
         >
           <FcGoogle size={18} /> Sign in with Google
         </button>
