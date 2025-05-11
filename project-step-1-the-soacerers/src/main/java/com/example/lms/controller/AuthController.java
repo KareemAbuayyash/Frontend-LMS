@@ -169,7 +169,7 @@ public class AuthController {
 
             userRepository.save(user);
 
-            String resetLink = "http://localhost:8080/api/auth/reset-password-form?token=" + token;
+            String resetLink = "http://localhost:5173/reset-password?token=" + token;
             try {
                 emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
             } catch (MessagingException e) {
@@ -217,4 +217,5 @@ public class AuthController {
         logger.info("Token invalidated successfully");
         return ResponseEntity.ok("Logged out successfully");
     }
+    
 }
