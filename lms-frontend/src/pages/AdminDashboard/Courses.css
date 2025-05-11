@@ -178,59 +178,64 @@
 }
 
 /* ——— Responsive: table → cards ——— */
-@media (max-width: 768px) {
+@media (max-width: 1010px) {
   .table-container { overflow-x: hidden; }
+
   .courses-table,
   .courses-table thead,
   .courses-table tbody,
   .courses-table th,
   .courses-table td,
-  .courses-table tr {
-    display: block;
-    width: 100%;
-  }
-  .courses-table thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-  .courses-table tr {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
-    background: #fff;
-  }
-  .courses-table td {
-    border: none;
-    position: relative;
-    padding-left: 50%;
-    white-space: normal;
-  }
-  .courses-table td:before {
-    position: absolute;
-    top: .75rem;
-    left: 1rem;
-    width: 45%;
-    padding-right: 1rem;
-    white-space: nowrap;
-    font-weight: bold;
-    pointer-events: none;
-  }
-  /* mobile labels */
-  .courses-table td:nth-of-type(1):before { content: "Name"; }
-  .courses-table td:nth-of-type(2):before { content: "Description"; }
-  .courses-table td:nth-of-type(3):before { content: "Duration"; }
-  .courses-table td:nth-of-type(4):before { content: "Instructor"; }
-  .courses-table td:nth-of-type(5):before { content: "Price"; }
-  .courses-table td:nth-of-type(6):before { content: "Start"; }
-  .courses-table td:nth-of-type(7):before { content: "End"; }
-  .courses-table td:nth-of-type(8):before { content: "Actions"; }
+  .courses-table tr { display:block; width:100%; }
 
-  .courses-table td:nth-of-type(8) {
-    padding-left: 1rem;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+  .courses-table thead tr { position:absolute; top:-9999px; left:-9999px; }
+
+  .courses-table tr {
+    border:1px solid #ddd;
+    border-radius:6px;
+    margin-bottom:1rem;
+    padding:.75rem 1rem;
+    background:#fff;
+  }
+
+  /* cells */
+  .courses-table td {
+    border:none;
+    position:relative;
+    padding-left:50%;
+    white-space:normal;
+    color:#333;
+    text-align:left !important;          /* ➊ override inline centre */
+  }
+
+  /* labels */
+  .courses-table td:before {
+    position:absolute;
+    top:.75rem;
+    left:1rem;
+    width:45%;
+    padding-right:1rem;
+    white-space:nowrap;
+    font-weight:600;
+    color:#555;
+  }
+
+  /* correct label list (9 columns) */
+  .courses-table td:nth-of-type(1):before { content:"Name"; }
+  .courses-table td:nth-of-type(2):before { content:"Description"; }
+  .courses-table td:nth-of-type(3):before { content:"Duration"; }
+  .courses-table td:nth-of-type(4):before { content:"Instructor"; }  /* ➋ spelling */
+  .courses-table td:nth-of-type(5):before { content:"Price"; }
+  .courses-table td:nth-of-type(6):before { content:"Enrolled"; }
+  .courses-table td:nth-of-type(7):before { content:"Start"; }
+  .courses-table td:nth-of-type(8):before { content:"End"; }
+  .courses-table td:nth-of-type(9):before { content:"Actions"; }
+
+  /* Actions cell uses flex, no indent */
+  .courses-table td:nth-of-type(9) {
+    padding-left:1rem;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
   }
 }
