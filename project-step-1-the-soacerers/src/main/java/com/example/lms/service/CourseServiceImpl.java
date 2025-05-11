@@ -1,14 +1,16 @@
 package com.example.lms.service;
 
+import com.example.lms.assembler.CourseModelAssembler;
+import com.example.lms.dto.CourseDTO;
 import com.example.lms.entity.Course;
 import com.example.lms.entity.Student;
-import com.example.lms.exception.CourseNotFoundException;
-import com.example.lms.dto.CourseDTO;
 import com.example.lms.mapper.CourseMapper;
+import com.example.lms.notification.Notification;
+import com.example.lms.notification.NotificationService;
+import com.example.lms.notification.NotificationType;
 import com.example.lms.repository.AdminRepository;
 import com.example.lms.repository.CourseRepository;
-import com.example.lms.assembler.CourseModelAssembler;
-
+import com.example.lms.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +29,18 @@ public class CourseServiceImpl implements CourseService {
 
     private static final Logger logger = LoggerFactory.getLogger(CourseServiceImpl.class);
 
-    private final CourseRepository courseRepository;
-    private final CourseModelAssembler assembler;
-    private final AdminRepository adminRepository;
-    private final EmailService emailService;
+    private final CourseRepository          courseRepository;
+    private final CourseModelAssembler      assembler;
+    private final AdminRepository           adminRepository;
+    private final NotificationService       notificationService;   // ← inject NotificationService
 
     @Override
     public CollectionModel<EntityModel<CourseDTO>> findAll() {
         logger.info("Fetching all courses");
         List<EntityModel<CourseDTO>> courses = courseRepository.findAll().stream()
-                .map(CourseMapper::toDTO)
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+            .map(CourseMapper::toDTO)
+            .map(assembler::toModel)
+            .collect(Collectors.toList());
         return CollectionModel.of(courses);
     }
 
@@ -52,7 +54,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public EntityModel<CourseDTO> findById(Long id) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new CourseNotFoundException(id));
+            .orElseThrow(() -> new RuntimeException("Course not found: " + id));
         return assembler.toModel(CourseMapper.toDTO(course));
     }
 
@@ -64,7 +66,6 @@ public class CourseServiceImpl implements CourseService {
         Course updated = courseRepository.save(toSave);
         logger.info("Course with ID: {} saved to DB, dispatching notifications asynchronously", id);
 
-        // fire-and-forget
         sendUpdateNotificationsAsync(updated);
 
         EntityModel<CourseDTO> model = assembler.toModel(CourseMapper.toDTO(updated));
@@ -80,42 +81,41 @@ public class CourseServiceImpl implements CourseService {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Send update notifications in a separate thread so that the API response
-     * can return immediately.
-     */
+
     @Async
     public void sendUpdateNotificationsAsync(Course updatedCourse) {
         // notify students
         if (updatedCourse.getStudents() != null) {
             for (Student student : updatedCourse.getStudents()) {
-                String to = student.getUser().getEmail();
-                String subject = "Course Updated: " + updatedCourse.getCourseName();
-                String body = "Dear Student,\n\nThe course '"
-                        + updatedCourse.getCourseName()
-                        + "' has been updated. Please check it in the LMS.\n\nBest,\nLMS Team";
-                try {
-                    emailService.sendEmail(to, subject, body);
-                    logger.info("Notified student {}", to);
-                } catch (Exception e) {
-                    logger.error("Failed to notify student {}", to, e);
-                }
+                String username = student.getUser().getUsername();  // ← use username
+                Notification n = new Notification();
+                n.setTo(username);
+                n.setSubject("Course Updated: " + updatedCourse.getCourseName());
+                n.setMessage(
+                    "Dear Student,\n\n" +
+                    "The course '" + updatedCourse.getCourseName() + "' has been updated. " +
+                    "Please check it in the LMS.\n\nBest,\nLMS Team"
+                );
+                n.setType(NotificationType.EMAIL);
+                notificationService.sendNotification(n);
+                logger.info("Notification (student) sent to: {}", username);
             }
         }
 
         // notify admins
         adminRepository.findAll().forEach(admin -> {
-            String to = admin.getUser().getEmail();
-            String subject = "Course Updated";
-            String body = "Dear Admin,\n\nCourse '"
-                    + updatedCourse.getCourseName()
-                    + "' was updated. Please review.\n\nBest,\nLMS System";
-            try {
-                emailService.sendEmail(to, subject, body);
-                logger.info("Notified admin {}", to);
-            } catch (Exception e) {
-                logger.error("Failed to notify admin {}", to, e);
-            }
+            String username = admin.getUser().getUsername();      // ← use username
+            Notification n = new Notification();
+            n.setTo(username);
+            n.setSubject("Course Updated: " + updatedCourse.getCourseName());
+            n.setMessage(
+                "Dear Admin,\n\n" +
+                "Course '" + updatedCourse.getCourseName() + "' was updated. Please review.\n\n" +
+                "Best,\nLMS System"
+            );
+            n.setType(NotificationType.EMAIL);
+            notificationService.sendNotification(n);
+            logger.info("Notification (admin) sent to: {}", username);
         });
     }
 }

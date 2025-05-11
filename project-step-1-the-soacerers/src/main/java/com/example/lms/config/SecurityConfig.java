@@ -19,6 +19,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -40,32 +41,32 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .cors().and()
-        .csrf().disable()
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-            .anyRequest().authenticated())
-        .exceptionHandling()
-        .authenticationEntryPoint((request, response, authException) -> {
-          response.sendError(
-              HttpServletResponse.SC_UNAUTHORIZED,
-              "Unauthorized: " + authException.getMessage());
-        })
-        .accessDeniedHandler((request, response, accessDeniedException) -> {
-          response.sendError(
-              HttpServletResponse.SC_FORBIDDEN,
-              "Forbidden: " + accessDeniedException.getMessage());
-        })
-        .and()
-        .oauth2Login()
+      .cors().and()
+      .csrf().disable()
+      .authorizeHttpRequests(auth -> auth
+        // allow anyone to fetch static uploads:
+        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+
+        // your existing public endpoints:
+        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+        // everything else requires authentication
+        .anyRequest().authenticated()
+      )
+      .exceptionHandling()
+        .authenticationEntryPoint((req, rsp, ex) ->
+          rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: " + ex.getMessage()))
+        .accessDeniedHandler((req, rsp, ex) ->
+          rsp.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden: " + ex.getMessage()))
+      .and()
+      .oauth2Login()
         .loginPage("/login")
         .successHandler(googleOAuth2SuccessHandler)
-        .and()
-        .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+      .and()
+      .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
-
   @Bean
 public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration cfg = new CorsConfiguration();

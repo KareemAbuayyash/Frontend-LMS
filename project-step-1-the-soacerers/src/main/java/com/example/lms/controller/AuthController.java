@@ -1,5 +1,6 @@
 package com.example.lms.controller;
 
+import com.example.lms.audit.SystemActivityService;
 import com.example.lms.dto.AuthRequest;
 import com.example.lms.dto.AuthResponse;
 import com.example.lms.dto.ForgotPasswordRequest;
@@ -7,9 +8,13 @@ import com.example.lms.dto.RegisterRequest;
 import com.example.lms.dto.UserDTO;
 import com.example.lms.entity.User;
 import com.example.lms.mapper.UserMapper;
+import com.example.lms.notification.Notification;
+import com.example.lms.notification.NotificationService;
+import com.example.lms.notification.NotificationType;
 import com.example.lms.security.JwtUtil;
 import com.example.lms.service.EmailService;
 import com.example.lms.service.UserService;
+import com.example.lms.repository.AdminRepository;
 import com.example.lms.repository.UserRepository;
 import com.example.lms.security.TokenBlacklist;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,25 +38,24 @@ import org.slf4j.LoggerFactory;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
-@CrossOrigin(
-    origins = "http://localhost:5173",
-    allowCredentials = "true",
-    methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.PUT, RequestMethod.DELETE }
-)
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", methods = { RequestMethod.GET,
+        RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.PUT, RequestMethod.DELETE })
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
+    private final SystemActivityService activity;
+    private final NotificationService notificationService;
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final TokenBlacklist tokenBlacklist;
-
+    @Autowired
+    private AdminRepository adminRepository;
     private final Map<String, Long> blacklist = new ConcurrentHashMap<>();
 
     public void addToken(String token, long expirationTime) {
@@ -67,14 +72,44 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
-        logger.info("Registering user with username: {}", request.getUsername());
+    public ResponseEntity<?> register(
+            @Valid @RequestBody RegisterRequest request,
+            Authentication authentication // ← Spring injects this
+    ) {
+        // 1) create the user
         User user = userService.createUser(request);
-        UserDTO userDTO = UserMapper.toDTO(user);
 
-        logger.info("User registered successfully with username: {}", user.getUsername());
+        // 2) figure out “who” did it
+        String actor = (authentication != null)
+                ? authentication.getName()
+                : "self-registration";
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+        // 3) log with “by …”
+        activity.logEvent(
+                "USER_CREATED",
+                String.format(
+                        "User '%s' (ID: %d) registered with role %s by %s",
+                        user.getUsername(),
+                        user.getId(),
+                        user.getRole(),
+                        actor));
+
+        // ───── notify all admins ─────
+        String subject = "New user: " + user.getUsername();
+        String message = String.format(
+                "User '%s' (ID: %d) has just registered with role %s.",
+                user.getUsername(), user.getId(), user.getRole());
+        adminRepository.findAll().forEach(admin -> {
+            Notification n = new Notification();
+            n.setTo(admin.getUser().getUsername());
+            n.setSubject(subject);
+            n.setMessage(message);
+            n.setType(NotificationType.EMAIL);
+            notificationService.sendNotification(n);
+        });
+        // ──────────────────────────────
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDTO(user));
     }
 
     @PostMapping("/login")
@@ -134,7 +169,7 @@ public class AuthController {
 
             userRepository.save(user);
 
-            String resetLink = "http://localhost:8080/api/auth/reset-password-form?token=" + token;
+            String resetLink = "http://localhost:5173/reset-password?token=" + token;
             try {
                 emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
             } catch (MessagingException e) {
@@ -182,4 +217,5 @@ public class AuthController {
         logger.info("Token invalidated successfully");
         return ResponseEntity.ok("Logged out successfully");
     }
+    
 }
