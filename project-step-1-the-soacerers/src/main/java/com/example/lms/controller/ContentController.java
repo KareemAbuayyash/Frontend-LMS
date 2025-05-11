@@ -16,6 +16,7 @@ import com.example.lms.repository.InstructorRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,11 +35,15 @@ import java.util.stream.Collectors;
 public class ContentController {
 
     private static final Logger logger = LoggerFactory.getLogger(ContentController.class);
-
+    @Autowired
     private final ContentService contentService;
+    @Autowired
     private final CourseRepository courseRepository;
+    @Autowired
     private final InstructorRepository instructorRepository;
+    @Autowired
     private final ContentNotificationService contentNotificationService;
+    @Autowired
     private final SystemActivityService systemActivityService;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")

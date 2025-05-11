@@ -1,9 +1,14 @@
+// src/main/java/com/example/lms/controller/UserController.java
 package com.example.lms.controller;
 
+import com.example.lms.audit.SystemActivityService;
 import com.example.lms.dto.UserDTO;
 import com.example.lms.dto.UserUpdateRequest;
-import com.example.lms.entity.User;
 import com.example.lms.service.UserService;
+import com.example.lms.repository.AdminRepository;
+import com.example.lms.notification.Notification;
+import com.example.lms.notification.NotificationService;
+import com.example.lms.notification.NotificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +20,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-
+import java.util.ArrayList;
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:5173")
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    private UserService userService;
+    @Autowired private SystemActivityService activity;
+    @Autowired private UserService userService;
+    @Autowired private AdminRepository adminRepository;
+    @Autowired private NotificationService notificationService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -45,49 +53,158 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    // @PreAuthorize("hasRole('ADMIN')")
-    // @PutMapping("/{id}")
-    // public ResponseEntity<?> replaceUser(@Valid @RequestBody UserDTO newUser, @PathVariable Long id) {
-    //     logger.info("Request received to update user with ID: {}", id);
-    //     ResponseEntity<?> response = userService.save(newUser, id);
-    //     logger.info("User with ID: {} updated successfully", id);
-    //     return response;
-    // }
-
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        logger.info("Request received to delete user with ID: {}", id);
-        ResponseEntity<?> response = userService.deleteById(id);
-        logger.info("User with ID: {} deleted successfully", id);
-        return response;
+    public ResponseEntity<?> deleteUser(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        UserDTO existing = userService.findById(id);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String actor = authentication.getName();
+        String username = existing.getUsername();
+
+        ResponseEntity<?> resp = userService.deleteById(id);
+
+        // audit
+        activity.logEvent(
+            "USER_DELETED",
+            String.format("User '%s' (ID: %d) was deleted by %s", username, id, actor)
+        );
+
+        // notify admins
+        String subject = "User deleted: " + username;
+        String message = String.format(
+            "User '%s' (ID: %d) was deleted by %s", username, id, actor
+        );
+        adminRepository.findAll().forEach(admin -> {
+            Notification n = new Notification();
+            n.setTo(admin.getUser().getUsername());
+            n.setSubject(subject);
+            n.setMessage(message);
+            n.setType(NotificationType.EMAIL);
+            notificationService.sendNotification(n);
+        });
+
+        return resp;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
+       @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     @PutMapping("/profile")
-    public ResponseEntity<?> updateProfile(@Valid @RequestBody UserDTO newUser,
-                                           Authentication authentication) {
-        User currentUser = (User) authentication.getPrincipal();
-        logger.info("Request received to update profile for user with ID: {}", currentUser.getId());
-        ResponseEntity<?> response = userService.save(newUser, currentUser.getId());
-        logger.info("Profile updated successfully for user with ID: {}", currentUser.getId());
+    public ResponseEntity<?> updateProfile(
+            @Valid @RequestBody UserDTO newUser,
+            Authentication authentication) {
+
+        // 1) Get the current User entity from the Authentication principal
+        com.example.lms.entity.User currentUserEntity =
+            (com.example.lms.entity.User) authentication.getPrincipal();
+        Long currentUserId = currentUserEntity.getId();
+
+        // 2) (Optional) fetch the before-state DTO if you need it
+        UserDTO before = userService.findById(currentUserId);
+
+        // 3) Save the changes
+        ResponseEntity<?> response = userService.save(newUser, currentUserId);
+
+        // 4) Audit log
+        activity.logEvent(
+            "USER_UPDATED",
+            String.format(
+              "User '%s' (ID: %d) updated own profile",
+              currentUserEntity.getUsername(),
+              currentUserId
+            )
+        );
+
+        // 5) Notify admins
+        String subject = "Profile updated: " + currentUserEntity.getUsername();
+        String message = String.format(
+            "User '%s' (ID: %d) updated their own profile.",
+            currentUserEntity.getUsername(),
+            currentUserId
+        );
+        adminRepository.findAll().forEach(admin -> {
+            Notification n = new Notification();
+            n.setTo(admin.getUser().getUsername());
+            n.setSubject(subject);
+            n.setMessage(message);
+            n.setType(NotificationType.EMAIL);
+            notificationService.sendNotification(n);
+        });
+
         return response;
     }
-    @PreAuthorize("hasRole('ADMIN')")
-@PutMapping("/{id}")
-public ResponseEntity<?> updateUser(
-    @Valid @RequestBody UserUpdateRequest req,
-    @PathVariable Long id
-) {
-    UserDTO dto = new UserDTO();
-    dto.setUsername(req.getUsername());
-    dto.setEmail(req.getEmail());
-    dto.setRole(req.getRole());
-    dto.setProfile(req.getProfile());
-    if (req.getPassword()!=null && !req.getPassword().isBlank()) {
-      dto.setPassword(req.getPassword());
-    }
-    return userService.save(dto, id);
-}
 
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(
+            @Valid @RequestBody UserUpdateRequest req,
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        // before
+        UserDTO before = userService.findById(id);
+
+        // build dto
+        UserDTO dto = new UserDTO();
+        dto.setUsername(req.getUsername());
+        dto.setEmail(req.getEmail());
+        dto.setRole(req.getRole());
+        dto.setProfile(req.getProfile());
+        if (req.getPassword() != null && !req.getPassword().isBlank()) {
+            dto.setPassword(req.getPassword());
+        }
+
+        // save
+        ResponseEntity<?> response = userService.save(dto, id);
+
+        // after
+        UserDTO after = userService.findById(id);
+
+        // diff
+        List<String> changes = new ArrayList<>();
+        if (!Objects.equals(before.getUsername(), after.getUsername())) {
+            changes.add(String.format("username '%s' → '%s'", before.getUsername(), after.getUsername()));
+        }
+        if (!Objects.equals(before.getEmail(), after.getEmail())) {
+            changes.add(String.format("email '%s' → '%s'", before.getEmail(), after.getEmail()));
+        }
+        if (!Objects.equals(before.getRole(), after.getRole())) {
+            changes.add(String.format("role '%s' → '%s'", before.getRole(), after.getRole()));
+        }
+        if (!Objects.equals(before.getProfile(), after.getProfile())) {
+            changes.add(String.format("profile '%s' → '%s'", before.getProfile(), after.getProfile()));
+        }
+        if (req.getPassword() != null && !req.getPassword().isBlank()) {
+            changes.add("password changed");
+        }
+        String detail = changes.isEmpty() ? "no fields changed" : String.join(", ", changes);
+
+        String actor = authentication.getName();
+        // audit
+        activity.logEvent(
+            "USER_UPDATED",
+            String.format("User (ID: %d) updated by %s: %s", id, actor, detail)
+        );
+
+        // notify admins
+        String subject = "User updated: ID " + id;
+        String message = String.format(
+            "User (ID: %d) was updated by %s: %s", id, actor, detail
+        );
+        adminRepository.findAll().forEach(admin -> {
+            Notification n = new Notification();
+            n.setTo(admin.getUser().getUsername());
+            n.setSubject(subject);
+            n.setMessage(message);
+            n.setType(NotificationType.EMAIL);
+            notificationService.sendNotification(n);
+        });
+
+        return response;
+    }
 }
