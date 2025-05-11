@@ -1,165 +1,153 @@
-// src/components/Layout.jsx
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  FiBell,
-  FiMenu,
-  FiX,
-  FiUser,
-  FiLogOut,
-  FiGrid,
-  FiFileText,
-  FiSettings
+  FiBell, FiMenu, FiX, FiUser, FiLogOut,
+  FiGrid, FiFileText, FiSettings
 } from 'react-icons/fi';
-import api from '../../api/axios';
+
+import api  from '../../api/axios';
+import logo from '../../assets/log.png';
 import './Layout.css';
 
-const SIDEBAR_ITEMS = [
-  { label: 'Dashboard',   to: '/admin',             icon: <FiGrid />     },
-  { label: 'Courses',     to: '/admin/courses',     icon: <FiFileText /> },
-  { label: 'Users',       to: '/admin/users',       icon: <FiUser />     },
-  { label: 'Enrollments', to: '/admin/enrollments', icon: <FiFileText /> },
+const NAV = [
+  { label:'Dashboard',   to:'/admin',             icon:<FiGrid/>     },
+  { label:'Courses',     to:'/admin/courses',     icon:<FiFileText/> },
+  { label:'Users',       to:'/admin/users',       icon:<FiUser/>     },
+  { label:'Enrollments', to:'/admin/enrollments', icon:<FiFileText/> },
 ];
 
 export default function Layout({ showSidebar = true, children }) {
-  const [collapsed,     setCollapsed]     = useState(false);
-  const [showUserMenu,  setShowUserMenu]  = useState(false);
-  const [showNotifMenu, setShowNotifMenu] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [connected,     setConnected]     = useState(false);
-  const [unreadCount,   setUnreadCount]   = useState(0);
+  const [collapsed, setCollapsed]         = useState(false);
+  const [showUserMenu, setShowUserMenu]   = useState(false);
+  const [showNotif,    setShowNotif]      = useState(false);
+  const [notifs,       setNotifs]         = useState([]);
+  const [online,       setOnline]         = useState(false);
+  const [unread,       setUnread]         = useState(0);
 
-  const navigate = useNavigate();
+  const nav      = useNavigate();
   const location = useLocation();
   const username = localStorage.getItem('username') || 'User';
 
-  // 1) Health‐check
+  /* ── ping API status ────────────────────────────────────────── */
   useEffect(() => {
-    const check = () =>
-      api.get('/health').then(() => setConnected(true)).catch(() => setConnected(false));
-    check();
-    const id = setInterval(check, 10000);
+    const ping = () => api.get('/health')
+                          .then(()=>setOnline(true))
+                          .catch(()=>setOnline(false));
+    ping();
+    const id = setInterval(ping, 10000);
     return () => clearInterval(id);
   }, []);
 
-  // 2) Auto‐collapse sidebar on small
+  /* ── collapse for small screens ─────────────────────────────── */
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 600px)');
-    const onChange = e => setCollapsed(e.matches);
-    mq.addEventListener('change', onChange);
+    const mq = window.matchMedia('(max-width:600px)');
+    const fn = e => setCollapsed(e.matches);
+    mq.addEventListener('change', fn);
     setCollapsed(mq.matches);
-    return () => mq.removeEventListener('change', onChange);
+    return () => mq.removeEventListener('change', fn);
   }, []);
 
-  // 3) Poll unread count
+  /* ── unread count polling ───────────────────────────────────── */
   useEffect(() => {
-    const fetchUnread = () =>
-      api.get('/notifications/unread-count')
-         .then(res => setUnreadCount(Number(res.data)))
-         .catch(() => {});
-    fetchUnread();
-    const id = setInterval(fetchUnread, 30000);
+    const load = () => api.get('/notifications/unread-count')
+                          .then(r=>setUnread(Number(r.data)))
+                          .catch(()=>{});
+    load();
+    const id = setInterval(load, 30000);
     return () => clearInterval(id);
   }, []);
 
+  /* ── auth helpers ───────────────────────────────────────────── */
   const logout = async () => {
-    try     { await api.post('/auth/logout'); }
-    finally { localStorage.clear(); navigate('/login'); }
+    try   { await api.post('/auth/logout'); }
+    finally { localStorage.clear(); nav('/login'); }
   };
 
-  const toggleUserMenu = () => {
-    setShowUserMenu(u => !u);
-    setShowNotifMenu(false);
-  };
-
-  const toggleNotifMenu = async () => {
-    const opening = !showNotifMenu;
-    setShowNotifMenu(opening);
+  const toggleUser   = () => { setShowUserMenu(p=>!p); setShowNotif(false); };
+  const toggleNotif  = async () => {
+    const open = !showNotif;
+    setShowNotif(open);
     setShowUserMenu(false);
-    if (opening) {
+    if (open) {
       try {
         const { data } = await api.get('/notifications');
-        setNotifications(data);
-        setUnreadCount(0);
+        setNotifs(data);
+        setUnread(0);
         await api.post('/notifications/mark-as-read');
-      } catch (e) {
-        console.error('Failed loading notifications', e);
-        setNotifications([]);
-      }
+      } catch { setNotifs([]); }
     }
   };
 
+  /* ── render ─────────────────────────────────────────────────── */
   return (
     <div className="layout">
       {showSidebar && (
         <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
           <div className="sidebar-header">
-            {!collapsed && <h2>LMS Admin</h2>}
-            <button onClick={() => setCollapsed(c => !c)}>
-              {collapsed ? <FiMenu size={20}/> : <FiX size={20}/> }
+            {/* logo + text */}
+            <div className="brand">
+              <img src={logo} alt="logo" className="sidebar-logo"/>
+              {!collapsed && <span className="sidebar-title">Fluento</span>}
+            </div>
+
+            {/* toggle */}
+            <button
+              className="toggle-btn"
+              onClick={() => setCollapsed(c=>!c)}
+            >
+              {collapsed ? <FiMenu size={20}/> : <FiX size={20}/>}
             </button>
           </div>
+
           <nav className="sidebar-nav">
-            {SIDEBAR_ITEMS.map(item => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={location.pathname === item.to ? 'active' : ''}
-              >
-                {item.icon}
-                {!collapsed && <span>{item.label}</span>}
+            {NAV.map(({label,to,icon}) => (
+              <Link key={to} to={to} className={location.pathname===to?'active':''}>
+                {icon}
+                {!collapsed && <span>{label}</span>}
               </Link>
             ))}
           </nav>
         </aside>
       )}
 
+      {/* ────────────────────────── main ───────────────────────── */}
       <div className="main-content">
         <header className="topbar">
           <div className="topbar-icons">
-            {/* API Connection Dot */}
             <span
-              className={`connection-dot ${connected ? 'online' : 'offline'}`}
-              title={connected ? 'API: Online' : 'API: Offline'}
+              className={`connection-dot ${online?'online':'offline'}`}
+              title={online?'API: Online':'API: Offline'}
             />
-
-            {/* Bell + Count */}
-            <button className="icon-btn" onClick={toggleNotifMenu}>
-              <FiBell />
-              {unreadCount > 0 && (
-                <span className="badge-count">{unreadCount}</span>
-              )}
+            <button className="icon-btn" onClick={toggleNotif}>
+              <FiBell/>
+              {unread>0 && <span className="badge-count">{unread}</span>}
             </button>
-            {showNotifMenu && (
+
+            {showNotif && (
               <div className="dropdown-menu notif-menu">
-                {notifications.length > 0
-                  ? notifications.map((n,i) => (
-                      <div
-                        key={i}
-                        className={`dropdown-item notif-item ${!n.read ? 'new-email' : ''}`}
-                      >
+                {notifs.length
+                  ? notifs.map((n,i)=>(
+                      <div key={i} className={`dropdown-item notif-item ${!n.read?'new-email':''}`}>
                         <span className="subject">{n.subject}</span>
                         <span className="message">{n.message}</span>
                       </div>
                     ))
-                  : <div className="dropdown-item">No notifications</div>
-                }
+                  : <div className="dropdown-item">No notifications</div>}
               </div>
             )}
 
-            {/* Profile */}
-            <button className="profile-btn" onClick={toggleUserMenu}>
-              <FiUser />
+            <button className="profile-btn" onClick={toggleUser}>
+              <FiUser/>
               <span className="user-name">{username}</span>
             </button>
+
             {showUserMenu && (
               <div className="dropdown-menu user-menu">
-                <button className="dropdown-item" onClick={() => navigate('/settings')}>
-                  <FiSettings /> Settings
+                <button className="dropdown-item" onClick={()=>nav('/settings')}>
+                  <FiSettings/> Settings
                 </button>
                 <button className="dropdown-item" onClick={logout}>
-                  <FiLogOut /> Log out
+                  <FiLogOut/> Log out
                 </button>
               </div>
             )}
