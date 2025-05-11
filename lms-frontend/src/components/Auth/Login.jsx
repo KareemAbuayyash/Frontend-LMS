@@ -1,116 +1,169 @@
-// src/components/Auth/Login.jsx
+// ─────────────────────────────────────────────────────────────
+// Full file: src/components/Auth/Login.jsx
+// ─────────────────────────────────────────────────────────────
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import api from '../../api/axios';
-import styles from './Login.module.css';
-import { FcGoogle } from 'react-icons/fc';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { Link, useNavigate }   from 'react-router-dom';
+import api                     from '../../api/axios';
 import { saveTokens, getUserRole } from '../../utils/auth';
-import logo from '../../assets/log.png';
+
+import styles                  from './Login.module.css';
+import logo                    from '../../assets/log.png';
+import { FiEye, FiEyeOff }     from 'react-icons/fi';
+import { FcGoogle }            from 'react-icons/fc';
+
+/* key used to persist credentials */
+const LS_KEY = 'savedCreds';   // { username, password }
 
 export default function Login() {
-  const savedUsername = localStorage.getItem('savedUsername') || '';
-  const savedPassword = localStorage.getItem('savedPassword') || '';
-  const [username, setUsername]     = useState(savedUsername);
-  const [password, setPassword]     = useState(savedPassword);
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(!!savedUsername && !!savedPassword);
-  const [error, setError]           = useState('');
-  const navigate                   = useNavigate();
+  /* ── 1. Bootstrap from localStorage ─────────────────────── */
+  let initCreds = { username: '', password: '' };
+  try {
+    initCreds = JSON.parse(localStorage.getItem(LS_KEY)) || initCreds;
+  } catch {/* ignore bad JSON */}
 
+  /* ── 2. State ───────────────────────────────────────────── */
+  const [form, setForm] = useState({
+    username: initCreds.username,
+    password: initCreds.password,
+    remember: !!initCreds.username         // checkbox pre-checked if creds exist
+  });
+  const [showPwd, setShowPwd] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState('');
+
+  const navigate = useNavigate();
+
+  /* ── 3. Persist / clear creds whenever form changes ─────── */
   useEffect(() => {
-    if (rememberMe) {
-      localStorage.setItem('savedUsername', username);
-      localStorage.setItem('savedPassword', password);
+    if (form.remember) {
+      localStorage.setItem(
+        LS_KEY,
+        JSON.stringify({ username: form.username, password: form.password })
+      );
     } else {
-      localStorage.removeItem('savedUsername');
-      localStorage.removeItem('savedPassword');
+      localStorage.removeItem(LS_KEY);
     }
-  }, [rememberMe, username, password]);
+  }, [form.remember, form.username, form.password]);
 
+  /* ── 4. Input handler (checkbox + text inputs) ──────────── */
+  const handleChange = e => {
+    const { name, value, type, checked } = e.target;
+    setForm(f => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
+  };
+
+  /* ── 5. Submit handler ──────────────────────────────────── */
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    try {
-      // ← no leading "/api"
-      const { data } = await api.post('/auth/login', { username, password });
-      saveTokens(data.accessToken, data.refreshToken);
-      localStorage.setItem('username', username);
+    setLoading(true);
 
+    try {
+      const { data } = await api.post('/auth/login', {
+        username: form.username,
+        password: form.password
+      });
+
+      /* JWT storage: localStorage↔sessionStorage based on remember flag */
+      saveTokens(data.accessToken, data.refreshToken, form.remember);
+
+      /* name for top-bar */
+      localStorage.setItem('username', form.username);
+
+      /* route by role */
       const role = getUserRole();
       navigate(role === 'ROLE_ADMIN' ? '/admin' : '/dashboard');
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
+  /* ── 6. UI ──────────────────────────────────────────────── */
   return (
     <main className={styles.app}>
       <form className={styles.card} onSubmit={handleSubmit}>
+        {/* ——— Logo ——— */}
         <div className={styles.header}>
           <img src={logo} alt="Logo" className={styles.logo} />
         </div>
 
         <h1 className={styles.title}>Sign in</h1>
 
+        {/* ——— Username ——— */}
         <label className={styles.label}>
           Username
           <input
-            type="text"
             className={styles.input}
-            value={username}
-            onChange={e => setUsername(e.target.value)}
+            type="text"
+            name="username"
+            value={form.username}
+            onChange={handleChange}
             required
+            autoComplete="username"
           />
         </label>
 
+        {/* ——— Password ——— */}
         <label className={styles.label}>
           Password
           <div className={styles.passwordWrapper}>
             <input
-              type={showPassword ? 'text' : 'password'}
               className={styles.input}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              type={showPwd ? 'text' : 'password'}
+              name="password"
+              value={form.password}
+              onChange={handleChange}
               required
+              autoComplete="current-password"
             />
             <button
               type="button"
               className={styles.toggleBtn}
-              onClick={() => setShowPassword(v => !v)}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={() => setShowPwd(p => !p)}
+              aria-label={showPwd ? 'Hide password' : 'Show password'}
             >
-              {showPassword ? <FiEyeOff /> : <FiEye />}
+              {showPwd ? <FiEyeOff /> : <FiEye />}
             </button>
           </div>
         </label>
 
         {error && <p className={styles.error}>{error}</p>}
 
+        {/* ——— Remember / Forgot row ——— */}
         <div className={styles.row}>
           <label className={styles.rememberRow}>
             <input
               type="checkbox"
-              checked={rememberMe}
-              onChange={() => setRememberMe(r => !r)}
+              name="remember"
+              checked={form.remember}
+              onChange={handleChange}
             />
             Remember me
           </label>
+
           <Link to="/forgot-password" className={styles.forgot}>
             Forgot Password?
           </Link>
         </div>
 
-        <button type="submit" className={styles.primaryBtn}>
-          Sign in
+        {/* ——— Sign-in button ——— */}
+        <button
+          type="submit"
+          className={styles.primaryBtn}
+          disabled={loading}
+        >
+          {loading ? 'Signing in…' : 'Sign in'}
         </button>
 
-        <div className={styles.divider}>
-          <span>or</span>
-        </div>
-
-        <button type="button" className={styles.socialBtn}>
+        {/* ——— Divider & Google placeholder ——— */}
+        <div className={styles.divider}><span>or</span></div>
+        <button
+          type="button"
+          className={styles.socialBtn}
+          onClick={() => alert('Google OAuth coming soon!')}
+        >
           <FcGoogle size={18} /> Sign in with Google
         </button>
       </form>

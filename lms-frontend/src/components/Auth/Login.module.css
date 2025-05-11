@@ -97,11 +97,17 @@
   margin-bottom: 1rem;
 }
 .rememberRow {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+   display: flex;
+  flex-direction: row;       /* explicit row layout */
+  align-items: center;       /* vertical center */
+  gap: 0.4rem;               /* space between box and text */
   color: #5e3aa1;
   font-size: 0.9rem;
+}
+.rememberRow input[type="checkbox"] {
+  margin: 0;                 /* remove any default margin */
+  width: 1rem;               /* 16px */
+  height: 1rem;              /* 16px */
 }
 .forgot {
   color: #5e3aa1;
