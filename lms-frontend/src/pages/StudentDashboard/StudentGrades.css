@@ -1,0 +1,35 @@
+.student-grades {
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.student-grades h1 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.grades-table th,
+.grades-table td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.grades-table th {
+  background-color: #5462e7;
+  color: white;
+}
+
+.grades-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.grades-table tr:hover {
+  background-color: #f1f1f1;
+}

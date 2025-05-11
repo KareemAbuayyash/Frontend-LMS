@@ -1,0 +1,35 @@
+.student-courses {
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.student-courses h1 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.courses-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.courses-table th,
+.courses-table td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.courses-table th {
+  background-color: #5462e7;
+  color: white;
+}
+
+.courses-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.courses-table tr:hover {
+  background-color: #f1f1f1;
+}

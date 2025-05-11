@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
   if (requiredRole && role !== requiredRole) {
     // logged in but wrong role
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={role === 'ROLE_ADMIN' ? '/admin' : '/student/dashboard'} replace />;
   }
 
   return children;
