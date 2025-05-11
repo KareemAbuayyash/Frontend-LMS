@@ -4,6 +4,10 @@ package com.example.lms.controller;
 import com.example.lms.audit.SystemActivityService;
 import com.example.lms.dto.UserDTO;
 import com.example.lms.dto.UserUpdateRequest;
+import com.example.lms.entity.User;
+import com.example.lms.exception.UserNotFoundException;
+import com.example.lms.mapper.UserMapper;
+import com.example.lms.service.StorageService;
 import com.example.lms.service.UserService;
 import com.example.lms.repository.AdminRepository;
 import com.example.lms.notification.Notification;
@@ -14,10 +18,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -28,12 +34,17 @@ import java.util.Objects;
 @RequestMapping("/api/users")
 public class UserController {
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired private SystemActivityService activity;
     @Autowired private UserService userService;
     @Autowired private AdminRepository adminRepository;
     @Autowired private NotificationService notificationService;
+    @Autowired private StorageService storageService;  
+    @Autowired private com.example.lms.repository.UserRepository userRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -207,4 +218,75 @@ public class UserController {
 
         return response;
     }
+     @PreAuthorize("isAuthenticated()")
+  @GetMapping("/profile")
+  public ResponseEntity<UserDTO> getCurrentUser(Authentication auth) {
+    // `auth.getPrincipal()` should be your UserDetails implementation
+    com.example.lms.entity.User me = (com.example.lms.entity.User) auth.getPrincipal();
+    UserDTO dto = userService.findById(me.getId());
+    return ResponseEntity.ok(dto);
+  }
+
+// src/main/java/com/example/lms/controller/UserController.java
+@PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
+    @PutMapping(
+      path = "/profile/photo",
+      consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<UserDTO> updateProfileWithPhoto(
+        @RequestParam String username,
+        @RequestParam String email,
+        @RequestParam(required = false) String password,
+        @RequestParam(required = false) MultipartFile photo,
+        Authentication auth
+    ) {
+        // 1) Identify current user
+        var me = (com.example.lms.entity.User) auth.getPrincipal();
+        Long id = me.getId();
+
+        // 2) Load the JPA entity
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException(id));
+
+        // 3) Update only the fields the client provided
+        user.setUsername(username);
+        user.setEmail(email);
+
+        if (password != null && !password.isBlank()) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+
+        if (photo != null && !photo.isEmpty()) {
+            String publicUrl = storageService.store(photo);
+            user.setProfile(publicUrl);
+        }
+
+        // 4) Save and convert to DTO
+        User updated = userRepository.save(user);
+        UserDTO dto = UserMapper.toDTO(updated);
+
+        // 5) Audit & notify admins
+        activity.logEvent(
+          "USER_UPDATED",
+          String.format("User '%s' (ID: %d) updated own profile (including photo)", 
+                        me.getUsername(), id)
+        );
+        String subject = "Profile updated: " + me.getUsername();
+        String message = String.format("User '%s' (ID: %d) updated their profile.", 
+                                       me.getUsername(), id);
+        adminRepository.findAll().forEach(admin -> {
+          Notification n = new Notification();
+          n.setTo(admin.getUser().getUsername());
+          n.setSubject(subject);
+          n.setMessage(message);
+          n.setType(NotificationType.EMAIL);
+          notificationService.sendNotification(n);
+        });
+
+        return ResponseEntity.ok(dto);
+    }
+
+
+
+
 }

@@ -14,6 +14,7 @@ import Courses         from "./pages/AdminDashboard/Courses";
 import AdminUsers      from "./pages/AdminDashboard/Users";
 import Enrollments     from "./pages/AdminDashboard/Enrollments";
 
+import ProfileSettings from "./components/ProfileSettings/ProfileSettings";
 
 // Error boundary
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -38,7 +39,7 @@ export default function App() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="courses"     element={<Courses />} />
-       
+        <Route path="settings" element={<ProfileSettings />} /> 
         <Route path="users"       element={
           <ErrorBoundary>
             <AdminUsers />

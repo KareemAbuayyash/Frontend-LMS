@@ -143,7 +143,7 @@ export default function Layout({ showSidebar = true, children }) {
 
             {showUserMenu && (
               <div className="dropdown-menu user-menu">
-                <button className="dropdown-item" onClick={()=>nav('/settings')}>
+                <button className="dropdown-item" onClick={()=>nav('settings')}>
                   <FiSettings/> Settings
                 </button>
                 <button className="dropdown-item" onClick={logout}>
