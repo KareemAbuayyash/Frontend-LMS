@@ -15,8 +15,8 @@ public class AuthResponse {
       this.refreshToken = refreshToken;
   }
 
-  public AuthResponse(String errorMessage) {
-      this.errorMessage = errorMessage;
-  }
-
+ /* Helper factory for failures */
+    public static AuthResponse failure(String msg) {
+        return new AuthResponse(null, null, msg);
+    }
 }

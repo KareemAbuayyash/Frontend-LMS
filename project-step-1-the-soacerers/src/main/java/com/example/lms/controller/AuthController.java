@@ -5,19 +5,29 @@ import com.example.lms.dto.AuthRequest;
 import com.example.lms.dto.AuthResponse;
 import com.example.lms.dto.ForgotPasswordRequest;
 import com.example.lms.dto.RegisterRequest;
-import com.example.lms.dto.UserDTO;
 import com.example.lms.entity.User;
 import com.example.lms.mapper.UserMapper;
 import com.example.lms.notification.Notification;
 import com.example.lms.notification.NotificationService;
 import com.example.lms.notification.NotificationType;
-import com.example.lms.security.JwtUtil;
-import com.example.lms.service.EmailService;
-import com.example.lms.service.UserService;
 import com.example.lms.repository.AdminRepository;
 import com.example.lms.repository.UserRepository;
+import com.example.lms.security.JwtUtil;
 import com.example.lms.security.TokenBlacklist;
+import com.example.lms.service.EmailService;
+import com.example.lms.service.UserService;
+import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -25,197 +35,177 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
-
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", methods = { RequestMethod.GET,
-        RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.PUT, RequestMethod.DELETE })
+@CrossOrigin(
+    origins = "http://localhost:5173",
+    allowCredentials = "true",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS,
+               RequestMethod.PUT, RequestMethod.DELETE}
+)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+    /* ───────────────────────────────── DI ─────────────────────────────────── */
     private final SystemActivityService activity;
-    private final NotificationService notificationService;
-    private final UserService userService;
+    private final NotificationService   notificationService;
+    private final UserService           userService;
     private final AuthenticationManager authenticationManager;
-    private final EmailService emailService;
-    private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
-    private final TokenBlacklist tokenBlacklist;
-    @Autowired
-    private AdminRepository adminRepository;
+    private final EmailService          emailService;
+    private final UserRepository        userRepository;
+    private final JwtUtil               jwtUtil;
+    private final TokenBlacklist        tokenBlacklist;
+    private final AdminRepository       adminRepository;
+
+    /* ─────────────── optional in-memory blacklist (quick demo only) ───────── */
     private final Map<String, Long> blacklist = new ConcurrentHashMap<>();
-
-    public void addToken(String token, long expirationTime) {
-        blacklist.put(token, expirationTime);
-    }
-
-    public boolean isTokenBlacklisted(String token) {
-        Long expirationTime = blacklist.get(token);
-        if (expirationTime == null || expirationTime < System.currentTimeMillis()) {
-            blacklist.remove(token);
-            return false;
-        }
+    public void addToken(String token, long exp) { blacklist.put(token, exp); }
+    public boolean isTokenBlacklisted(String t) {
+        Long exp = blacklist.get(t);
+        if (exp == null || exp < System.currentTimeMillis()) { blacklist.remove(t); return false; }
         return true;
     }
 
+    /* ─────────────────────────────── REGISTER ─────────────────────────────── */
     @PostMapping("/register")
-    public ResponseEntity<?> register(
-            @Valid @RequestBody RegisterRequest request,
-            Authentication authentication // ← Spring injects this
-    ) {
-        // 1) create the user
-        User user = userService.createUser(request);
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req,
+                                      Authentication auth) {
 
-        // 2) figure out “who” did it
-        String actor = (authentication != null)
-                ? authentication.getName()
-                : "self-registration";
+        User user  = userService.createUser(req);
+        String who = (auth != null) ? auth.getName() : "self-registration";
 
-        // 3) log with “by …”
-        activity.logEvent(
-                "USER_CREATED",
-                String.format(
-                        "User '%s' (ID: %d) registered with role %s by %s",
-                        user.getUsername(),
-                        user.getId(),
-                        user.getRole(),
-                        actor));
+        activity.logEvent("USER_CREATED",
+                "User '%s' (ID:%d) registered with role %s by %s"
+                        .formatted(user.getUsername(), user.getId(), user.getRole(), who));
 
-        // ───── notify all admins ─────
-        String subject = "New user: " + user.getUsername();
-        String message = String.format(
-                "User '%s' (ID: %d) has just registered with role %s.",
-                user.getUsername(), user.getId(), user.getRole());
+        String subj = "New user: " + user.getUsername();
+        String msg  = "User '%s' (ID:%d) registered with role %s."
+                        .formatted(user.getUsername(), user.getId(), user.getRole());
         adminRepository.findAll().forEach(admin -> {
             Notification n = new Notification();
             n.setTo(admin.getUser().getUsername());
-            n.setSubject(subject);
-            n.setMessage(message);
+            n.setSubject(subj);
+            n.setMessage(msg);
             n.setType(NotificationType.EMAIL);
             notificationService.sendNotification(n);
         });
-        // ──────────────────────────────
 
         return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDTO(user));
     }
 
+    /* ──────────────────────────────── LOGIN ───────────────────────────────── */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
-        logger.info("Login attempt for username: {}", request.getUsername());
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()));
-        User user = (User) authentication.getPrincipal();
-        logger.info("Login successful for username: {}", user.getUsername());
-        String jwtToken = jwtUtil.generateAccessToken(user);
-        String refreshToken = jwtUtil.generateRefreshToken(user);
-        logger.info("Tokens generated successfully for username: {}", user.getUsername());
-        return ResponseEntity.ok(new AuthResponse(jwtToken, refreshToken));
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest req) {
+
+        logger.info("Login attempt: {}", req.getUsername());
+
+        try {
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    req.getUsername(), req.getPassword()));
+
+            User user = (User) authentication.getPrincipal();
+
+            String access  = jwtUtil.generateAccessToken(user);
+            String refresh = jwtUtil.generateRefreshToken(user);
+
+            return ResponseEntity.ok(new AuthResponse(access, refresh));
+
+        } catch (BadCredentialsException ex) {
+            /* Decide if it’s a wrong pwd or unknown user */
+            boolean exists = userRepository.findByUsername(req.getUsername()).isPresent();
+            String  msg    = exists ? "Wrong password" : "User not found";
+
+            logger.warn("Login failed for '{}': {}", req.getUsername(), msg);
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(AuthResponse.failure(msg));   // see new helper in AuthResponse
+        }
     }
 
+    /* ─────────────────────────── REFRESH TOKEN ────────────────────────────── */
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestBody Map<String, String> request) {
-        logger.info("Refresh token request received");
+    public ResponseEntity<AuthResponse> refresh(@RequestBody Map<String,String> body) {
 
-        String refreshToken = request.get("refreshToken");
-
-        if (refreshToken == null || refreshToken.isEmpty()) {
-            logger.warn("Refresh token is missing or invalid");
-            throw new IllegalArgumentException("Refresh token is missing or invalid");
+        String refreshToken = body.get("refreshToken");
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return ResponseEntity.badRequest()
+                                 .body(AuthResponse.failure("Refresh token is missing"));
         }
 
         try {
             String username = jwtUtil.extractUsername(refreshToken);
-            logger.info("Extracted username from refresh token: {}", username);
+            User   user     = userService.findByUsername(username);
 
-            User user = userService.findByUsername(username);
-            logger.info("User found for username: {}", username);
+            String access  = jwtUtil.generateAccessToken(user);
+            String refresh = jwtUtil.generateRefreshToken(user);
 
-            String newAccessToken = jwtUtil.generateAccessToken(user);
-            String newRefreshToken = jwtUtil.generateRefreshToken(user);
-            logger.info("New tokens generated successfully for username: {}", username);
+            return ResponseEntity.ok(new AuthResponse(access, refresh));
 
-            return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken));
-        } catch (Exception e) {
-            logger.error("Error processing the refresh token", e);
-            throw new RuntimeException("Error processing the refresh token", e);
+        } catch (Exception ex) {
+            logger.error("Refresh-token error", ex);
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(AuthResponse.failure("Invalid refresh token"));
         }
     }
 
+    /* ───────────────────────── PASSWORD RESET FLOW ────────────────────────── */
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest req) {
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            String token = UUID.randomUUID().toString();
-            user.setResetToken(token);
+        userRepository.findByEmail(req.getEmail()).ifPresent(user -> {
+            user.setResetToken(UUID.randomUUID().toString());
             user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(30));
-
             userRepository.save(user);
 
-            String resetLink = "http://localhost:5173/reset-password?token=" + token;
-            try {
-                emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
-            } catch (MessagingException e) {
-                System.err.println("Failed to send reset email: " + e.getMessage());
-            }
-        }
+            String link = "http://localhost:5173/reset-password?token=" + user.getResetToken();
+            try { emailService.sendPasswordResetEmail(user.getEmail(), link); }
+            catch (MessagingException e) { logger.error("Mail error", e); }
+        });
 
-        return ResponseEntity.ok("Password reset link sent (if email is in our system).");
+        return ResponseEntity.ok("If the email exists, a reset link has been sent.");
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(
-            @RequestParam("token") String token,
-            @RequestParam("newPassword") String newPassword) {
-        User user = userService.findByResetToken(token);
+    public ResponseEntity<?> resetPassword(@RequestParam String token,
+                                           @RequestParam String newPassword) {
 
-        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
-            return ResponseEntity.badRequest().body("Reset token is expired or invalid.");
+        User user = userService.findByResetToken(token);
+        if (user.getResetTokenExpiry() == null ||
+            user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+
+            return ResponseEntity.badRequest().body("Reset token expired or invalid.");
         }
 
         userService.updatePassword(user, newPassword);
-
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
         userService.updateUser(user);
 
         try {
-            emailService.sendPasswordChangedConfirmation(user.getEmail(), user.getUsername(), newPassword);
-        } catch (MessagingException e) {
-            System.err.println("Failed to send 'password changed' email: " + e.getMessage());
-        }
+            emailService.sendPasswordChangedConfirmation(
+                    user.getEmail(), user.getUsername(), newPassword);
+        } catch (MessagingException e) { logger.error("Mail error", e); }
 
-        return ResponseEntity.ok("Password has been reset successfully.");
+        return ResponseEntity.ok("Password has been reset.");
     }
 
+    /* ─────────────────────────────── LOGOUT ───────────────────────────────── */
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            logger.warn("Invalid or missing Authorization header");
-            return ResponseEntity.badRequest().body("Invalid or missing Authorization header");
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Invalid Authorization header");
         }
 
-        String token = authorizationHeader.substring(7);
+        String token = authHeader.substring(7);
         tokenBlacklist.addToken(token);
-        logger.info("Token invalidated successfully");
-        return ResponseEntity.ok("Logged out successfully");
+        logger.info("Token black-listed");
+
+        return ResponseEntity.ok("Logged out");
     }
-    
 }

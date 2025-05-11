@@ -1,23 +1,38 @@
-// src/components/ProtectedRoute.tsx
-import React from "react";
+/* ──────────────────────────────────────────────────────────────
+   File: src/components/ProtectedRoute.tsx
+   Guard for react-router routes
+   ──────────────────────────────────────────────────────────── */
+
 import PropTypes from "prop-types";
 import { Navigate, useLocation } from "react-router-dom";
-import { getAccessToken, getUserRole } from "../utils/auth";
+import {
+  getAccessToken,
+  getUserRole,
+  isAccessTokenExpired,
+  clearTokens,
+} from "../utils/auth";
 
 export default function ProtectedRoute({ children, requiredRole }) {
-  const token = getAccessToken();
-  const role = getUserRole();
-  const location = useLocation();
+  const tokenMissingOrExpired = !getAccessToken() || isAccessTokenExpired();
+  const role                  = getUserRole();
+  const location              = useLocation();
 
-  if (!token) {
-    // not logged in
-    return <Navigate to="/" replace state={{ from: location }} />;
+  /* not logged-in OR token is stale → boot to /login */
+  if (tokenMissingOrExpired) {
+    clearTokens();
+    localStorage.removeItem("username");
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
+  /* logged-in but wrong role → send to generic dashboard */
   if (requiredRole && role !== requiredRole) {
-    // logged in but wrong role
     return <Navigate to="/dashboard" replace />;
   }
 
   return children;
 }
+
+ProtectedRoute.propTypes = {
+  children:     PropTypes.node.isRequired,
+  requiredRole: PropTypes.string,
+};
