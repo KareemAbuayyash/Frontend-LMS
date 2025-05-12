@@ -181,20 +181,28 @@ export default function StudentDashboard() {
             <table>
               <tbody>
                 <tr>
-                  <td><strong>ID</strong></td>
-                  <td>{selectedCourse.courseId}</td>
+                  <td colSpan={2}><strong>ID</strong></td>
                 </tr>
                 <tr>
-                  <td><strong>Name</strong></td>
-                  <td>{selectedCourse.courseName}</td>
+                  <td colSpan={2}>{selectedCourse.courseId}</td>
                 </tr>
                 <tr>
-                  <td><strong>Instructor</strong></td>
-                  <td>{selectedCourse.instructorName}</td>
+                  <td colSpan={2}><strong>Name</strong></td>
                 </tr>
                 <tr>
-                  <td><strong>Description</strong></td>
-                  <td>{selectedCourse.description || 'N/A'}</td>
+                  <td colSpan={2}>{selectedCourse.courseName}</td>
+                </tr>
+                <tr>
+                  <td colSpan={2}><strong>Instructor</strong></td>
+                </tr>
+                <tr>
+                  <td colSpan={2}>{selectedCourse.instructorName}</td>
+                </tr>
+                <tr>
+                  <td colSpan={2}><strong>Description</strong></td>
+                </tr>
+                <tr>
+                  <td colSpan={2}>{selectedCourse.courseDescription || 'N/A'}</td>
                 </tr>
               </tbody>
             </table>

@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Layouts
 import Layout from "./components/Layout/Layout";
+import StudentSidebar from "./Sidebar/StudentSidebar";
 
 // Admin pages
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
@@ -61,7 +62,7 @@ export default function App() {
         path="/student/dashboard"
         element={
           <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar>
+            <Layout showSidebar sidebarComponent={StudentSidebar}>
               <StudentDashboard />
             </Layout>
           </ProtectedRoute>
@@ -71,7 +72,7 @@ export default function App() {
         path="/student/courses"
         element={
           <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar>
+            <Layout showSidebar sidebarComponent={StudentSidebar}>
               <StudentCourses />
             </Layout>
           </ProtectedRoute>
@@ -81,7 +82,7 @@ export default function App() {
         path="/student/grades"
         element={
           <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar>
+            <Layout showSidebar sidebarComponent={StudentSidebar}>
               <StudentGrades />
             </Layout>
           </ProtectedRoute>
@@ -91,7 +92,7 @@ export default function App() {
         path="/student/coursework"
         element={
           <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar>
+            <Layout showSidebar sidebarComponent={StudentSidebar}>
               <Coursework />
             </Layout>
           </ProtectedRoute>

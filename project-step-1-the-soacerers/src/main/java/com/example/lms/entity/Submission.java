@@ -30,4 +30,9 @@ public class Submission {
     // Make sure the columnDefinition sets a default of 0 in MySQL
     @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean graded;
+
+    @ManyToOne
+    @JoinColumn(name = "assignment_id")
+    private Assignment assignment;
+
 }

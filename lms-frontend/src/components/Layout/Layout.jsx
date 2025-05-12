@@ -14,7 +14,7 @@ const SIDEBAR_ITEMS = [
   { label: 'Enrollments', to: '/admin/enrollments',icon: <FiFileText /> },
 ];
 
-export default function Layout({ showSidebar, children }) {
+export default function Layout({ showSidebar, sidebarComponent, children }) {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,26 +44,30 @@ export default function Layout({ showSidebar, children }) {
   return (
     <div className="layout">
       {showSidebar && (
-        <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-          <div className="sidebar-header">
-            {!collapsed && <h2>LMS Admin</h2>}
-            <button onClick={() => setCollapsed(c => !c)}>
-              {collapsed ? <FiMenu size={20}/> : <FiX size={20}/>}
-            </button>
-          </div>
-          <nav className="sidebar-nav">
-            {SIDEBAR_ITEMS.map(item => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={location.pathname === item.to ? 'active' : ''}
-              >
-                {item.icon}
-                {!collapsed && <span>{item.label}</span>}
-              </Link>
-            ))}
-          </nav>
-        </aside>
+        sidebarComponent
+          ? React.createElement(sidebarComponent)
+          : (
+            <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+              <div className="sidebar-header">
+                {!collapsed && <h2>LMS Admin</h2>}
+                <button onClick={() => setCollapsed(c => !c)}>
+                  {collapsed ? <FiMenu size={20}/> : <FiX size={20}/>}
+                </button>
+              </div>
+              <nav className="sidebar-nav">
+                {SIDEBAR_ITEMS.map(item => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={location.pathname === item.to ? 'active' : ''}
+                  >
+                    {item.icon}
+                    {!collapsed && <span>{item.label}</span>}
+                  </Link>
+                ))}
+              </nav>
+            </aside>
+          )
       )}
 
       <div className="main-content">

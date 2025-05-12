@@ -1,26 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { FiMenu, FiX, FiGrid, FiFileText, FiUser } from 'react-icons/fi';
 
 export default function StudentSidebar() {
+  const [collapsed, setCollapsed] = useState(false);
   return (
-    <nav className="sidebar">
-      <ul>
-        <li>
-          <NavLink to="/student/dashboard" activeClassName="active">
-            Dashboard
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/student/courses" activeClassName="active">
-            Courses
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/student/grades" activeClassName="active">
-            Grades
-          </NavLink>
-        </li>
-      </ul>
-    </nav>
+    <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
+      <div className="sidebar-header">
+        {!collapsed && <h2>LMS Student</h2>}
+        <button onClick={() => setCollapsed(c => !c)}>
+          {collapsed ? <FiMenu size={20}/> : <FiX size={20}/>}
+        </button>
+      </div>
+      <nav className="sidebar-nav">
+        <NavLink to="/student/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
+          <FiGrid />
+          {!collapsed && <span>Dashboard</span>}
+        </NavLink>
+        <NavLink to="/student/courses" className={({ isActive }) => isActive ? 'active' : ''}>
+          <FiFileText />
+          {!collapsed && <span>Courses</span>}
+        </NavLink>
+        <NavLink to="/student/grades" className={({ isActive }) => isActive ? 'active' : ''}>
+          <FiUser />
+          {!collapsed && <span>Grades</span>}
+        </NavLink>
+      </nav>
+    </aside>
   );
 }
