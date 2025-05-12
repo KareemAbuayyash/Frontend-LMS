@@ -11,8 +11,8 @@ export default function ProfilePicture({ src, alt, className }) {
     (async () => {
       try {
         const token = getAccessToken();
-        const res   = await fetch(src, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch(src, {
+        headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error(`Failed to fetch image: ${res.status}`);
         const blob = await res.blob();

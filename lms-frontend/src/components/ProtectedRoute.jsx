@@ -1,8 +1,3 @@
-/* ──────────────────────────────────────────────────────────────
-   File: src/components/ProtectedRoute.tsx
-   Guard for react-router routes
-   ──────────────────────────────────────────────────────────── */
-
 import PropTypes from "prop-types";
 import { Navigate, useLocation } from "react-router-dom";
 import {
@@ -26,7 +21,12 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
   /* logged-in but wrong role → send to generic dashboard */
   if (requiredRole && role !== requiredRole) {
-    return <Navigate to="/dashboard" replace />;
+    const home = role === 'ROLE_ADMIN'
+      ? '/admin'
+      : role === 'ROLE_INSTRUCTOR'
+        ? '/instructor'
+        : '/login';
+    return <Navigate to={home} replace />;
   }
 
   return children;

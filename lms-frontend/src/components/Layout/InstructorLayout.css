@@ -1,0 +1,19 @@
+/* src/components/Layout/InstructorLayout.css */
+
+/* Container for instructor view: sidebar + main content */
+.instructor-layout {
+  display: flex;
+  height: 100vh;
+  background-color: #f3f4f6;
+  font-family: "Inter", sans-serif;
+}
+
+/* Main content area alongside the sidebar */
+.instructor-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  overflow-y: auto;
+  background-color: #ffffff;
+}

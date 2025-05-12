@@ -1,0 +1,85 @@
+/* src/components/Sidebar/InstructorSidebar.css */
+
+/* Main sidebar container */
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background-color: #f9f9f9;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+}
+
+/* Collapsed state */
+.sidebar.collapsed {
+  width: 60px;
+}
+
+/* Header (title + toggle button) */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.sidebar-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+}
+
+/* Navigation links container */
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+/* Each link */
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: #555;
+  transition: background 0.2s;
+}
+
+/* Hover & active state */
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background-color: #e6e6e6;
+  color: #000;
+}
+
+/* Icon in the link */
+.sidebar-nav a svg {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+/* Label text */
+.sidebar-nav a span {
+  margin-left: 0.75rem;
+}
+
+/* When collapsed, center icons and hide labels */
+.sidebar.collapsed .sidebar-nav a {
+  justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-nav a span {
+  display: none;
+}
