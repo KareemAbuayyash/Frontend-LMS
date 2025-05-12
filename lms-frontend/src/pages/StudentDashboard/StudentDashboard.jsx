@@ -14,6 +14,8 @@ export default function StudentDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
   const [error, setError] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
   // Fetch enrolled courses
   useEffect(() => {
@@ -65,6 +67,11 @@ export default function StudentDashboard() {
     .filter(assignment => !assignment.submitted)
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
     .slice(0, 5);
+
+  const handleViewCourse = (course) => {
+    setSelectedCourse(course);
+    setModalOpen(true);
+  };
 
   return (
     <div className="student-dashboard">
@@ -154,7 +161,7 @@ export default function StudentDashboard() {
                     <td>
                       <button 
                         className="view-course-btn"
-                        onClick={() => window.location.href = `/course/${course.courseId}`}
+                        onClick={() => handleViewCourse(course)}
                       >
                         View Course
                       </button>
@@ -166,6 +173,35 @@ export default function StudentDashboard() {
           </table>
         </div>
       </div>
+
+      {modalOpen && selectedCourse && (
+        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h2>Course Details</h2>
+            <table>
+              <tbody>
+                <tr>
+                  <td><strong>ID</strong></td>
+                  <td>{selectedCourse.courseId}</td>
+                </tr>
+                <tr>
+                  <td><strong>Name</strong></td>
+                  <td>{selectedCourse.courseName}</td>
+                </tr>
+                <tr>
+                  <td><strong>Instructor</strong></td>
+                  <td>{selectedCourse.instructorName}</td>
+                </tr>
+                <tr>
+                  <td><strong>Description</strong></td>
+                  <td>{selectedCourse.description || 'N/A'}</td>
+                </tr>
+              </tbody>
+            </table>
+            <button className="btn" onClick={() => setModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
