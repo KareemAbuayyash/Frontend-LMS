@@ -38,7 +38,13 @@ export default function Login() {
       localStorage.setItem('username', username);
 
       const role = getUserRole();
-      navigate(role === 'ROLE_ADMIN' ? '/admin' : '/student/dashboard');
+      navigate(
+        role === 'ROLE_ADMIN' 
+          ? '/admin' 
+          : role === 'ROLE_INSTRUCTOR'
+            ? '/instructor/dashboard'
+            : '/student/dashboard'
+      );
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Login failed');

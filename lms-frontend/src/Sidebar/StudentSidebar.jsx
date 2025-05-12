@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { FiMenu, FiX, FiGrid, FiFileText, FiUser } from 'react-icons/fi';
 
 export default function StudentSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
       <div className="sidebar-header">

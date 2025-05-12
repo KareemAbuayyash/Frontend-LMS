@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Layouts
 import Layout from "./components/Layout/Layout";
 import StudentSidebar from "./Sidebar/StudentSidebar";
+import InstructorSidebar from "./Sidebar/InstructorSidebar";
 
 // Admin pages
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
@@ -20,6 +21,15 @@ import StudentDashboard from "./pages/StudentDashboard/StudentDashboard";
 import StudentCourses from "./pages/StudentDashboard/StudentCourses";
 import StudentGrades from "./pages/StudentDashboard/StudentGrades";
 import Coursework from "./pages/StudentDashboard/Coursework";
+import StudentCourseDetails from "./pages/StudentDashboard/StudentCourseDetails";
+
+// Instructor pages
+import InstructorDashboard from "./pages/instructor/Dashboard";
+import InstructorCourses from "./pages/instructor/Courses";
+import InstructorSubmissions from "./pages/instructor/Submissions";
+import InstructorStudents from "./pages/instructor/Students";
+import InstructorAnalytics from "./pages/instructor/Analytics";
+import InstructorSettings from "./pages/instructor/Settings";
 
 // Error boundary
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -57,6 +67,68 @@ export default function App() {
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
 
+      {/* Instructor section */}
+      <Route
+        path="/instructor/dashboard"
+        element={
+          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
+            <Layout showSidebar sidebarComponent={InstructorSidebar}>
+              <InstructorDashboard />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/courses"
+        element={
+          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
+            <Layout showSidebar sidebarComponent={InstructorSidebar}>
+              <InstructorCourses />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/submissions"
+        element={
+          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
+            <Layout showSidebar sidebarComponent={InstructorSidebar}>
+              <InstructorSubmissions />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/students"
+        element={
+          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
+            <Layout showSidebar sidebarComponent={InstructorSidebar}>
+              <InstructorStudents />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/analytics"
+        element={
+          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
+            <Layout showSidebar sidebarComponent={InstructorSidebar}>
+              <InstructorAnalytics />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/settings"
+        element={
+          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
+            <Layout showSidebar sidebarComponent={InstructorSidebar}>
+              <InstructorSettings />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
       {/* Student section */}
       <Route
         path="/student/dashboard"
@@ -88,12 +160,22 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-        <Route
+      <Route
         path="/student/coursework"
         element={
           <ProtectedRoute requiredRole="ROLE_STUDENT">
             <Layout showSidebar sidebarComponent={StudentSidebar}>
               <Coursework />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/student/courses/:courseId"
+        element={
+          <ProtectedRoute requiredRole="ROLE_STUDENT">
+            <Layout showSidebar sidebarComponent={StudentSidebar}>
+              <StudentCourseDetails />
             </Layout>
           </ProtectedRoute>
         }

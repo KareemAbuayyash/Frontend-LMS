@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import './StudentCourses.css';
 
@@ -6,6 +7,7 @@ export default function StudentCourses() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -48,10 +50,23 @@ export default function StudentCourses() {
               <tr key={course.courseId}>
                 <td>{course.courseName}</td>
                 <td>{course.instructorName}</td>
-                <td>{/* Add progress logic here */}</td>
+                <td>
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill"
+                      style={{ width: `${course.progress}%` }}
+                    />
+                    <span>{course.progress}%</span>
+                  </div>
+                </td>
                 <td>{course.completed ? 'Completed' : 'In Progress'}</td>
                 <td>
-                  {/* Add action buttons */}
+                  <button
+                    className="view-course-btn"
+                    onClick={() => navigate(`/student/courses/${course.courseId}`)}
+                  >
+                    View Course
+                  </button>
                 </td>
               </tr>
             ))}
