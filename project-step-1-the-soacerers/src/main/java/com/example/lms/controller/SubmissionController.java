@@ -3,38 +3,46 @@ package com.example.lms.controller;
 import com.example.lms.dto.QuizSubmissionRequest;
 import com.example.lms.dto.ScoreRequest;
 import com.example.lms.dto.SubmissionResponse;
+import com.example.lms.entity.Student;
 import com.example.lms.entity.Submission;
+import com.example.lms.entity.User;
+import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.SubmissionMapper;
+import com.example.lms.repository.StudentRepository;
+import com.example.lms.repository.UserRepository;
 import com.example.lms.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/submissions")
+@RequestMapping("/api/submissions")
 @RequiredArgsConstructor
 public class SubmissionController {
 
     private static final Logger logger = LoggerFactory.getLogger(SubmissionController.class);
     private final QuizService quizService;
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
 
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
-    @PostMapping("/quizzes/{quizId}/students/{studentId}")
-    public ResponseEntity<Submission> submitQuiz(
-            @PathVariable Long quizId,
-            @PathVariable Long studentId,
-            @RequestBody QuizSubmissionRequest request) {
-        logger.info("Request received to submit quiz with ID: {} for student ID: {}", quizId, studentId);
-        Submission submission = quizService.submitQuiz(quizId, studentId, request.getAnswers());
-        logger.info("Quiz submitted successfully with submission ID: {}", submission.getId());
-        return ResponseEntity.ok(submission);
-    }
+    // @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
+    // @PostMapping("/quizzes/{quizId}/students/{studentId}")
+    // public ResponseEntity<Submission> submitQuiz(
+    //         @PathVariable Long quizId,
+    //         @PathVariable Long studentId,
+    //         @RequestBody QuizSubmissionRequest request) {
+    //     logger.info("Request received to submit quiz with ID: {} for student ID: {}", quizId, studentId);
+    //     Submission submission = quizService.submitQuiz(quizId, studentId, request.getAnswers());
+    //     logger.info("Quiz submitted successfully with submission ID: {}", submission.getId());
+    //     return ResponseEntity.ok(submission);
+    // }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR')")
     @GetMapping("/{submissionId}")
@@ -117,4 +125,43 @@ public class SubmissionController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
+   // new “me” shortcut:
+@PostMapping("/quizzes/{quizId}/students/{studentId}")
+@PreAuthorize("hasAnyRole('INSTRUCTOR','STUDENT')")
+public ResponseEntity<SubmissionResponse> submitQuiz(
+    @PathVariable Long quizId,
+    @PathVariable Long studentId,
+    @RequestBody QuizSubmissionRequest request
+) {
+  Submission saved = quizService.submitQuiz(quizId, studentId, request.getAnswers());
+  return ResponseEntity.ok( SubmissionMapper.toResponse(saved) );
+}
+
+@PostMapping("/quizzes/{quizId}/students/me")
+@PreAuthorize("hasRole('STUDENT')")
+public ResponseEntity<SubmissionResponse> submitQuizAsMe(
+    @PathVariable Long quizId,
+    Authentication auth,
+    @RequestBody QuizSubmissionRequest request
+) {
+  // 1) get the username
+  String username = auth.getName();
+
+  // 2) load the User (throws 404 if not found)
+  User user = userRepository.findByUsername(username)
+      .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+
+  // 3) load the Student record (throws 404 if missing)
+  Student student = studentRepository.findByUser(user);
+  if (student == null) {
+    throw new ResourceNotFoundException("Student record not found for user: " + username);
+  }
+
+  // 4) do the submission
+  Submission saved = quizService.submitQuiz(quizId, student.getId(), request.getAnswers());
+
+  // 5) return a clean DTO
+  return ResponseEntity.ok( SubmissionMapper.toResponse(saved) );
+}
+
 }

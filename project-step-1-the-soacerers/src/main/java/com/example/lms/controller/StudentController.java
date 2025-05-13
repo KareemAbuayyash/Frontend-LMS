@@ -97,4 +97,5 @@ public ResponseEntity<List<CourseSummaryDTO>> getEnrolledCourses(Authentication 
 
     return ResponseEntity.ok(dtos);
 }
+
 }

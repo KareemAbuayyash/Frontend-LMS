@@ -121,6 +121,11 @@ public class GlobalExceptionHandler {
     ErrorResponse error = new ErrorResponse("Bad Request", ex.getMessage());
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
-  
+  @ExceptionHandler(AlreadySubmittedException.class)
+public ResponseEntity<ErrorResponse> handleAlreadySubmitted(AlreadySubmittedException ex) {
+  ErrorResponse err = new ErrorResponse("Bad Request", ex.getMessage());
+  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+}
+
 
 }

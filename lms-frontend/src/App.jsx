@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 
@@ -12,9 +13,9 @@ import InstructorSidebar from "./Sidebar/InstructorSidebar";
 
 // Admin pages
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
-import Courses         from "./pages/AdminDashboard/Courses";
-import AdminUsers      from "./pages/AdminDashboard/Users";
-import Enrollments     from "./pages/AdminDashboard/Enrollments";
+import Courses from "./pages/AdminDashboard/Courses";
+import AdminUsers from "./pages/AdminDashboard/Users";
+import Enrollments from "./pages/AdminDashboard/Enrollments";
 
 // Student pages
 import StudentDashboard from "./pages/StudentDashboard/StudentDashboard";
@@ -22,6 +23,7 @@ import StudentCourses from "./pages/StudentDashboard/StudentCourses";
 import StudentGrades from "./pages/StudentDashboard/StudentGrades";
 import Coursework from "./pages/StudentDashboard/Coursework";
 import StudentCourseDetails from "./pages/StudentDashboard/StudentCourseDetails";
+import QuizAttempt from "./pages/StudentDashboard/QuizAttempt";
 
 // Instructor pages
 import InstructorDashboard from "./pages/instructor/Dashboard";
@@ -39,7 +41,7 @@ export default function App() {
     <Routes>
       {/* Public */}
       <Route path="/login" element={<Login />} />
-      <Route path="/"      element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* Admin section */}
       <Route
@@ -53,17 +55,23 @@ export default function App() {
         }
       >
         <Route index element={<AdminDashboard />} />
-        <Route path="courses"     element={<Courses />} />
-        <Route path="users"       element={
-          <ErrorBoundary>
-            <AdminUsers />
-          </ErrorBoundary>
-        }/>
-        <Route path="enrollments" element={
-          <ErrorBoundary>
-            <Enrollments />
-          </ErrorBoundary>
-        }/>
+        <Route path="courses" element={<Courses />} />
+        <Route
+          path="users"
+          element={
+            <ErrorBoundary>
+              <AdminUsers />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="enrollments"
+          element={
+            <ErrorBoundary>
+              <Enrollments />
+            </ErrorBoundary>
+          }
+        />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
 
@@ -170,6 +178,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* course details (assignments + quizzes list) */}
       <Route
         path="/student/courses/:courseId"
         element={
@@ -180,6 +190,20 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* quiz attempt page */}
+      <Route
+        path="/student/courses/:courseId/quizzes/:quizId"
+        element={
+          <ProtectedRoute requiredRole="ROLE_STUDENT">
+            <Layout showSidebar sidebarComponent={StudentSidebar}>
+              <QuizAttempt />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

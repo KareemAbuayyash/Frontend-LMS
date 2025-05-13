@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/submissions/assignments")
+@RequestMapping("/api/submissions/assignments")
 @RequiredArgsConstructor
 public class AssignmentSubmissionController {
 

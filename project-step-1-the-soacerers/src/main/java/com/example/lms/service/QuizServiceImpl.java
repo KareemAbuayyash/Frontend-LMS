@@ -212,5 +212,8 @@ public class QuizServiceImpl implements QuizService {
         logger.info("Fetched {} submissions for quiz ID: {} in course ID: {}", submissions.size(), quizId, courseId);
         return submissions;
     }
-
+@Override
+public List<Quiz> findByCourseId(Long courseId) {
+  return quizRepository.findByCourseIdWithQuestions(courseId);
+}
 }
