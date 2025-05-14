@@ -11,111 +11,115 @@ export default function StudentGrades() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch courses the student is currently taking
+  // load enrolled courses
   useEffect(() => {
-    const fetchCourses = async () => {
+    async function fetchCourses() {
       try {
-        const response = await api.get('/students/enrolled-courses');
-        setCourses(response.data);
-      } catch (error) {
-        console.error('Error fetching courses:', error);
-        setError('Failed to fetch courses. Please try again.');
+        const { data } = await api.get('/students/enrolled-courses');
+        setCourses(data);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch courses.');
       } finally {
         setLoading(false);
       }
-    };
-
+    }
     fetchCourses();
   }, []);
 
-  // Fetch grades for the selected course
-  const fetchGrades = (courseId) => {
+  // load grades when a course is selected
+  const fetchGrades = async courseId => {
     setLoading(true);
-    api.get(`/students/grades/${courseId}`)
-      .then((response) => {
-        setGrades(response.data);
-        setSelectedCourse(courseId);
-      })
-      .catch((error) => {
-        console.error('Error fetching grades:', error);
-        setError('Failed to fetch grades. Please try again.');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const { data } = await api.get(`/students/grades/${courseId}`);
+      setGrades(data);
+      setSelectedCourse(courseId);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch grades.');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) return <p>Loading…</p>;
+  if (error)   return <p className="error">{error}</p>;
 
   return (
     <div className="student-grades">
       <h1>Grades</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : selectedCourse ? (
-        <div>
-          <button 
+      {selectedCourse ? (
+        <>
+          <button
             className="back-button"
             onClick={() => setSelectedCourse(null)}
           >
             Back to Courses
           </button>
           <h2>Grades for Course ID: {selectedCourse}</h2>
-          <table className="grades-table">
-            <thead>
-              <tr>
-                <th>Coursework</th>
-                <th>Grade</th>
-              </tr>
-            </thead>
-            <tbody>
-              {grades.map((grade) => (
-                <tr key={grade.id}>
-                  <td>{grade.coursework}</td>
-                  <td>{grade.grade}</td>
+          {grades.length === 0 ? (
+            <p>No graded items yet.</p>
+          ) : (
+            <table className="grades-table">
+              <thead>
+                <tr>
+                  <th>Coursework</th>
+                  <th>Grade</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div>
-          <table className="courses-table">
-            <thead>
-              <tr>
-                <th>Course Name</th>
-                <th>Instructor</th>
-                <th>Progress</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {courses.length === 0 ? (
-                <tr className="empty">
-                  <td colSpan="5">No courses found.</td>
-                </tr>
-              ) : (
-                courses.map((course) => (
-                  <tr key={course.courseId}>
-                    <td>{course.courseName}</td>
-                    <td>{course.instructorName}</td>
-                    <td>{/* Add progress logic here */}</td>
-                    <td>{course.completed ? 'Completed' : 'In Progress'}</td>
-                    <td>
-                      <button
-                        className="view-grades-btn"
-                        onClick={() => fetchGrades(course.courseId)}
-                      >
-                        View Grades
-                      </button>
-                    </td>
+              </thead>
+              <tbody>
+                {grades.map(g => (
+                  <tr key={g.id}>
+                    <td>{g.coursework}</td>
+                    <td>{g.grade}</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
+      ) : (
+        <table className="courses-table">
+          <thead>
+            <tr>
+              <th>Course Name</th>
+              <th>Instructor</th>
+              <th>Progress</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {courses.length === 0 ? (
+              <tr><td colSpan="5">No courses found.</td></tr>
+            ) : (
+              courses.map(course => (
+                <tr key={course.courseId}>
+                  <td>{course.courseName}</td>
+                  <td>{course.instructorName}</td>
+                  <td>
+                    <div className="progress-bar">
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${course.progress}%` }}
+                      />
+                      <span>{course.progress}%</span>
+                    </div>
+                  </td>
+                  <td>{course.completed ? 'Completed' : 'In Progress'}</td>
+                  <td>
+                    <button
+                      className="view-grades-btn"
+                      onClick={() => fetchGrades(course.courseId)}
+                    >
+                      View Grades
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       )}
     </div>
   );

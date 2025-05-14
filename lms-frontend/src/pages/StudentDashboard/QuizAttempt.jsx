@@ -1,78 +1,122 @@
+// src/components/quizzes/QuizAttempt.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../../api/axios';
 import './QuizAttempt.css';
 
 export default function QuizAttempt() {
   const { quizId } = useParams();
-  const navigate   = useNavigate();
 
-  const [quiz,    setQuiz]    = useState(null);
+  const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
-  const [error,   setError]   = useState('');
+  const [loading, setLoading] = useState(true);
+  const [submission, setSubmission] = useState(null);
+  const [error, setError] = useState('');
 
-  // 1) fetch the quiz
   useEffect(() => {
-    api.get(`/quizzes/${quizId}`)
-      .then(res => {
-        setQuiz(res.data);
-        // init answers
+    async function init() {
+      try {
+        // 1) check for existing submission
+        const { data: existing } = await api.get(
+          `/submissions/quizzes/${quizId}/students/me`
+        );
+        setSubmission(existing);
+      } catch (err) {
+        if (err.response?.status !== 404) {
+          console.error('Error checking submission:', err);
+          setError('Failed to check submission status.');
+        }
+        // 404 → no submission yet
+      }
+
+      // 2) fetch quiz data
+      try {
+        const { data } = await api.get(`/quizzes/${quizId}`);
+        setQuiz(data);
+
+        // initialize answers state
         const init = {};
-        res.data.questions.forEach(q => {
+        data.questions.forEach((q) => {
           init[q.id] = q.questionType.includes('MULTIPLE_CHOICE_MULTIPLE')
             ? []
             : '';
         });
         setAnswers(init);
-      })
-      .catch(() => setError('Failed to load quiz'));
+      } catch {
+        setError('Failed to load quiz.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    init();
   }, [quizId]);
 
   const handleChange = (q, val) => {
-    const current = answers[q.id];
-    if (Array.isArray(current)) {
-      // toggle for multiple‐choice‐multiple
-      setAnswers(a => ({
+    const curr = answers[q.id];
+    if (Array.isArray(curr)) {
+      setAnswers((a) => ({
         ...a,
-        [q.id]: current.includes(val)
-          ? current.filter(x => x !== val)
-          : [...current, val]
+        [q.id]: curr.includes(val)
+          ? curr.filter((x) => x !== val)
+          : [...curr, val],
       }));
     } else {
-      // radio / text
-      setAnswers(a => ({ ...a, [q.id]: val }));
+      setAnswers((a) => ({ ...a, [q.id]: val }));
     }
   };
 
-  // 2) submit against the new “me” shortcut endpoint
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
-      const payload = quiz.questions.map(q => answers[q.id]);
-      await api.post(
+      const payload = quiz.questions.map((q) => answers[q.id]);
+      const { data } = await api.post(
         `/submissions/quizzes/${quizId}/students/me`,
         { answers: payload }
       );
-      navigate('/student/grades');
-    } catch {
-      setError('Submission failed');
+      setSubmission(data);
+    } catch (err) {
+      console.error(err);
+      setError(
+        err.response?.status === 400
+          ? 'You cannot submit this quiz again.'
+          : 'Submission failed.'
+      );
     }
   };
 
-  if (!quiz) return <p>Loading quiz…</p>;
+  if (loading) return <p>Loading…</p>;
+  if (error) return <p className="error">{error}</p>;
 
+  // If already submitted, just show your score & date
+  if (submission) {
+    return (
+      <div className="quiz-attempt">
+        <h1>{quiz?.title || 'Quiz'}</h1>
+        <p>
+          <strong>Your Score:</strong> {submission.score}
+        </p>
+        <p>
+          <strong>Submitted:</strong>{' '}
+          {new Date(submission.submissionDate).toLocaleString()}
+        </p>
+      </div>
+    );
+  }
+
+  // Otherwise render the attempt form
   return (
     <div className="quiz-attempt">
       <h1>{quiz.title}</h1>
-      {error && <p className="error">{error}</p>}
-
       <form onSubmit={handleSubmit}>
         {quiz.questions.map((q, idx) => (
           <div key={q.id} className="question-block">
-            <p><strong>{idx + 1}.</strong> {q.text}</p>
+            <p>
+              <strong>{idx + 1}.</strong> {q.text}
+            </p>
 
             {q.questionType === 'TRUE_FALSE' &&
-              ['true','false'].map(val => (
+              ['true', 'false'].map((val) => (
                 <label key={val}>
                   <input
                     type="radio"
@@ -82,11 +126,10 @@ export default function QuizAttempt() {
                   />
                   {val}
                 </label>
-              ))
-            }
+              ))}
 
             {q.questionType.includes('MULTIPLE_CHOICE_SINGLE') &&
-              q.options.map(opt => (
+              q.options.map((opt) => (
                 <label key={opt}>
                   <input
                     type="radio"
@@ -96,11 +139,10 @@ export default function QuizAttempt() {
                   />
                   {opt}
                 </label>
-              ))
-            }
+              ))}
 
             {q.questionType.includes('MULTIPLE_CHOICE_MULTIPLE') &&
-              q.options.map(opt => (
+              q.options.map((opt) => (
                 <label key={opt}>
                   <input
                     type="checkbox"
@@ -109,14 +151,13 @@ export default function QuizAttempt() {
                   />
                   {opt}
                 </label>
-              ))
-            }
+              ))}
 
             {q.questionType === 'ESSAY' && (
               <textarea
                 rows={6}
                 value={answers[q.id]}
-                onChange={e => handleChange(q, e.target.value)}
+                onChange={(e) => handleChange(q, e.target.value)}
                 placeholder="Your answer…"
               />
             )}

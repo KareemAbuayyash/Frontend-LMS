@@ -8,38 +8,15 @@
   color: #333;
 }
 
-.courses-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.courses-table th,
-.courses-table td {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.courses-table th {
-  background-color: #5462e7;
-  color: white;
-}
-
-.courses-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.courses-table tr:hover {
-  background-color: #f1f1f1;
-}
-
+.courses-table,
 .grades-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
 }
 
+.courses-table th,
+.courses-table td,
 .grades-table th,
 .grades-table td {
   padding: 0.75rem;
@@ -47,20 +24,24 @@
   text-align: left;
 }
 
+.courses-table th,
 .grades-table th {
   background-color: #5462e7;
   color: white;
 }
 
+.courses-table tr:nth-child(even),
 .grades-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
+.courses-table tr:hover,
 .grades-table tr:hover {
   background-color: #f1f1f1;
 }
 
-.back-button {
+.back-button,
+.view-grades-btn {
   padding: 8px 16px;
   background-color: #5462e7;
   color: white;
@@ -70,24 +51,35 @@
   margin-bottom: 1rem;
 }
 
-.back-button:hover {
-  background-color: #4552d4;
-}
-
-.view-grades-btn {
-  padding: 6px 12px;
-  background-color: #5462e7;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
+.back-button:hover,
 .view-grades-btn:hover {
   background-color: #4552d4;
 }
 
-.empty {
-  text-align: center;
+.progress-bar {
+  background: #eee;
+  height: 8px;
+  border-radius: 4px;
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+}
+
+.progress-fill {
+  background: #28a745;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-bar span {
+  position: absolute;
+  right: -40px;
+  top: -4px;
+  font-size: 0.9rem;
   color: #666;
+}
+
+.error {
+  color: #dc3545;
 }

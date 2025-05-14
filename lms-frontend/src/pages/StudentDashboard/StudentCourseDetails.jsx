@@ -20,6 +20,7 @@ export default function StudentCourseDetails() {
         setAssignments(aRes.data);
         setQuizzes(qRes.data);
       } catch (err) {
+        console.error(err);
         setError('Failed to load course details');
       } finally {
         setLoading(false);

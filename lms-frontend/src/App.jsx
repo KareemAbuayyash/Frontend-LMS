@@ -6,7 +6,7 @@ import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-// Layouts
+// Layouts & Sidebars
 import Layout from "./components/Layout/Layout";
 import StudentSidebar from "./Sidebar/StudentSidebar";
 import InstructorSidebar from "./Sidebar/InstructorSidebar";
@@ -39,11 +39,11 @@ import ErrorBoundary from "./components/ErrorBoundary";
 export default function App() {
   return (
     <Routes>
-      {/* Public */}
+      {/* PUBLIC */}
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Admin section */}
+      {/* ADMIN */}
       <Route
         path="/admin/*"
         element={
@@ -75,135 +75,59 @@ export default function App() {
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
 
-      {/* Instructor section */}
+      {/* INSTRUCTOR */}
       <Route
-        path="/instructor/dashboard"
+        path="/instructor/*"
         element={
           <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
             <Layout showSidebar sidebarComponent={InstructorSidebar}>
-              <InstructorDashboard />
+              <Outlet />
             </Layout>
           </ProtectedRoute>
         }
-      />
-      <Route
-        path="/instructor/courses"
-        element={
-          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
-            <Layout showSidebar sidebarComponent={InstructorSidebar}>
-              <InstructorCourses />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/instructor/submissions"
-        element={
-          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
-            <Layout showSidebar sidebarComponent={InstructorSidebar}>
-              <InstructorSubmissions />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/instructor/students"
-        element={
-          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
-            <Layout showSidebar sidebarComponent={InstructorSidebar}>
-              <InstructorStudents />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/instructor/analytics"
-        element={
-          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
-            <Layout showSidebar sidebarComponent={InstructorSidebar}>
-              <InstructorAnalytics />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/instructor/settings"
-        element={
-          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
-            <Layout showSidebar sidebarComponent={InstructorSidebar}>
-              <InstructorSettings />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+      >
+        <Route path="dashboard"  element={<InstructorDashboard />} />
+        <Route path="courses"    element={<InstructorCourses />} />
+        <Route path="submissions" element={<InstructorSubmissions />} />
+        <Route path="students"    element={<InstructorStudents />} />
+        <Route path="analytics"   element={<InstructorAnalytics />} />
+        <Route path="settings"    element={<InstructorSettings />} />
+        <Route path="*" element={<Navigate to="/instructor/dashboard" replace />} />
+      </Route>
 
-      {/* Student section */}
+      {/* STUDENT */}
       <Route
-        path="/student/dashboard"
+        path="/student/*"
         element={
           <ProtectedRoute requiredRole="ROLE_STUDENT">
             <Layout showSidebar sidebarComponent={StudentSidebar}>
-              <StudentDashboard />
+              <Outlet />
             </Layout>
           </ProtectedRoute>
         }
-      />
-      <Route
-        path="/student/courses"
-        element={
-          <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar sidebarComponent={StudentSidebar}>
-              <StudentCourses />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/student/grades"
-        element={
-          <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar sidebarComponent={StudentSidebar}>
-              <StudentGrades />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/student/coursework"
-        element={
-          <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar sidebarComponent={StudentSidebar}>
-              <Coursework />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+      >
+        {/* Dashboard, Courses, Grades, Coursework */}
+        <Route path="dashboard"  element={<StudentDashboard />} />
+        <Route path="courses"    element={<StudentCourses />} />
+        <Route path="grades"     element={<StudentGrades />} />
+        <Route path="coursework" element={<Coursework />} />
 
-      {/* course details (assignments + quizzes list) */}
-      <Route
-        path="/student/courses/:courseId"
-        element={
-          <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar sidebarComponent={StudentSidebar}>
-              <StudentCourseDetails />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+        {/* Course details: assignments + quizzes */}
+        <Route
+          path="courses/:courseId"
+          element={<StudentCourseDetails />}
+        />
 
-      {/* quiz attempt page */}
-      <Route
-        path="/student/courses/:courseId/quizzes/:quizId"
-        element={
-          <ProtectedRoute requiredRole="ROLE_STUDENT">
-            <Layout showSidebar sidebarComponent={StudentSidebar}>
-              <QuizAttempt />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+        {/* Quiz attempt under a specific course */}
+        <Route
+          path="courses/:courseId/quizzes/:quizId"
+          element={<QuizAttempt />}
+        />
 
-      {/* fallback */}
+        <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
+      </Route>
+
+      {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
