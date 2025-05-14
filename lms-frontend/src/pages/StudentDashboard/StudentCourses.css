@@ -1,79 +1,116 @@
+/* Container & Heading */
 .student-courses {
-  padding: 1rem;
-  font-family: 'Segoe UI', sans-serif;
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: Arial, sans-serif;
 }
 
 .student-courses h1 {
-  margin-bottom: 1rem;
-  color: #333;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #24292e;
 }
 
-.courses-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
+/* Grid of cards */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
 }
 
-.courses-table th,
-.courses-table td {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.courses-table th {
-  background-color: #5462e7;
-  color: white;
-}
-
-.courses-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.courses-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-/* Modal Overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-/* Modal Content Box */
-.modal-content {
-  background: white;
-  padding: 20px;
+/* Individual course card */
+.course-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  max-width: 500px;
-  width: 90%;
-  position: relative;
-  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
 }
 
-.modal-content h2 {
-  margin-top: 0;
+.card-title {
+  margin: 0 0 0.75rem 0;
+  color: #0366d6;
+  font-size: 1.1rem;
 }
 
-.modal-content .btn {
-  margin-top: 15px;
-  padding: 8px 16px;
-  background-color: #007bff;
-  color: white;
+.card-description {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  color: #586069;
+  margin-bottom: 1rem;
+}
+
+/* Progress bar */
+.card-progress {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #28a745;
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  font-size: 0.85rem;
+  color: #24292e;
+  min-width:  thirty-six px;
+  text-align: right;
+}
+
+/* Instructor line */
+.card-instructor {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Action button */
+.card-actions {
+  text-align: right;
+}
+
+.view-btn {
+  background: #4a90e2;
+  color: #fff;
   border: none;
+  padding: 0.5em 1em;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
 }
 
-.modal-content .btn:hover {
-  background-color: #0056b3;
+.view-btn:hover {
+  background: #357ab8;
+}
+
+/* Loading & error states */
+.loading,
+.error {
+  text-align: center;
+  margin: 2rem 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.error {
+  color: #dc3545;
+  background: #f8d7da;
+  padding: 1rem;
+  border-radius: 4px;
 }
