@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -101,4 +103,11 @@ public class AssignmentSubmissionServiceImpl implements AssignmentSubmissionServ
         logger.info("Fetched submission with ID: {}", submission.getId());
         return submission;
     }
+    @Override
+    public AssignmentSubmission submitAssignment(Long assignmentId, Long studentId, String content, MultipartFile file) {
+        // Implement file handling logic here if needed
+        return submitAssignment(assignmentId, studentId, content);
+    }
+
+   
 }

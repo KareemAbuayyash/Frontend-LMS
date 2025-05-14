@@ -27,6 +27,11 @@ export default function StudentSidebar() {
           <FiUser />
           {!collapsed && <span>Grades</span>}
         </NavLink>
+<NavLink to="/student/coursework" className={({ isActive }) => isActive ? 'active' : ''}>
+  <FiFileText />
+  {!collapsed && <span>Coursework</span>}
+</NavLink>
+
       </nav>
     </aside>
   );
