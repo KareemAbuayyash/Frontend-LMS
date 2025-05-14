@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import './StudentGrades.css';
 
@@ -9,7 +8,6 @@ export default function StudentGrades() {
   const [grades, setGrades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   // load enrolled courses
   useEffect(() => {
