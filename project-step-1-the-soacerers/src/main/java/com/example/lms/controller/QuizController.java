@@ -11,6 +11,7 @@ import com.example.lms.repository.CourseRepository;
 import com.example.lms.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/quizzes")
+@RequestMapping("/api/quizzes")
 @RequiredArgsConstructor
 public class QuizController {
 
@@ -40,6 +41,18 @@ public class QuizController {
         QuizDTO createdQuizDTO = QuizMapper.toDTO(quiz);
         logger.info("Quiz created successfully with ID: {} for course ID: {}", quiz.getId(), courseId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdQuizDTO);
+    }
+     @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<List<QuizDTO>> getQuizzesForCourse(
+      @PathVariable Long courseId
+    ) {
+      // pull back all quizzes for that course (with questions if you like)
+      var quizzes = quizService.findByCourseId(courseId);
+      var dtos = quizzes.stream()
+                        .map(QuizMapper::toDTO)
+                        .toList();
+      return ResponseEntity.ok(dtos);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'INSTRUCTOR', 'STUDENT')")
     @GetMapping("/{quizId}")

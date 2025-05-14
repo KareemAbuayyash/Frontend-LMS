@@ -1,70 +1,112 @@
-import React from "react";
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+// src/App.jsx
+import React from 'react';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
-// Authentication
-import Login from "./components/Auth/Login";
-import ForgotPassword from "./components/Auth/ForgotPassword";
-import ResetPassword from "./components/Auth/ResetPassword";
-import ProtectedRoute from "./components/ProtectedRoute";
+// Auth
+import Login from './components/Auth/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 
-// Layouts
-import Layout from "./components/Layout/Layout";
+// Layout & Sidebars
+import Layout from './components/Layout/Layout';
+import AdminSidebar from './Sidebar/AdminSidebar';
+import InstructorSidebar from './Sidebar/InstructorSidebar';
+import StudentSidebar from './Sidebar/StudentSidebar';
 
 // Admin pages
-import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
-import Courses from "./pages/AdminDashboard/Courses";
-import AdminUsers from "./pages/AdminDashboard/Users";
-import Enrollments from "./pages/AdminDashboard/Enrollments";
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import Courses from './pages/AdminDashboard/Courses';
+import AdminUsers from './pages/AdminDashboard/Users';
+import Enrollments from './pages/AdminDashboard/Enrollments';
 
-// User settings
-import ProfileSettings from "./components/ProfileSettings/ProfileSettings";
+// Instructor pages
+import InstructorDashboard from './pages/instructor/Dashboard';
+import InstructorCourses from './pages/instructor/Courses';
+import InstructorSubmissions from './pages/instructor/Submissions';
+import InstructorStudents from './pages/instructor/Students';
+import InstructorAnalytics from './pages/instructor/Analytics';
+import InstructorSettings from './pages/instructor/Settings';
 
-// Error boundary
-import ErrorBoundary from "./components/ErrorBoundary";
+// Student pages
+import StudentDashboard from './pages/StudentDashboard/StudentDashboard';
+import StudentCourses from './pages/StudentDashboard/StudentCourses';
+import Coursework from './pages/StudentDashboard/Coursework';
+import StudentCourseDetails from './pages/StudentDashboard/StudentCourseDetails';
+import QuizAttempt from './pages/StudentDashboard/QuizAttempt';
 
 export default function App() {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* PUBLIC */}
       <Route path="/login" element={<Login />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Admin section */}
+      {/* ADMIN */}
       <Route
         path="/admin/*"
         element={
           <ProtectedRoute requiredRole="ROLE_ADMIN">
-            <Layout showSidebar>
+            <Layout
+              showSidebar={true}
+              SidebarComponent={AdminSidebar}
+            >
               <Outlet />
             </Layout>
           </ProtectedRoute>
         }
       >
         <Route index element={<AdminDashboard />} />
-        <Route path="courses" element={<Courses />} />
-        <Route path="settings" element={<ProfileSettings />} />
-        <Route
-          path="users"
-          element={
-            <ErrorBoundary>
-              <AdminUsers />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="enrollments"
-          element={
-            <ErrorBoundary>
-              <Enrollments />
-            </ErrorBoundary>
-          }
-        />
+        <Route path="courses"     element={<Courses />} />
+        <Route path="users"       element={<AdminUsers />} />
+        <Route path="enrollments" element={<Enrollments />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
 
-      {/* Fallback to login */}
+      {/* INSTRUCTOR */}
+      <Route
+        path="/instructor/*"
+        element={
+          <ProtectedRoute requiredRole="ROLE_INSTRUCTOR">
+            <Layout
+              showSidebar={true}
+              SidebarComponent={InstructorSidebar}
+            >
+              <Outlet />
+            </Layout>
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard"   element={<InstructorDashboard />} />
+        <Route path="courses"     element={<InstructorCourses />} />
+        <Route path="submissions" element={<InstructorSubmissions />} />
+        <Route path="students"    element={<InstructorStudents />} />
+        <Route path="analytics"   element={<InstructorAnalytics />} />
+        <Route path="settings"    element={<InstructorSettings />} />
+        <Route path="*" element={<Navigate to="/instructor/dashboard" replace />} />
+      </Route>
+
+      {/* STUDENT */}
+      <Route
+        path="/student/*"
+        element={
+          <ProtectedRoute requiredRole="ROLE_STUDENT">
+            <Layout
+              showSidebar={true}
+              SidebarComponent={StudentSidebar}
+            >
+              <Outlet />
+            </Layout>
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard"  element={<StudentDashboard />} />
+        <Route path="courses"    element={<StudentCourses />} />
+        <Route path="coursework" element={<Coursework />} />
+        <Route path="courses/:courseId" element={<StudentCourseDetails />} />
+        <Route path="courses/:courseId/quizzes/:quizId" element={<QuizAttempt />} />
+        <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
+      </Route>
+
+      {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

@@ -19,6 +19,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -131,14 +132,19 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public ResponseEntity<?> deleteById(Long id) {
-        logger.info("Deleting enrollment with ID: {}", id);
-        if (!enrollmentRepository.existsById(id)) {
-            logger.warn("Enrollment with ID: {} not found", id);
-            return ResponseEntity.notFound().build();
-        }
-        enrollmentRepository.deleteById(id);
-        logger.info("Enrollment with ID: {} deleted successfully", id);
+  @Transactional
+  public ResponseEntity<?> deleteById(Long id) {
+    return enrollmentRepository.findById(id)
+      .map(enrollment -> {
+        // 1) remove the courses from the student's enrolledCourses
+        Student student = enrollment.getStudent();
+        student.getEnrolledCourses().removeAll(enrollment.getCourses());
+        studentRepository.save(student);
+
+        // 2) delete the enrollment itself
+        enrollmentRepository.delete(enrollment);
         return ResponseEntity.noContent().build();
-    }
+      })
+      .orElseGet(() -> ResponseEntity.notFound().build());
+  }
 }

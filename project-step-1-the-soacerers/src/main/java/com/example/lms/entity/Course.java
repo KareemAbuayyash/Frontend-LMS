@@ -23,6 +23,7 @@ public class Course {
     private Double coursePrice;
     private Date courseStartDate;
     private Date courseEndDate;
+    private boolean completed;
 
     @ManyToMany(mappedBy = "enrolledCourses", fetch = FetchType.EAGER)
     @JsonManagedReference

@@ -1,7 +1,9 @@
 package com.example.lms.mapper;
 
 import com.example.lms.entity.Course;
+import com.example.lms.entity.Instructor;
 import com.example.lms.dto.CourseDTO;
+import com.example.lms.dto.CourseSummaryDTO;
 
 public class CourseMapper {
 
@@ -28,5 +30,17 @@ public class CourseMapper {
         courseDTO.setCourseStartDate(course.getCourseStartDate());
         courseDTO.setCourseEndDate(course.getCourseEndDate());
         return courseDTO;
+    }
+
+    public static CourseSummaryDTO toCourseSummaryDTO(Course course, boolean completed) {
+        CourseSummaryDTO dto = new CourseSummaryDTO();
+        dto.setCourseId(course.getId());
+        dto.setCourseName(course.getCourseName());
+        Instructor instructor = course.getInstructor();
+        dto.setInstructorName(instructor != null ? instructor.getUser().getUsername() : "N/A");
+        dto.setDuration("12 weeks"); // Customize as needed
+        dto.setCompleted(completed);
+        dto.setCourseDescription(course.getCourseDescription());
+        return dto;
     }
 }

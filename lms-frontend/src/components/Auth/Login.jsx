@@ -1,35 +1,29 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate }    from "react-router-dom";
-import api                      from "../../api/axios";
-import { saveTokens, getUserRole } from "../../utils/auth";
-
-import styles                   from "./Login.module.css";
-import logo                     from "../../assets/log.png";
-import { FiEye, FiEyeOff }      from "react-icons/fi";
-import { FcGoogle }             from "react-icons/fc";
-import { toast }                from "../../utils/toast";   // ✅ NEW
-
-const LS_KEY = "savedCreds";
-
+// src/components/Auth/Login.jsx
+import { useState, useEffect } from 'react';
+import { Link, useNavigate }          from 'react-router-dom';
+import api                            from '../../api/axios';
+import { saveTokens, getUserRole }    from '../../utils/auth';
+import { toast }                      from '../../utils/toast';
+import styles                         from './Login.module.css';
+import logo                           from '../../assets/log.png'; // unified logo
+import { FiEye, FiEyeOff }            from 'react-icons/fi';
+import { FcGoogle }                   from 'react-icons/fc';
 export default function Login() {
-  /* ───────────────────────── bootstrap ───────────────────────── */
-  let boot = { username: "", password: "" };
-  try { boot = JSON.parse(localStorage.getItem(LS_KEY)) || boot; } catch (err) {
-    console.error("Error parsing localStorage data:", err);
-  }
-
+  // --- remember-me bootstrap ---
+  const LS_KEY = 'savedCreds';
+  const stored = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
   const [form, setForm] = useState({
-    username: boot.username,
-    password: boot.password,
-    remember: !!boot.username,
+    username: stored?.username || '',
+    password: stored?.password || '',
+    remember: !!stored?.username,
   });
-  const [showPwd, setShowPwd]   = useState(false);
-  const [loading, setLoading]   = useState(false);
-  const [error,   setError]     = useState("");
 
+  const [showPwd, setShowPwd] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState('');
   const navigate = useNavigate();
 
-  /* remember-me persistence */
+  // persist remember-me
   useEffect(() => {
     if (form.remember) {
       localStorage.setItem(LS_KEY, JSON.stringify({
@@ -41,56 +35,60 @@ export default function Login() {
     }
   }, [form]);
 
-  /* ───────────────────────── handlers ────────────────────────── */
-  const handleChange = (e) => {
+  // input handler
+  const handleChange = e => {
     const { name, value, type, checked } = e.target;
-    setForm(f => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+    setForm(f => ({
+      ...f,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
-  const handleSubmit = async (e) => {
+  // submit
+  const handleSubmit = async e => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
-
     try {
-      /* skipToast ➜ don't show the generic 401 toast here */
       const { data } = await api.post(
-        "/auth/login",
+        '/auth/login',
         { username: form.username, password: form.password },
         { skipToast: true }
       );
 
-      saveTokens(data.accessToken, data.refreshToken, form.remember);
-      localStorage.setItem("username", form.username);
+      saveTokens(data.accessToken, data.refreshToken);
+      localStorage.setItem('username', form.username);
+      toast('Login successful', 'success');
 
-      toast("Login successful", "success");           // ✅ NEW
-
-      navigate(getUserRole() === "ROLE_ADMIN" ? "/admin" : "/dashboard");
-
+      const role = getUserRole();
+      if (role === 'ROLE_ADMIN') {
+        navigate('/admin');
+      } else if (role === 'ROLE_INSTRUCTOR') {
+        navigate('/instructor/dashboard');
+      } else {
+        navigate('/student/dashboard');
+      }
     } catch (err) {
       console.error(err);
       setError(
         err.response?.data?.message ??
         err.response?.data?.errorMessage ??
-        "Login failed"
+        'Login failed'
       );
     } finally {
       setLoading(false);
     }
   };
 
-  /* ─────────────────────────── UI ────────────────────────────── */
   return (
     <main className={styles.app}>
       <form className={styles.card} onSubmit={handleSubmit}>
-
         <div className={styles.header}>
           <img src={logo} alt="Logo" className={styles.logo} />
         </div>
 
         <h1 className={styles.title}>Sign in</h1>
 
-        {/* Username */}
         <label className={styles.label}>
           Username
           <input
@@ -104,13 +102,12 @@ export default function Login() {
           />
         </label>
 
-        {/* Password */}
         <label className={styles.label}>
           Password
           <div className={styles.passwordWrapper}>
             <input
               className={styles.input}
-              type={showPwd ? "text" : "password"}
+              type={showPwd ? 'text' : 'password'}
               name="password"
               value={form.password}
               onChange={handleChange}
@@ -121,7 +118,7 @@ export default function Login() {
               type="button"
               className={styles.toggleBtn}
               onClick={() => setShowPwd(p => !p)}
-              aria-label={showPwd ? "Hide password" : "Show password"}
+              aria-label={showPwd ? 'Hide password' : 'Show password'}
             >
               {showPwd ? <FiEyeOff /> : <FiEye />}
             </button>
@@ -130,7 +127,6 @@ export default function Login() {
 
         {error && <p className={styles.error}>{error}</p>}
 
-        {/* Remember / Forgot */}
         <div className={styles.row}>
           <label className={styles.rememberRow}>
             <input
@@ -138,30 +134,28 @@ export default function Login() {
               name="remember"
               checked={form.remember}
               onChange={handleChange}
-            />{" "}
+            />{' '}
             Remember me
           </label>
-
           <Link to="/forgot-password" className={styles.forgot}>
             Forgot Password?
           </Link>
         </div>
 
-        {/* Sign-in */}
         <button
           type="submit"
           className={styles.primaryBtn}
           disabled={loading}
         >
-          {loading ? "Signing in…" : "Sign in"}
+          {loading ? 'Signing in…' : 'Sign in'}
         </button>
 
-        {/* Divider & Google */}
         <div className={styles.divider}><span>or</span></div>
+
         <button
           type="button"
           className={styles.socialBtn}
-          onClick={() => alert("Google OAuth coming soon!")}
+          onClick={() => alert('Google OAuth coming soon!')}
         >
           <FcGoogle size={18} /> Sign in with Google
         </button>

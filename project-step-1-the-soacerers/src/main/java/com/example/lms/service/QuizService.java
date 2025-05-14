@@ -19,4 +19,6 @@ public interface QuizService {
     List<Submission> getSubmissionsByCourse(Long courseId);
     List<Submission> getSubmissionsByQuiz(Long quizId);
     List<Submission> getSubmissionsByQuizAndCourse(Long quizId, Long courseId);
+List<Quiz> findByCourseId(Long courseId);
+
 }

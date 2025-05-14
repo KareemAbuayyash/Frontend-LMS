@@ -10,7 +10,8 @@ import {
   FiXCircle,
   FiDownload
 } from 'react-icons/fi';
-import './Courses.css';
+import styles from './Courses.module.css'; // Updated import
+// No need for 'Courses.css' import now, as we're using module-based styling
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -212,10 +213,10 @@ export default function Courses() {
   };
 
   return (
-    <div className="courses-page">
-      <div className="toolbar">
-        <div className="search-box">
-          <FiSearch className="icon" />
+    <div className={styles.coursesPage}>
+      <div className={styles.toolbar}>
+        <div className={styles.searchBox}>
+          <FiSearch className={styles.icon} />
           <input
             type="text"
             placeholder="Search courses…"
@@ -232,16 +233,16 @@ export default function Courses() {
             <option key={ins.id} value={ins.id}>{ins.username}</option>
           ))}
         </select>
-        <button className="btn primary" onClick={openModal}>
+        <button className={`${styles.btn} ${styles.primary}`} onClick={openModal}>
           <FiPlus /> Add Course
         </button>
-        <button className="icon-btn" onClick={exportCoursesCSV} title="Export CSV">
+        <button className={styles.iconBtn} onClick={exportCoursesCSV} title="Export CSV">
           <FiDownload />
         </button>
       </div>
 
-      <div className="table-container">
-        <table className="courses-table">
+      <div className={styles.tableContainer}>
+        <table className={styles.coursesTable}>
           <thead>
             <tr>
               <th onClick={() => changeSort('courseName')}>
@@ -267,41 +268,41 @@ export default function Courses() {
           </thead>
           <tbody>
             {loading ? (
-              <tr className="empty">
+              <tr className={styles.empty}>
                 <td colSpan="9">Loading…</td>
               </tr>
             ) : displayed.length === 0 ? (
-              <tr className="empty">
+              <tr className={styles.empty}>
                 <td colSpan="9">No courses found.</td>
               </tr>
             ) : displayed.map(c => (
-              <tr key={c.courseId} className="fade-in">
+              <tr key={c.courseId} className={styles.fadeIn}>
                 {editingId === c.courseId ? (
                   <>
                     <td>
                       <input
-                        className="inline-edit"
+                        className={styles.inlineEdit}
                         value={draft.courseName}
                         onChange={e => setDraft(d => ({ ...d, courseName: e.target.value }))}
                       />
                     </td>
                     <td>
                       <input
-                        className="inline-edit"
+                        className={styles.inlineEdit}
                         value={draft.courseDescription}
                         onChange={e => setDraft(d => ({ ...d, courseDescription: e.target.value }))}
                       />
                     </td>
                     <td>
                       <input
-                        className="inline-edit"
+                        className={styles.inlineEdit}
                         value={draft.courseDuration}
                         onChange={e => setDraft(d => ({ ...d, courseDuration: e.target.value }))}
                       />
                     </td>
                     <td>
                       <select
-                        className="inline-edit"
+                        className={styles.inlineEdit}
                         value={draft.courseInstructor}
                         onChange={e => setDraft(d => ({ ...d, courseInstructor: e.target.value }))}
                       >
@@ -313,7 +314,7 @@ export default function Courses() {
                     </td>
                     <td>
                       <input
-                        className="inline-edit"
+                        className={styles.inlineEdit}
                         type="number"
                         value={draft.coursePrice}
                         onChange={e => setDraft(d => ({ ...d, coursePrice: e.target.value }))}
@@ -324,7 +325,7 @@ export default function Courses() {
                     </td>
                     <td>
                       <input
-                        className="inline-edit"
+                        className={styles.inlineEdit}
                         type="date"
                         value={draft.courseStartDate}
                         onChange={e => setDraft(d => ({ ...d, courseStartDate: e.target.value }))}
@@ -332,15 +333,15 @@ export default function Courses() {
                     </td>
                     <td>
                       <input
-                        className="inline-edit"
+                        className={styles.inlineEdit}
                         type="date"
                         value={draft.courseEndDate}
                         onChange={e => setDraft(d => ({ ...d, courseEndDate: e.target.value }))}
                       />
                     </td>
                     <td>
-                      <button className="icon-btn" onClick={() => saveEdit(c.courseId)}><FiCheck /></button>
-                      <button className="icon-btn" onClick={cancelEdit}><FiXCircle /></button>
+                      <button className={styles.iconBtn} onClick={() => saveEdit(c.courseId)}><FiCheck /></button>
+                      <button className={styles.iconBtn} onClick={cancelEdit}><FiXCircle /></button>
                     </td>
                   </>
                 ) : (
@@ -354,8 +355,8 @@ export default function Courses() {
                     <td>{new Date(c.courseStartDate).toLocaleDateString()}</td>
                     <td>{new Date(c.courseEndDate).toLocaleDateString()}</td>
                     <td>
-                      <button className="icon-btn" onClick={() => startEdit(c)}><FiEdit2 /></button>
-                      <button className="icon-btn trash" onClick={() => handleDelete(c.courseId)}><FiTrash2 /></button>
+                      <button className={styles.iconBtn} onClick={() => startEdit(c)}><FiEdit2 /></button>
+                      <button className={`${styles.iconBtn} ${styles.trash}`} onClick={() => handleDelete(c.courseId)}><FiTrash2 /></button>
                     </td>
                   </>
                 )}
@@ -367,11 +368,11 @@ export default function Courses() {
 
       {/* ADD COURSE MODAL */}
       {modalOpen && (
-        <div className="modal-backdrop" onClick={closeModal}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className={styles.modalBackdrop} onClick={closeModal}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <h3>New Course</h3>
             <form onSubmit={handleAdd}>
-              <div className="grid2">
+              <div className={styles.grid2}>
                 <input required placeholder="Name" value={newCourse.courseName} onChange={e => setNewCourse(n => ({ ...n, courseName: e.target.value }))} />
                 <select required value={newCourse.courseInstructor} onChange={e => setNewCourse(n => ({ ...n, courseInstructor: e.target.value }))}>
                   <option value="">-- select instructor --</option>
@@ -385,9 +386,9 @@ export default function Courses() {
                 <input required type="date" placeholder="End Date" value={newCourse.courseEndDate} onChange={e => setNewCourse(n => ({ ...n, courseEndDate: e.target.value }))} />
               </div>
               <textarea required placeholder="Description" value={newCourse.courseDescription} onChange={e => setNewCourse(n => ({ ...n, courseDescription: e.target.value }))} />
-              <div className="modal-actions">
-                <button type="button" className="btn" onClick={closeModal}>Cancel</button>
-                <button type="submit" className="btn primary">Create</button>
+              <div className={styles.modalActions}>
+                <button type="button" className={styles.btn} onClick={closeModal}>Cancel</button>
+                <button type="submit" className={`${styles.btn} ${styles.primary}`}>Create</button>
               </div>
             </form>
           </div>
@@ -396,4 +397,3 @@ export default function Courses() {
     </div>
   );
 }
-
