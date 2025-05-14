@@ -1,17 +1,16 @@
-// src/components/StudentCourseDetails.jsx
-
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import './StudentCourseDetails.css';
 
 export default function StudentCourseDetails() {
   const { courseId } = useParams();
+  const navigate      = useNavigate();
   const [assignments, setAssignments] = useState([]);
-  const [quizzes, setQuizzes]         = useState([]);
-  const [content, setContent]         = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState(null);
+  const [quizzes,     setQuizzes]     = useState([]);
+  const [content,     setContent]     = useState([]);
+  const [loading,     setLoading]     = useState(true);
+  const [error,       setError]       = useState(null);
 
   const [showAssign, setShowAssign] = useState(true);
   const [showQuiz,   setShowQuiz]   = useState(true);
@@ -38,31 +37,9 @@ export default function StudentCourseDetails() {
     fetchAll();
   }, [courseId]);
 
-  const downloadContent = async (id, filename) => {
-    try {
-      const resp = await api.get(`/content/${id}/download`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(resp.data);
-      const a   = document.createElement('a');
-      a.href    = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch {
-      setError('Unable to download content');
-    }
-  };
-
-  const viewContent = async (id) => {
-    try {
-      const resp = await api.get(`/content/${id}/download`, { responseType: 'blob' });
-      const url  = window.URL.createObjectURL(resp.data);
-      window.open(url, '_blank');
-      setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
-    } catch {
-      setError('Unable to open content');
-    }
+  // navigate to coursework & auto-open modal for this assignment
+  const goToSubmit = (assignmentId) => {
+    navigate('/student/coursework', { state: { assignmentId } });
   };
 
   if (loading) return <p>Loading…</p>;
@@ -84,7 +61,13 @@ export default function StudentCourseDetails() {
               ? <p>No assignments.</p>
               : <ul>
                   {assignments.map(a => (
-                    <li key={a.id} className="assignment-item">
+                    <li
+                      key={a.id}
+                      className="assignment-item"
+                      onClick={() => !a.submitted && goToSubmit(a.id)}
+                      style={{ cursor: a.submitted ? 'default' : 'pointer' }}
+                      title={a.submitted ? 'Already submitted' : 'Click to submit'}
+                    >
                       <div className="assignment-details">
                         <span className="assignment-title">{a.title}</span>
                         <span className="assignment-date">
@@ -115,7 +98,8 @@ export default function StudentCourseDetails() {
               : <ul>
                   {quizzes.map(q => (
                     <li key={q.id} className="quiz-item">
-                      <Link className="quiz-link" to={`/student/courses/${courseId}/quizzes/${q.id}`}>
+                      <Link className="quiz-link"
+                            to={`/student/courses/${courseId}/quizzes/${q.id}`}>
                         {q.title}
                       </Link>
                     </li>
@@ -143,13 +127,28 @@ export default function StudentCourseDetails() {
                       {item.description && <p>{item.description}</p>}
                       <button
                         className="download-button"
-                        onClick={() => downloadContent(item.id, item.title + '.pdf')}
+                        onClick={async () => {
+                          const resp = await api.get(`/content/${item.id}/download`, { responseType: 'blob' });
+                          const url  = window.URL.createObjectURL(resp.data);
+                          const a    = document.createElement('a');
+                          a.href     = url;
+                          a.download = item.title + '.pdf';
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          window.URL.revokeObjectURL(url);
+                        }}
                       >
                         Download
                       </button>
                       <button
                         className="view-button"
-                        onClick={() => viewContent(item.id)}
+                        onClick={async () => {
+                          const resp = await api.get(`/content/${item.id}/download`, { responseType: 'blob' });
+                          const url = window.URL.createObjectURL(resp.data);
+                          window.open(url, '_blank');
+                          setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+                        }}
                       >
                         View
                       </button>

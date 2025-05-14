@@ -55,16 +55,8 @@
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.9em;
-}
-
-.status.submitted {
   background: #e6f4ea;
   color: #1e7e34;
-}
-
-.status.pending {
-  background: #fff3cd;
-  color: #856404;
 }
 
 .course-name {
@@ -87,12 +79,6 @@
   font-weight: bold;
 }
 
-.score {
-  font-weight: bold;
-  margin-top: 10px;
-  color: #333;
-}
-
 .submit-btn {
   background: #5462e7;
   color: white;
@@ -112,10 +98,7 @@
 /* Modal Styles */
 .submission-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -210,4 +193,4 @@
 
 .cancel-button:hover {
   background: #5a6268;
-} 
+}
