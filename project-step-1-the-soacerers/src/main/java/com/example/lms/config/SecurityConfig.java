@@ -44,6 +44,7 @@ public class SecurityConfig {
       .cors().and()
       .csrf().disable()
       .authorizeHttpRequests(auth -> auth
+      .requestMatchers(HttpMethod.GET, "/api/content/*/download").permitAll()
         // allow anyone to fetch static uploads:
         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
 

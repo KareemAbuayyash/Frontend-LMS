@@ -3,6 +3,7 @@ package com.example.lms.controller;
 import com.example.lms.assembler.CourseModelAssembler;
 import com.example.lms.dto.CourseDTO;
 import com.example.lms.entity.Course;
+import com.example.lms.entity.Instructor;
 import com.example.lms.exception.DuplicateAssociationException;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.CourseMapper;
@@ -205,4 +206,30 @@ public class CourseController {
     }
 
     // (assignInstructor omitted for brevity)
+     @GetMapping("/{courseId}/enrollment-count")
+public ResponseEntity<Long> getEnrollmentCount(@PathVariable Long courseId) {
+    long count = studentRepository.countByEnrolledCourses_Id(courseId);
+    return ResponseEntity.ok(count);
+}
+@PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{courseId}/assignInstructor/{instructorId}")
+    public ResponseEntity<CourseDTO> assignInstructorToCourse(
+            @PathVariable Long courseId,
+            @PathVariable Long instructorId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id " + courseId));
+
+        Instructor instructor = instructorRepository.findById(instructorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id " + instructorId));
+        if (course.getInstructor() != null
+                && course.getInstructor().getId().equals(instructorId)) {
+            throw new DuplicateAssociationException(
+                    "Instructor with ID " + instructorId +
+                            " is already assigned to course ID " + courseId);
+        }
+        course.setInstructor(instructor);
+        Course updatedCourse = courseRepository.save(course);
+
+        return ResponseEntity.ok(CourseMapper.toDTO(updatedCourse));
+    }
 }

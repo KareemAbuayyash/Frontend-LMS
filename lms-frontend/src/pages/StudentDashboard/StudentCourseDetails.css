@@ -1,0 +1,174 @@
+/* src/components/StudentCourseDetails.css */
+
+.course-details {
+  max-width: 800px;
+  margin: 2rem auto;
+  font-family: Arial, sans-serif;
+  color: #24292e;
+}
+
+.course-details h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Section card wrapper */
+.section-container {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+/* Collapsible headers */
+.toggle-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 1rem;
+  background: #f7f9fb;
+}
+
+.toggle-header h2 {
+  margin: 0;
+  flex-grow: 1;
+  font-size: 1.25rem;
+}
+
+.arrow {
+  display: inline-block;
+  margin-right: 0.75rem;
+  transition: transform 0.2s ease;
+  font-weight: bold;
+  transform: rotate(90deg);
+}
+
+.arrow.collapsed {
+  transform: rotate(0deg);
+}
+
+/* Section inner content */
+.section-content {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.section-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Assignment card */
+.assignment-item {
+  background: #fafbfc;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.assignment-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.assignment-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0366d6;
+}
+
+.assignment-date {
+  font-size: 0.85rem;
+  color: #586069;
+}
+
+/* Quiz card */
+.quiz-item {
+  background: #fafbfc;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.quiz-link {
+  font-weight: 600;
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.quiz-link:hover {
+  text-decoration: underline;
+}
+
+/* Content card */
+.content-item {
+  background: #fafbfc;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.content-item strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.content-item p {
+  margin: 0.25rem 0 0.75rem;
+  color: #586069;
+}
+
+/* Submitted badge */
+.status {
+  padding: 0.25em 0.6em;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  background: #d4edda;
+  color: #155724;
+}
+
+/* Buttons */
+.download-button,
+.view-button {
+  border: none;
+  padding: 0.5em 1em;
+  margin-right: 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.download-button {
+  background: #4a90e2;
+  color: white;
+}
+
+.download-button:hover {
+  background: #357ab8;
+}
+
+.view-button {
+  background: #50c878;
+  color: white;
+}
+
+.view-button:hover {
+  background: #3aa45a;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 2rem;
+}

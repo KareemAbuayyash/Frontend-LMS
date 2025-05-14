@@ -2,24 +2,32 @@ package com.example.lms.controller;
 
 import com.example.lms.dto.SubmissionDTO;
 import com.example.lms.entity.AssignmentSubmission;
+import com.example.lms.entity.Student;
+import com.example.lms.entity.User;
+import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.AssignmentSubmissionMapper;
+import com.example.lms.repository.StudentRepository;
+import com.example.lms.repository.UserRepository;
 import com.example.lms.service.AssignmentSubmissionService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/submissions/assignments")
+@RequestMapping("/api/submissions/assignments")
 @RequiredArgsConstructor
 public class AssignmentSubmissionController {
-
+    private final UserRepository           userRepo;
+    private final StudentRepository        studentRepo;
     private static final Logger logger = LoggerFactory.getLogger(AssignmentSubmissionController.class);
     private final AssignmentSubmissionService submissionService;
 
@@ -90,5 +98,28 @@ public class AssignmentSubmissionController {
 
         SubmissionDTO dto = AssignmentSubmissionMapper.toDTO(submission);
         return ResponseEntity.ok(dto);
+    }
+    @PreAuthorize("hasRole('STUDENT')")
+    @PostMapping("/{assignmentId}")
+    public ResponseEntity<SubmissionDTO> submitAssignment(
+            @PathVariable Long assignmentId,
+            @RequestPart("submissionContent") String content,
+            @RequestPart(value="file", required=false) MultipartFile file,
+            Authentication auth
+    ) {
+        // 1) find the current Student
+        String username = auth.getName();
+        User   user    = userRepo.findByUsername(username)
+                            .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        Student student = studentRepo.findByUser(user);
+        if (student == null) {
+            throw new ResourceNotFoundException("Student record not found for user: " + username);
+        }
+
+        // 2) delegate to your service
+        AssignmentSubmission sub =
+          submissionService.submitAssignment(assignmentId, student.getId(), content, file);
+
+        return ResponseEntity.ok(AssignmentSubmissionMapper.toDTO(sub));
     }
 }
