@@ -20,7 +20,6 @@ import Enrollments from "./pages/AdminDashboard/Enrollments";
 // Student pages
 import StudentDashboard from "./pages/StudentDashboard/StudentDashboard";
 import StudentCourses from "./pages/StudentDashboard/StudentCourses";
-import StudentGrades from "./pages/StudentDashboard/StudentGrades";
 import Coursework from "./pages/StudentDashboard/Coursework";
 import StudentCourseDetails from "./pages/StudentDashboard/StudentCourseDetails";
 import QuizAttempt from "./pages/StudentDashboard/QuizAttempt";
@@ -109,7 +108,6 @@ export default function App() {
         {/* Dashboard, Courses, Grades, Coursework */}
         <Route path="dashboard"  element={<StudentDashboard />} />
         <Route path="courses"    element={<StudentCourses />} />
-        <Route path="grades"     element={<StudentGrades />} />
         <Route path="coursework" element={<Coursework />} />
 
         {/* Course details: assignments + quizzes */}

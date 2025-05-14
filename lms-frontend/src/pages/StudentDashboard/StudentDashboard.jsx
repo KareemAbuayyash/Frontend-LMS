@@ -13,7 +13,7 @@ export default function StudentDashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
@@ -40,12 +40,12 @@ export default function StudentDashboard() {
       setLoading(true);
       try {
         console.log('Fetching assignments...');
-        const assignmentsRes = await api.get('/api/students/assignments');
+        const assignmentsRes = await api.get('/students/assignments');
         console.log('Assignments response:', assignmentsRes.data);
         setAssignments(assignmentsRes.data);
 
         console.log('Fetching stats...');
-        const statsRes = await api.get('/api/students/stats');
+        const statsRes = await api.get('/students/stats');
         console.log('Stats response:', statsRes.data);
         setStats(statsRes.data);
       } catch (error) {

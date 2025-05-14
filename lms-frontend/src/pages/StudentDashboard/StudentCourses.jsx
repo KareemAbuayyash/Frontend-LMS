@@ -1,12 +1,14 @@
+// src/pages/StudentDashboard/StudentCourses.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import './StudentCourses.css';
 
 export default function StudentCourses() {
-  const [courses, setCourses]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,22 +38,14 @@ export default function StudentCourses() {
           <div key={course.courseId} className="course-card">
             <h3 className="card-title">{course.courseName}</h3>
 
-            {course.description && (
-              <p className="card-description">{course.description}</p>
+            {course.courseDescription && (
+              <p className="card-description">
+                {course.courseDescription}
+              </p>
             )}
 
-            <div className="card-progress">
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${course.progress}%` }}
-                />
-              </div>
-              <span className="progress-label">{course.progress}%</span>
-            </div>
-
             <p className="card-instructor">
-              <strong>Instructor:</strong> {course.instructorName}
+              <strong>Instructor:</strong> {course.instructorName || 'N/A'}
             </p>
 
             <div className="card-actions">

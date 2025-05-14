@@ -1,3 +1,5 @@
+/* src/pages/StudentDashboard/StudentCourses.css */
+
 /* Container & Heading */
 .student-courses {
   max-width: 1000px;
@@ -43,45 +45,15 @@
   margin-bottom: 1rem;
 }
 
-/* Progress bar */
-.card-progress {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.progress-bar {
-  flex-grow: 1;
-  height: 8px;
-  background: #eee;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-right: 0.5rem;
-}
-
-.progress-fill {
-  height: 100%;
-  background: #28a745;
-  transition: width 0.3s ease;
-}
-
-.progress-label {
-  font-size: 0.85rem;
-  color: #24292e;
-  min-width:  thirty-six px;
-  text-align: right;
-}
-
-/* Instructor line */
 .card-instructor {
   font-size: 0.9rem;
   color: #333;
   margin-bottom: 1rem;
 }
 
-/* Action button */
 .card-actions {
   text-align: right;
+  margin-top: auto;
 }
 
 .view-btn {
