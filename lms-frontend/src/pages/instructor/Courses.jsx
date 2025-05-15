@@ -1,5 +1,6 @@
+// src/pages/instructor/Courses.jsx
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Space, Tag } from 'antd';
+import { Card, Table, Button, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axios';
 import './Courses.css';
@@ -14,7 +15,7 @@ const InstructorCourses = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await api.get('/instructor/courses');
+      const response = await api.get('/instructors/me/courses'); 
       setCourses(response.data);
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -26,28 +27,18 @@ const InstructorCourses = () => {
   const columns = [
     {
       title: 'Course Name',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'courseName',
+      key: 'courseName',
     },
     {
-      title: 'Code',
-      dataIndex: 'code',
-      key: 'code',
+      title: 'Course ID',
+      dataIndex: 'courseId',
+      key: 'courseId',
     },
     {
-      title: 'Students',
-      dataIndex: 'studentCount',
-      key: 'studentCount',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <Tag color={status === 'active' ? 'green' : 'red'}>
-          {status.toUpperCase()}
-        </Tag>
-      ),
+      title: 'Enrolled Students',
+      dataIndex: 'enrollmentCount',
+      key: 'enrollmentCount',
     },
     {
       title: 'Actions',
@@ -79,11 +70,11 @@ const InstructorCourses = () => {
           columns={columns}
           dataSource={courses}
           loading={loading}
-          rowKey="id"
+          rowKey="courseId"
         />
       </Card>
     </div>
   );
 };
 
-export default InstructorCourses; 
+export default InstructorCourses;

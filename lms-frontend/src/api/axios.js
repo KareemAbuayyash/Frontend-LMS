@@ -1,22 +1,19 @@
-// src/api/axios.js
-import axios from "axios";
+import axios from 'axios';
 import {
   getAccessToken,
   getRefreshToken,
   saveTokens,
   clearTokens,
-} from "../utils/auth";
-import { toast } from "../utils/toast";
+} from '../utils/auth';
+import { toast } from '../utils/toast';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api",
-  withCredentials: true,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+  withCredentials: true,     // still OK if you need cookies elsewhere
 });
 
-/* ──────────────────────────────────────────────────────────────
-   Attach JWT to every outgoing request
-   ──────────────────────────────────────────────────────────── */
-api.interceptors.request.use((config) => {
+// Attach JWT to every outgoing request
+api.interceptors.request.use(config => {
   const token = getAccessToken();
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -24,57 +21,49 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-/* ──────────────────────────────────────────────────────────────
-   Refresh-token retry (unchanged)
-   ──────────────────────────────────────────────────────────── */
+// Refresh-token retry
 api.interceptors.response.use(
-  (res) => res,
-  async (err) => {
-    const original = err.config;
-
+  res => res,
+  async err => {
+    const orig = err.config;
     if (
       err.response?.status === 401 &&
-      !original._retry &&
+      !orig._retry &&
       getRefreshToken()
     ) {
-      original._retry = true;
+      orig._retry = true;
       try {
         const { data } = await axios.post(
           `${api.defaults.baseURL}/auth/refresh-token`,
           { refreshToken: getRefreshToken() }
         );
+        // Save and re-attach the _new_ tokens
         saveTokens(data.accessToken, data.refreshToken);
-        original.headers.Authorization = `Bearer ${data.accessToken}`;
-        return api(original);
+        orig.headers.Authorization = `Bearer ${data.accessToken}`;
+        return api(orig);
       } catch (refreshErr) {
         clearTokens();
-        localStorage.removeItem("username");
-        window.location.replace("/login");
+        window.location.replace('/login');
         return Promise.reject(refreshErr);
       }
     }
-    return Promise.reject(err); // bubble up to the next interceptor
+    return Promise.reject(err);
   }
 );
 
-/* ──────────────────────────────────────────────────────────────
-   Generic catch-all: show a toast unless { skipToast: true }
-   ──────────────────────────────────────────────────────────── */
+// Global error → toast
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    /* caller opted-out? */
+  res => res,
+  err => {
     if (err?.config?.skipToast) {
       return Promise.reject(err);
     }
-
     const msg =
-      err.response?.data?.message ??
-      err.response?.data?.errorMessage ??
-      err.message ??
-      "Unexpected error";
-
-    toast(msg, "error");
+      err.response?.data?.message ||
+      err.response?.data?.errorMessage ||
+      err.message ||
+      'Unexpected error';
+    toast(msg, 'error');
     return Promise.reject(err);
   }
 );

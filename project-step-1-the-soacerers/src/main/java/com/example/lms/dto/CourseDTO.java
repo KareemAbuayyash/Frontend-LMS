@@ -1,10 +1,10 @@
 package com.example.lms.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.Data;
-
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
 public class CourseDTO {
@@ -17,9 +17,10 @@ public class CourseDTO {
     @NotBlank(message = "Course description must not be blank")
     private String courseDescription;
 
-    private String courseDuration;         
-    private String courseInstructor;
-
+    private String courseDuration;
+    @JsonProperty("courseInstructor")
+    @NotNull(message = "Instructor ID is required")
+    private Long instructorId;
     @PositiveOrZero(message = "Price can't be negative")
     private Double coursePrice;
 

@@ -1,14 +1,5 @@
+// src/main/java/com/example/lms/api/StudentDashboardController.java
 package com.example.lms.api;
-
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.example.lms.dto.CourseDTO;
 import com.example.lms.entity.Assignment;
@@ -21,94 +12,106 @@ import com.example.lms.repository.AssignmentRepository;
 import com.example.lms.repository.EnrollmentRepository;
 import com.example.lms.repository.StudentRepository;
 import com.example.lms.repository.SubmissionRepository;
-
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
 public class StudentDashboardController {
-
   @Autowired
-  private EnrollmentRepository enrollmentRepo;
-  @Autowired
-  private AssignmentRepository assignmentRepo;
-  @Autowired
-  private SubmissionRepository submissionRepo;
-  @Autowired
-  private StudentRepository studentRepo;
+    private final EnrollmentRepository   enrollmentRepo;
+    @Autowired
+    private final AssignmentRepository   assignmentRepo;
+    @Autowired
+    private final SubmissionRepository   submissionRepo;
+    @Autowired
+    private final StudentRepository      studentRepo;
+    @Autowired
+    private  CourseMapper           courseMapper;
 
-  // 1) List the student's courses
-  @GetMapping("/courses")
-  public ResponseEntity<List<CourseDTO>> myCourses(Authentication auth) {
-    // find the Student by auth.getName()
-    User user = (User) auth.getPrincipal();
-    Student student = studentRepo.findByUser(user);
-    var dtos = student.getEnrolledCourses()
-                     .stream()
-                     .map(CourseMapper::toDTO)
-                     .toList();
-    return ResponseEntity.ok(dtos);
-  }
+    // 1) List the student's courses
+    @GetMapping("/courses")
+    public ResponseEntity<List<CourseDTO>> myCourses(Authentication auth) {
+        User    user    = (User) auth.getPrincipal();
+        Student student = studentRepo.findByUser(user);
 
-  // 2) List that student's assignments (with a "submitted" flag)
-  @GetMapping("/assignments")
-  public ResponseEntity<List<Map<String,Object>>> myAssignments(Authentication auth) {
-    User user = (User) auth.getPrincipal();
-    Student student = studentRepo.findByUser(user);
+        List<CourseDTO> dtos = student.getEnrolledCourses().stream()
+            .map(courseMapper::toDTO)
+            .collect(Collectors.toList());
 
-    // fetch all assignments in the student's courses
-    List<Assignment> assignments = assignmentRepo.findAll()
-      .stream()
-      .filter(a -> student.getEnrolledCourses()
-                          .stream()
-                          .anyMatch(c -> c.getId().equals(a.getCourse().getId())))
-      .toList();
+        return ResponseEntity.ok(dtos);
+    }
 
-    // now map to a DTO including whether they've submitted
-    var list = assignments.stream().map(a -> {
-      boolean submitted = submissionRepo
-        .findByAssignment_IdAndStudentId(a.getId(), student.getId())
-        != null;
-      return Map.of(
-        "id",            a.getId(),
-        "title",         a.getTitle(),
-        "courseName",    a.getCourse().getCourseName(),
-        "dueDate",       a.getDueDate(),
-        "submitted",     submitted
-      );
-    }).toList();
+    // 2) List that student's assignments (with a "submitted" flag)
+    @GetMapping("/assignments")
+    public ResponseEntity<List<Map<String, Object>>> myAssignments(Authentication auth) {
+        User    user    = (User) auth.getPrincipal();
+        Student student = studentRepo.findByUser(user);
 
-    return ResponseEntity.ok((List<Map<String, Object>>) (List<?>) list);
-  }
+        // find all assignments in any of their courses
+        Set<Long> courseIds = student.getEnrolledCourses()
+                                     .stream()
+                                     .map(Course::getId)
+                                     .collect(Collectors.toSet());
 
-  // 3) Stats for the dashboard
-  @GetMapping("/stats")
-  public ResponseEntity<Map<String, Object>> stats(Authentication auth) {
-    User user = (User) auth.getPrincipal();
-    Student student = studentRepo.findByUser(user);
+        List<Assignment> assignments = assignmentRepo.findAll()
+            .stream()
+            .filter(a -> courseIds.contains(a.getCourse().getId()))
+            .collect(Collectors.toList());
 
-    long totalCourses = student.getEnrolledCourses().size();
-    long completedCourses = student.getEnrolledCourses().stream()
-                                   .filter(Course::isCompleted) // you'd need a flag on Course or Enrollment
-                                   .count();
-    long pendingAssignments = submissionRepo.findByStudentId(student.getId())
-      .stream()
-      .filter(s -> !s.isGraded())
-      .count();
-    double averageGrade = submissionRepo.findByStudentId(student.getId())
-      .stream()
-      .mapToInt(Submission::getScore)
-      .average()
-      .orElse(0.0);
+        List<Map<String, Object>> result = assignments.stream()
+            .map(a -> {
+                boolean submitted = submissionRepo
+                    .findByAssignment_IdAndStudentId(a.getId(), student.getId())
+                    != null;
 
-    var stats = Map.<String,Object>of(
-      "totalCourses",      totalCourses,
-      "completedCourses",  completedCourses,
-      "pendingAssignments",pendingAssignments,
-      "averageGrade",      averageGrade
-    );
-    return ResponseEntity.ok(stats);
-  }
+                return Map.<String,Object>of(
+                    "id",         a.getId(),
+                    "title",      a.getTitle(),
+                    "courseName", a.getCourse().getCourseName(),
+                    "dueDate",    a.getDueDate(),
+                    "submitted",  submitted
+                );
+            })
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+
+    // 3) Stats for the dashboard
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> stats(Authentication auth) {
+        User    user            = (User) auth.getPrincipal();
+        Student student         = studentRepo.findByUser(user);
+
+        long totalCourses       = student.getEnrolledCourses().size();
+        long completedCourses   = student.getEnrolledCourses().stream()
+                                         .filter(c -> c.isCompleted()) // or pull from Enrollment
+                                         .count();
+        long pendingAssignments = submissionRepo.findByStudentId(student.getId())
+                                                .stream()
+                                                .filter(s -> !s.isGraded())
+                                                .count();
+        double averageGrade     = submissionRepo.findByStudentId(student.getId())
+                                                .stream()
+                                                .mapToInt(Submission::getScore)
+                                                .average()
+                                                .orElse(0.0);
+
+        Map<String,Object> stats = new HashMap<>();
+        stats.put("totalCourses",      totalCourses);
+        stats.put("completedCourses",  completedCourses);
+        stats.put("pendingAssignments",pendingAssignments);
+        stats.put("averageGrade",      averageGrade);
+
+        return ResponseEntity.ok(stats);
+    }
 }
-

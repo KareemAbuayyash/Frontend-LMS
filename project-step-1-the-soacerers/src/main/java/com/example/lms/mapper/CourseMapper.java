@@ -1,37 +1,54 @@
 package com.example.lms.mapper;
 
-import com.example.lms.entity.Course;
-import com.example.lms.entity.Instructor;
 import com.example.lms.dto.CourseDTO;
 import com.example.lms.dto.CourseSummaryDTO;
+import com.example.lms.entity.Course;
+import com.example.lms.entity.Instructor;
+import com.example.lms.exception.ResourceNotFoundException;
+import com.example.lms.repository.InstructorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CourseMapper {
 
-    public static Course toEntity(CourseDTO courseDTO) {
-        Course course = new Course();
-        course.setCourseName(courseDTO.getCourseName());
-        course.setCourseDescription(courseDTO.getCourseDescription());
-        course.setCourseDuration(courseDTO.getCourseDuration());
-        course.setCourseInstructor(courseDTO.getCourseInstructor());
-        course.setCoursePrice(courseDTO.getCoursePrice());
-        course.setCourseStartDate(courseDTO.getCourseStartDate());
-        course.setCourseEndDate(courseDTO.getCourseEndDate());
-        return course;
+    private final InstructorRepository instructorRepo;
+
+    @Autowired
+    public CourseMapper(InstructorRepository instructorRepo) {
+        this.instructorRepo = instructorRepo;
     }
 
-    public static CourseDTO toDTO(Course course) {
-        CourseDTO courseDTO = new CourseDTO();
-        courseDTO.setCourseId(course.getId());
-        courseDTO.setCourseName(course.getCourseName());
-        courseDTO.setCourseDescription(course.getCourseDescription());
-        courseDTO.setCourseDuration(course.getCourseDuration());
-        courseDTO.setCourseInstructor(course.getCourseInstructor());
-        courseDTO.setCoursePrice(course.getCoursePrice());
-        courseDTO.setCourseStartDate(course.getCourseStartDate());
-        courseDTO.setCourseEndDate(course.getCourseEndDate());
-        return courseDTO;
+    public Course toEntity(CourseDTO dto) {
+        Course c = new Course();
+        c.setCourseName(dto.getCourseName());
+        c.setCourseDescription(dto.getCourseDescription());
+        c.setCourseDuration(dto.getCourseDuration());
+        c.setCoursePrice(dto.getCoursePrice());
+        c.setCourseStartDate(dto.getCourseStartDate());
+        c.setCourseEndDate(dto.getCourseEndDate());
+
+        Instructor inst = instructorRepo.findById(dto.getInstructorId())
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Instructor not found: " + dto.getInstructorId())
+            );
+        c.setInstructor(inst);
+
+        return c;
     }
 
+    public CourseDTO toDTO(Course c) {
+        CourseDTO dto = new CourseDTO();
+        dto.setCourseId(c.getId());
+        dto.setCourseName(c.getCourseName());
+        dto.setCourseDescription(c.getCourseDescription());
+        dto.setCourseDuration(c.getCourseDuration());
+        dto.setCoursePrice(c.getCoursePrice());
+        dto.setCourseStartDate(c.getCourseStartDate());
+        dto.setCourseEndDate(c.getCourseEndDate());
+        dto.setInstructorId(c.getInstructor() != null ? c.getInstructor().getId() : null);
+        return dto;
+    }
     public static CourseSummaryDTO toCourseSummaryDTO(Course course, boolean completed) {
         CourseSummaryDTO dto = new CourseSummaryDTO();
         dto.setCourseId(course.getId());

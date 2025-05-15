@@ -3,22 +3,27 @@ package com.example.lms.service;
 import com.example.lms.assembler.CourseModelAssembler;
 import com.example.lms.dto.CourseDTO;
 import com.example.lms.entity.Course;
-import com.example.lms.entity.Student;
 import com.example.lms.mapper.CourseMapper;
 import com.example.lms.notification.Notification;
 import com.example.lms.notification.NotificationService;
 import com.example.lms.notification.NotificationType;
 import com.example.lms.repository.AdminRepository;
+import com.example.lms.repository.ContentRepository;
 import com.example.lms.repository.CourseRepository;
-import com.example.lms.service.EmailService;
+
+import jakarta.persistence.EntityNotFoundException;
+
+import com.example.lms.audit.SystemActivityService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,96 +31,145 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
-
     private static final Logger logger = LoggerFactory.getLogger(CourseServiceImpl.class);
-
-    private final CourseRepository          courseRepository;
-    private final CourseModelAssembler      assembler;
-    private final AdminRepository           adminRepository;
-    private final NotificationService       notificationService;   // ← inject NotificationService
+    @Autowired
+    private final CourseRepository       courseRepository;
+    @Autowired
+    private final CourseModelAssembler   assembler;
+    @Autowired
+    private  CourseMapper           courseMapper;
+    private final SystemActivityService  activityService;
+    @Autowired
+    private final AdminRepository        adminRepository;
+    @Autowired
+    private final NotificationService    notificationService;
+    @Autowired
+    private final ContentRepository      contentRepository;
 
     @Override
     public CollectionModel<EntityModel<CourseDTO>> findAll() {
-        logger.info("Fetching all courses");
-        List<EntityModel<CourseDTO>> courses = courseRepository.findAll().stream()
-            .map(CourseMapper::toDTO)
+        List<EntityModel<CourseDTO>> content = courseRepository.findAll().stream()
+            .map(courseMapper::toDTO)
             .map(assembler::toModel)
             .collect(Collectors.toList());
-        return CollectionModel.of(courses);
+        return CollectionModel.of(content);
     }
 
     @Override
-    public ResponseEntity<?> newCourse(CourseDTO newCourse) {
-        Course course = courseRepository.save(CourseMapper.toEntity(newCourse));
-        EntityModel<CourseDTO> model = assembler.toModel(CourseMapper.toDTO(course));
-        return ResponseEntity.created(model.getRequiredLink("self").toUri()).body(model);
+    public ResponseEntity<?> newCourse(CourseDTO newCourseDto) {
+        // 1) map DTO → entity & save
+        Course toSave = courseMapper.toEntity(newCourseDto);
+        Course saved  = courseRepository.save(toSave);
+
+        // 2) audit
+        String actor = SecurityContextHolder.getContext()
+                                             .getAuthentication()
+                                             .getName();
+        activityService.logEvent(
+            "COURSE_CREATED",
+            String.format(
+              "Course '%s' (ID: %d) was created by %s",
+              saved.getCourseName(),
+              saved.getId(),
+              actor
+            )
+        );
+
+        // 3) notify all admins by email
+        String subject = "New course: " + saved.getCourseName();
+        String message = String.format(
+            "Course '%s' (ID: %d) was just created by %s.",
+            saved.getCourseName(),
+            saved.getId(),
+            actor
+        );
+        adminRepository.findAll().forEach(admin -> {
+            Notification n = new Notification();
+            n.setTo(admin.getUser().getUsername());
+            n.setSubject(subject);
+            n.setMessage(message);
+            n.setType(NotificationType.EMAIL);
+            notificationService.sendNotification(n);
+        });
+
+        // 4) build HATEOAS response
+        EntityModel<CourseDTO> model = assembler.toModel(courseMapper.toDTO(saved));
+        return ResponseEntity
+                .created(model.getRequiredLink("self").toUri())
+                .body(model);
     }
 
     @Override
     public EntityModel<CourseDTO> findById(Long id) {
-        Course course = courseRepository.findById(id)
+        Course c = courseRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Course not found: " + id));
-        return assembler.toModel(CourseMapper.toDTO(course));
+        return assembler.toModel(courseMapper.toDTO(c));
     }
 
     @Override
     public ResponseEntity<?> save(CourseDTO dto, Long id) {
-        logger.info("Updating course with ID: {}", id);
-        Course toSave = CourseMapper.toEntity(dto);
+        logger.info("Updating course ID {}", id);
+
+        // 1) map DTO → entity & set the existing ID
+        Course toSave = courseMapper.toEntity(dto);
         toSave.setId(id);
+
+        // 2) save
         Course updated = courseRepository.save(toSave);
-        logger.info("Course with ID: {} saved to DB, dispatching notifications asynchronously", id);
 
-        sendUpdateNotificationsAsync(updated);
+        // 3) audit
+        String actor = SecurityContextHolder.getContext()
+                                             .getAuthentication()
+                                             .getName();
+        activityService.logEvent(
+            "COURSE_UPDATED",
+            String.format(
+              "Course '%s' (ID: %d) updated by %s",
+              updated.getCourseName(),
+              updated.getId(),
+              actor
+            )
+        );
 
-        EntityModel<CourseDTO> model = assembler.toModel(CourseMapper.toDTO(updated));
-        return ResponseEntity.created(model.getRequiredLink("self").toUri()).body(model);
+        // 4) notify admins
+        String subject = "Course updated: " + updated.getCourseName();
+        String message = String.format(
+            "Course '%s' (ID: %d) was updated by %s.",
+            updated.getCourseName(),
+            updated.getId(),
+            actor
+        );
+        adminRepository.findAll().forEach(admin -> {
+            Notification n = new Notification();
+            n.setTo(admin.getUser().getUsername());
+            n.setSubject(subject);
+            n.setMessage(message);
+            n.setType(NotificationType.EMAIL);
+            notificationService.sendNotification(n);
+        });
+
+        // 5) return created-style HATEOAS response
+        EntityModel<CourseDTO> model = assembler.toModel(courseMapper.toDTO(updated));
+        return ResponseEntity
+                .created(model.getRequiredLink("self").toUri())
+                .body(model);
     }
 
     @Override
-    public ResponseEntity<?> deleteById(Long id) {
-        if (!courseRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        courseRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+    @Transactional
+public ResponseEntity<?> deleteById(Long id) {
+  if (!courseRepository.existsById(id)) {
+    return ResponseEntity.notFound().build();
+  }
+
+  courseRepository.deleteStudentCourseLinks(id);
+  courseRepository.deleteCourseEnrollmentLinks(id);
+  courseRepository.deleteEnrollmentCourseLinks(id);  // <— this one
+  contentRepository.deleteByCourseId(id);
+
+  courseRepository.deleteById(id);
+  return ResponseEntity.noContent().build();
+}
 
 
-    @Async
-    public void sendUpdateNotificationsAsync(Course updatedCourse) {
-        // notify students
-        if (updatedCourse.getStudents() != null) {
-            for (Student student : updatedCourse.getStudents()) {
-                String username = student.getUser().getUsername();  // ← use username
-                Notification n = new Notification();
-                n.setTo(username);
-                n.setSubject("Course Updated: " + updatedCourse.getCourseName());
-                n.setMessage(
-                    "Dear Student,\n\n" +
-                    "The course '" + updatedCourse.getCourseName() + "' has been updated. " +
-                    "Please check it in the LMS.\n\nBest,\nLMS Team"
-                );
-                n.setType(NotificationType.EMAIL);
-                notificationService.sendNotification(n);
-                logger.info("Notification (student) sent to: {}", username);
-            }
-        }
-
-        // notify admins
-        adminRepository.findAll().forEach(admin -> {
-            String username = admin.getUser().getUsername();      // ← use username
-            Notification n = new Notification();
-            n.setTo(username);
-            n.setSubject("Course Updated: " + updatedCourse.getCourseName());
-            n.setMessage(
-                "Dear Admin,\n\n" +
-                "Course '" + updatedCourse.getCourseName() + "' was updated. Please review.\n\n" +
-                "Best,\nLMS System"
-            );
-            n.setType(NotificationType.EMAIL);
-            notificationService.sendNotification(n);
-            logger.info("Notification (admin) sent to: {}", username);
-        });
-    }
 }
