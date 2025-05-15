@@ -1,7 +1,5 @@
-// src/pages/instructor/Courses.jsx
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Space } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, Table } from 'antd';
 import api from '../../api/axios';
 import './Courses.css';
 
@@ -15,7 +13,7 @@ const InstructorCourses = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await api.get('/instructors/me/courses'); 
+      const response = await api.get('/instructors/me/courses');
       setCourses(response.data);
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -39,30 +37,13 @@ const InstructorCourses = () => {
       title: 'Enrolled Students',
       dataIndex: 'enrollmentCount',
       key: 'enrollmentCount',
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record) => (
-        <Space>
-          <Button icon={<EditOutlined />} type="primary" ghost>
-            Edit
-          </Button>
-          <Button icon={<DeleteOutlined />} danger>
-            Delete
-          </Button>
-        </Space>
-      ),
-    },
+    }
   ];
 
   return (
     <div className="instructor-courses">
       <div className="courses-header">
         <h1>My Courses</h1>
-        <Button type="primary" icon={<PlusOutlined />}>
-          Create New Course
-        </Button>
       </div>
 
       <Card>

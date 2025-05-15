@@ -1,5 +1,7 @@
 package com.example.lms.service;
 
+import java.util.List;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -11,4 +13,6 @@ public interface CourseService {
     EntityModel<CourseDTO> findById(Long id);
     ResponseEntity<?> save(CourseDTO newCourse, Long id);
     ResponseEntity<?> deleteById(Long id);
+        List<CourseDTO> findByInstructorUsername(String username);
+
 }

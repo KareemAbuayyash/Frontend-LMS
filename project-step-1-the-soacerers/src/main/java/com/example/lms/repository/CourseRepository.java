@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
@@ -38,5 +39,10 @@ void deleteCourseEnrollmentLinks(@Param("courseId") Long courseId);
   nativeQuery = true
 )
 void deleteEnrollmentCourseLinks(@Param("courseId") Long courseId);
-
+  @Query("""
+    SELECT c 
+      FROM Course c 
+     WHERE c.instructor.user.username = :username
+  """)
+  List<Course> findByInstructorUsername(@Param("username") String username);
 }

@@ -1,4 +1,5 @@
 // src/components/quizzes/QuizAttempt.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api/axios';
@@ -42,7 +43,8 @@ export default function QuizAttempt() {
             : '';
         });
         setAnswers(init);
-      } catch {
+      } catch (err) {
+        console.error('Failed to load quiz:', err);
         setError('Failed to load quiz.');
       } finally {
         setLoading(false);
@@ -54,6 +56,7 @@ export default function QuizAttempt() {
   const handleChange = (q, val) => {
     const curr = answers[q.id];
     if (Array.isArray(curr)) {
+      // multiple-choice-multiple
       setAnswers((a) => ({
         ...a,
         [q.id]: curr.includes(val)
@@ -61,6 +64,7 @@ export default function QuizAttempt() {
           : [...curr, val],
       }));
     } else {
+      // single-value
       setAnswers((a) => ({ ...a, [q.id]: val }));
     }
   };
@@ -69,7 +73,12 @@ export default function QuizAttempt() {
     e.preventDefault();
     setError('');
     try {
-      const payload = quiz.questions.map((q) => answers[q.id]);
+      // flatten arrays into comma-separated strings
+      const payload = quiz.questions.map((q) => {
+        const ans = answers[q.id];
+        return Array.isArray(ans) ? ans.join(',') : ans;
+      });
+
       const { data } = await api.post(
         `/submissions/quizzes/${quizId}/students/me`,
         { answers: payload }
@@ -88,32 +97,25 @@ export default function QuizAttempt() {
   if (loading) return <p>Loading…</p>;
   if (error) return <p className="error">{error}</p>;
 
-  // If already submitted, just show your score & date
+  // already submitted?
   if (submission) {
     return (
       <div className="quiz-attempt">
         <h1>{quiz?.title || 'Quiz'}</h1>
-        <p>
-          <strong>Your Score:</strong> {submission.score}
-        </p>
-        <p>
-          <strong>Submitted:</strong>{' '}
-          {new Date(submission.submissionDate).toLocaleString()}
-        </p>
+        <p><strong>Your Score:</strong> {submission.score}</p>
+        <p><strong>Submitted:</strong> {new Date(submission.submissionDate).toLocaleString()}</p>
       </div>
     );
   }
 
-  // Otherwise render the attempt form
+  // render the attempt form
   return (
     <div className="quiz-attempt">
       <h1>{quiz.title}</h1>
       <form onSubmit={handleSubmit}>
         {quiz.questions.map((q, idx) => (
           <div key={q.id} className="question-block">
-            <p>
-              <strong>{idx + 1}.</strong> {q.text}
-            </p>
+            <p><strong>{idx + 1}.</strong> {q.text}</p>
 
             {q.questionType === 'TRUE_FALSE' &&
               ['true', 'false'].map((val) => (

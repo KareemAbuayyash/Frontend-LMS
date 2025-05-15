@@ -1,5 +1,6 @@
 package com.example.lms.controller;
 
+import com.example.lms.dto.CourseDTO;
 import com.example.lms.dto.InstructorDTO;
 import com.example.lms.dto.InstructorSummaryDTO;
 import com.example.lms.dto.InstructorUpdateDTO;
@@ -19,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ public class InstructorController {
     private final InstructorRepository instructorRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final InstructorMapper instructorMapper;
+    private final com.example.lms.service.CourseService courseService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -103,4 +106,11 @@ public class InstructorController {
 
         return ResponseEntity.ok(dtos);
     }
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+  @GetMapping("/courses")
+  public ResponseEntity<List<CourseDTO>> myCourses(Principal principal) {
+    String username = principal.getName();
+    List<CourseDTO> dtos = courseService.findByInstructorUsername(username);
+    return ResponseEntity.ok(dtos);
+  }
 }

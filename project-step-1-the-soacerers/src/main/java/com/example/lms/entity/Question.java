@@ -31,4 +31,6 @@ public class Question {
 
     @ElementCollection(fetch = FetchType.EAGER) 
     private List<String> options = new ArrayList<>();
+
+    private Integer weight = 1;
 }

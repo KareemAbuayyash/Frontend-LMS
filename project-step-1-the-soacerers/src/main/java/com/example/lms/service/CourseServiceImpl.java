@@ -170,6 +170,13 @@ public ResponseEntity<?> deleteById(Long id) {
   courseRepository.deleteById(id);
   return ResponseEntity.noContent().build();
 }
-
+@Override
+  @Transactional(readOnly = true)
+  public List<CourseDTO> findByInstructorUsername(String username) {
+    List<Course> courses = courseRepository.findByInstructorUsername(username);
+    return courses.stream()
+                  .map(courseMapper::toDTO)
+                  .collect(Collectors.toList());
+  }
 
 }
