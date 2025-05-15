@@ -32,7 +32,7 @@ import StudentCourses from './pages/StudentDashboard/StudentCourses';
 import Coursework from './pages/StudentDashboard/Coursework';
 import StudentCourseDetails from './pages/StudentDashboard/StudentCourseDetails';
 import QuizAttempt from './pages/StudentDashboard/QuizAttempt';
-
+import ProfileSettings from './components/ProfileSettings/ProfileSettings';
 export default function App() {
   return (
     <Routes>
@@ -59,6 +59,8 @@ export default function App() {
         <Route path="users"       element={<AdminUsers />} />
         <Route path="enrollments" element={<Enrollments />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
+                <Route path="settings" element={<ProfileSettings />} />
+
       </Route>
 
       {/* INSTRUCTOR */}
