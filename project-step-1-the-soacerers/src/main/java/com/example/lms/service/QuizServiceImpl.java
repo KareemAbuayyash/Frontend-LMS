@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -142,51 +143,93 @@ public class QuizServiceImpl implements QuizService {
 
 //     return score;
 // }
-private int calculateScore(Quiz quiz, List<String> answers) {
-    int score = 0;
+// private int calculateScore(Quiz quiz, List<String> answers) {
+//     int score = 0;
 
-    for (int i = 0; i < quiz.getQuestions().size() && i < answers.size(); i++) {
-        Question q       = quiz.getQuestions().get(i);
-        String rawSub    = answers.get(i) != null ? answers.get(i) : "";
-        String rawCorr   = q.getCorrectAnswer()  != null ? q.getCorrectAnswer()  : "";
+//     for (int i = 0; i < quiz.getQuestions().size() && i < answers.size(); i++) {
+//         Question q       = quiz.getQuestions().get(i);
+//         String rawSub    = answers.get(i) != null ? answers.get(i) : "";
+//         String rawCorr   = q.getCorrectAnswer()  != null ? q.getCorrectAnswer()  : "";
 
-        // normalize and split into sets
-        var studentSet = Arrays.stream(rawSub.split(","))
-                               .map(String::trim)
-                               .map(String::toLowerCase)
-                               .filter(s -> !s.isEmpty())
-                               .collect(Collectors.toSet());
+//         // normalize and split into sets
+//         var studentSet = Arrays.stream(rawSub.split(","))
+//                                .map(String::trim)
+//                                .map(String::toLowerCase)
+//                                .filter(s -> !s.isEmpty())
+//                                .collect(Collectors.toSet());
 
-        var correctSet = Arrays.stream(rawCorr.split(","))
-                               .map(String::trim)
-                               .map(String::toLowerCase)
-                               .filter(s -> !s.isEmpty())
-                               .collect(Collectors.toSet());
+//         var correctSet = Arrays.stream(rawCorr.split(","))
+//                                .map(String::trim)
+//                                .map(String::toLowerCase)
+//                                .filter(s -> !s.isEmpty())
+//                                .collect(Collectors.toSet());
 
-        if (q.getQuestionType() == QuestionType.TRUE_FALSE) {
-            // 1 point if matches
-            if (studentSet.size() == 1 && correctSet.contains(studentSet.iterator().next())) {
-                score++;
-            }
+//         if (q.getQuestionType() == QuestionType.TRUE_FALSE) {
+//             // 1 point if matches
+//             if (studentSet.size() == 1 && correctSet.contains(studentSet.iterator().next())) {
+//                 score++;
+//             }
 
-        } else if (q.getQuestionType() == QuestionType.MULTIPLE_CHOICE_MULTIPLE) {
-            // +1 for each correctly selected option
-            for (String ans : studentSet) {
-                if (correctSet.contains(ans)) {
-                    score++;
+//         } else if (q.getQuestionType() == QuestionType.MULTIPLE_CHOICE_MULTIPLE) {
+//             // +1 for each correctly selected option
+//             for (String ans : studentSet) {
+//                 if (correctSet.contains(ans)) {
+//                     score++;
+//                 }
+//             }
+
+//         } else {
+//             // single‐choice, essay, etc. – 1 point if exactly matches
+//             if (studentSet.size() == 1 && correctSet.contains(studentSet.iterator().next())) {
+//                 score++;
+//             }
+//         }
+//     }
+
+//     return score;
+// }
+
+// src/main/java/com/example/lms/service/QuizServiceImpl.java
+ private int calculateScore(Quiz quiz, List<String> answers) {
+        int total = 0;
+
+        for (int i = 0; i < quiz.getQuestions().size() && i < answers.size(); i++) {
+            Question q = quiz.getQuestions().get(i);
+            int weight = q.getWeight() != null ? q.getWeight() : 1;
+
+            String submittedRaw = answers.get(i) == null
+                                 ? ""
+                                 : answers.get(i).trim().toLowerCase();
+
+            if (q.getQuestionType() == QuestionType.MULTIPLE_CHOICE_MULTIPLE) {
+                Set<String> got = Arrays.stream(submittedRaw.split(","))
+                                        .map(String::trim)
+                                        .map(String::toLowerCase)
+                                        .filter(s -> !s.isEmpty())
+                                        .collect(Collectors.toSet());
+
+                Set<String> want = Arrays.stream(q.getCorrectAnswer().split(","))
+                                         .map(String::trim)
+                                         .map(String::toLowerCase)
+                                         .filter(s -> !s.isEmpty())
+                                         .collect(Collectors.toSet());
+
+                if (got.equals(want)) {
+                    total += weight;
+                }
+
+            } else {
+                // TRUE_FALSE or MULTIPLE_CHOICE_SINGLE
+                String correctRaw = q.getCorrectAnswer().trim().toLowerCase();
+                if (submittedRaw.equals(correctRaw)) {
+                    total += weight;
                 }
             }
-
-        } else {
-            // single‐choice, essay, etc. – 1 point if exactly matches
-            if (studentSet.size() == 1 && correctSet.contains(studentSet.iterator().next())) {
-                score++;
-            }
         }
+
+        return total;
     }
 
-    return score;
-}
 
 
     @Override

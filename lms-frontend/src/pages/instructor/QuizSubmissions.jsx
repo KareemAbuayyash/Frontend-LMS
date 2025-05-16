@@ -1,4 +1,3 @@
-// src/pages/instructor/QuizSubmissions.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -30,7 +29,7 @@ export default function QuizSubmissions() {
   const [loadingSubs, setLoadingSubs] = useState(false);
   const [savingId, setSavingId] = useState();
 
-  // 1) load courses
+  // load courses
   useEffect(() => {
     api.get('/instructors/courses')
       .then(r => setCourses(r.data))
@@ -38,7 +37,7 @@ export default function QuizSubmissions() {
       .finally(() => setLoadingCourses(false));
   }, []);
 
-  // 2) load quizzes when course selected
+  // load quizzes for selected course
   useEffect(() => {
     setQuizzes([]);
     setSelectedQuiz(undefined);
@@ -50,7 +49,7 @@ export default function QuizSubmissions() {
       .finally(() => setLoadingQuizzes(false));
   }, [selectedCourse]);
 
-  // 3) load submissions + quiz details
+  // load submissions & quiz details
   useEffect(() => {
     if (!selectedQuiz) return;
     setLoadingSubs(true);
@@ -64,7 +63,7 @@ export default function QuizSubmissions() {
       .catch(() => message.error('Failed to load quiz details'));
   }, [selectedQuiz]);
 
-  // 4) grade update
+  // grade update
   const handleScoreChange = (id, score) => {
     setSavingId(id);
     api.put(`/submissions/quizzes/${selectedQuiz}/submissions/${id}/grade`, { score })
@@ -75,6 +74,11 @@ export default function QuizSubmissions() {
       .catch(() => message.error('Failed to update score'))
       .finally(() => setSavingId(null));
   };
+
+  // calculate max total points
+  const maxTotal = quizDetails
+    ? quizDetails.questions.reduce((sum, q) => sum + (q.weight || 1), 0)
+    : 0;
 
   const subColumns = [
     { title: 'Student ID', dataIndex: 'studentId', key: 'studentId' },
@@ -91,7 +95,7 @@ export default function QuizSubmissions() {
       render: (score, rec) => (
         <InputNumber
           min={0}
-          max={quizDetails?.questions.length}
+          max={maxTotal}
           defaultValue={score}
           onBlur={e => handleScoreChange(rec.id, e.target.value)}
           disabled={savingId === rec.id}
@@ -164,56 +168,50 @@ export default function QuizSubmissions() {
         </Card>
       )}
 
-      <Drawer
-        title={`Answers: Student ${currentRecord?.studentId}`}
-        visible={drawerVisible}
-        width={480}
-        onClose={() => setDrawerVisible(false)}
-      >
-        <div className="drawer-content">
-          <h3>{quizDetails?.title}</h3>
-          <ol>
-            {quizDetails?.questions.map((q, i) => {
-              const raw = currentRecord?.answers[i] ?? '';
+     <Drawer
+  title={`Answers: Student ${currentRecord?.studentId}`}
+  visible={drawerVisible}
+  width={600}
+  onClose={() => setDrawerVisible(false)}
+>
+  <div className="drawer-content">
+    <h3>{quizDetails?.title}</h3>
+    <ol>
+      {quizDetails?.questions.map((q, i) => {
+        const raw       = currentRecord?.answers[i] ?? '';
+        const weight    = q.weight || 1;
+        const studentArr = raw.split(',').map(a => a.trim()).filter(Boolean);
+        const correctArr = q.correctAnswer.split(',').map(a => a.trim());
 
-              // --- Handle TRUE_FALSE and SINGLE-CHOICE as simple strings ---
-              if (q.questionType === 'TRUE_FALSE' ||
-                  q.questionType.includes('MULTIPLE_CHOICE_SINGLE')) {
-                const studentAns = raw.trim().toLowerCase();
-                const correctAns = q.correctAnswer.trim().toLowerCase();
-                const isCorrect = studentAns === correctAns;
-                return (
-                  <li key={q.id} className={isCorrect ? 'correct' : 'wrong'}>
-                    <p><strong>Q{i + 1}:</strong> {q.text}</p>
-                    <p><strong>Their answer:</strong> {studentAns}</p>
-                    <p><strong>Correct answer:</strong> {correctAns}</p>
-                  </li>
-                );
-              }
+        let earned = 0;
+        if (q.questionType === 'TRUE_FALSE' ||
+            q.questionType === 'MULTIPLE_CHOICE_SINGLE') {
+          // simple full-credit
+          if ((studentArr[0] || '').toLowerCase() === (correctArr[0] || '').toLowerCase()) {
+            earned = weight;
+          }
+        } else {
+          // all-or-nothing for MULTIPLE_CHOICE_MULTIPLE
+          const gotSet  = new Set(studentArr.map(a => a.toLowerCase()));
+          const wantSet = new Set(correctArr.map(a => a.toLowerCase()));
+          const exactlyMatches =
+            gotSet.size === wantSet.size &&
+            [...wantSet].every(ans => gotSet.has(ans));
+          earned = exactlyMatches ? weight : 0;
+        }
 
-              // --- MULTIPLE_CHOICE_MULTIPLE or other multi-answer types ---
-              const studentArr = raw
-                .split(',')
-                .map(a => a.trim())
-                .filter(a => a !== '');
-              const correctArr = q.correctAnswer
-                .split(',')
-                .map(a => a.trim());
-              const isCorrect =
-                studentArr.length === correctArr.length &&
-                correctArr.every(ans => studentArr.includes(ans));
-
-              return (
-                <li key={q.id} className={isCorrect ? 'correct' : 'wrong'}>
-                  <p><strong>Q{i + 1}:</strong> {q.text}</p>
-                  <p><strong>Their answer:</strong> {studentArr.join(', ')}</p>
-                  <p><strong>Correct answer:</strong> {correctArr.join(', ')}</p>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-      </Drawer>
+        return (
+          <li key={q.id} className={earned === weight ? 'correct' : 'wrong'}>
+            <p><strong>Q{i+1} ({weight} pts):</strong> {q.text}</p>
+            <p><strong>Their answer:</strong> {studentArr.join(', ')}</p>
+            <p><strong>Correct answer:</strong> {correctArr.join(', ')}</p>
+            <p style={{ fontStyle: 'italic' }}>Earned: {earned} / {weight}</p>
+          </li>
+        );
+      })}
+    </ol>
+  </div>
+</Drawer>
     </div>
   );
 }

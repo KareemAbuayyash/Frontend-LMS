@@ -1,5 +1,4 @@
 // src/pages/instructor/Quizzes.jsx
-
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -12,12 +11,10 @@ import {
   message,
   Radio,
   Checkbox,
+  InputNumber,
   Typography
 } from 'antd';
-import {
-  MinusCircleOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/axios';
 import './Quizzes.css';
 
@@ -39,33 +36,36 @@ export default function InstructorQuizzes() {
 
   const onFinish = async values => {
     const { courseId, title, questions } = values;
+
+    // Build payload so that TRUE_FALSE questions always include ["True","False"]
     const payloadQuestions = questions.map(q => {
       if (q.questionType === 'TRUE_FALSE') {
         return {
           text: q.text,
           questionType: q.questionType,
           options: ['True', 'False'],
-          correctAnswer: q.correctAnswer
+          correctAnswer: q.correctAnswer,
+          weight: q.weight
         };
       }
-      if (q.questionType === 'MULTIPLE_CHOICE_MULTIPLE') {
-        return {
-          text: q.text,
-          questionType: q.questionType,
-          options: q.options,
-          correctAnswer: q.correctAnswers.join(',')
-        };
-      }
+
+      // for all other types options must come from the form
+      const opts = q.options || [];
       return {
         text: q.text,
         questionType: q.questionType,
-        options: q.options,
-        correctAnswer: q.correctAnswer
+        options: opts,
+        correctAnswer:
+          q.questionType === 'MULTIPLE_CHOICE_MULTIPLE'
+            ? q.correctAnswers.join(',')
+            : q.correctAnswer,
+        weight: q.weight
       };
     });
 
     setSubmitting(true);
     try {
+      // baseURL is already "/api", so this goes to POST /api/quizzes/course/:courseId
       await api.post(`/quizzes/course/${courseId}`, {
         title,
         questions: payloadQuestions
@@ -73,8 +73,11 @@ export default function InstructorQuizzes() {
       message.success('Quiz created!');
       form.resetFields();
     } catch (err) {
-      console.error('Failed to create quiz:', err);
-      message.error('Failed to create quiz');
+      console.error('Failed to create quiz:', err.response || err);
+      message.error(
+        err.response?.data?.message ||
+        'Failed to create quiz (check console for details)'
+      );
     } finally {
       setSubmitting(false);
     }
@@ -82,11 +85,7 @@ export default function InstructorQuizzes() {
 
   return (
     <div className="instructor-quizzes">
-      <Card
-        title={<Title level={3}>Create New Quiz</Title>}
-        variant="outlined"
-        className="quiz-card-wrapper"
-      >
+      <Card title={<Title level={3}>Create New Quiz</Title>} className="quiz-card-wrapper">
         <Form
           form={form}
           layout="vertical"
@@ -151,14 +150,21 @@ export default function InstructorQuizzes() {
                         >
                           <Select style={{ width: 180 }}>
                             <Option value="TRUE_FALSE">True / False</Option>
-                            <Option value="MULTIPLE_CHOICE_SINGLE">
-                              Single Choice
-                            </Option>
-                            <Option value="MULTIPLE_CHOICE_MULTIPLE">
-                              Multiple Choice
-                            </Option>
+                            <Option value="MULTIPLE_CHOICE_SINGLE">Single Choice</Option>
+                            <Option value="MULTIPLE_CHOICE_MULTIPLE">Multiple Choice</Option>
                             <Option value="ESSAY">Essay</Option>
                           </Select>
+                        </Form.Item>
+
+                        {/* Points (weight) */}
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'weight']}
+                          fieldKey={[fieldKey, 'weight']}
+                          rules={[{ required: true, message: 'Set points' }]}
+                          initialValue={1}
+                        >
+                          <InputNumber min={1} />
                         </Form.Item>
 
                         {/* Remove Question */}
@@ -170,24 +176,12 @@ export default function InstructorQuizzes() {
                         />
 
                         {/* Dynamic Correct-Answer / Options */}
-                        <Form.Item
-                          noStyle
-                          shouldUpdate={(prev, curr) =>
-                            prev.questions?.[name]?.questionType !==
-                              curr.questions?.[name]?.questionType ||
-                            prev.questions?.[name]?.options !==
-                              curr.questions?.[name]?.options
-                          }
-                        >
+                        <Form.Item noStyle shouldUpdate>
                           {() => {
-                            const type = form.getFieldValue([
-                              'questions',
-                              name,
-                              'questionType'
-                            ]);
+                            const type = form.getFieldValue(['questions', name, 'questionType']);
                             if (!type) return null;
 
-                            // -- True / False --
+                            // TRUE_FALSE
                             if (type === 'TRUE_FALSE') {
                               return (
                                 <Form.Item
@@ -204,18 +198,10 @@ export default function InstructorQuizzes() {
                               );
                             }
 
-                            // -- Multiple Choice (Multiple) --
+                            // MULTIPLE_CHOICE_MULTIPLE
                             if (type === 'MULTIPLE_CHOICE_MULTIPLE') {
-                              // pull out the live options array
-                              const opts = form.getFieldValue([
-                                'questions',
-                                name,
-                                'options'
-                              ]) || [];
-                              // filter undefined before building Checkbox options
-                              const cbOptions = opts
-                                .filter(o => o != null)
-                                .map(o => ({ label: o, value: o }));
+                              const opts = form.getFieldValue(['questions', name, 'options']) || [];
+                              const cbOptions = opts.filter(o => o).map(o => ({ label: o, value: o }));
 
                               return (
                                 <>
@@ -223,29 +209,21 @@ export default function InstructorQuizzes() {
                                     {(optFields, { add: addOpt, remove: removeOpt }) => (
                                       <div className="options-list">
                                         {optFields.map(opt => {
-                                          const {
-                                            key: optKey,
-                                            name: optName,
-                                            fieldKey: optFieldKey,
-                                            ...restOptField
-                                          } = opt;
+                                          const { key: k, name: n, fieldKey: fkey, ...rf } = opt;
                                           return (
-                                            <Space key={optKey} align="baseline">
+                                            <Space key={k} align="baseline">
                                               <Form.Item
-                                                {...restOptField}
-                                                name={[optName]}
-                                                fieldKey={[optFieldKey]}
+                                                {...rf}
+                                                name={[n]}
+                                                fieldKey={[fkey]}
                                                 rules={[{ required: true, message: 'Option text' }]}
                                               >
                                                 <Input placeholder="Option" />
                                               </Form.Item>
-                                              <MinusCircleOutlined
-                                                onClick={() => removeOpt(optName)}
-                                              />
+                                              <MinusCircleOutlined onClick={() => removeOpt(n)} />
                                             </Space>
                                           );
                                         })}
-
                                         <Button
                                           type="dashed"
                                           onClick={() => addOpt()}
@@ -268,9 +246,7 @@ export default function InstructorQuizzes() {
                                         validator: (_, vals) =>
                                           vals && vals.length > 0
                                             ? Promise.resolve()
-                                            : Promise.reject(
-                                                new Error('Select at least one correct answer')
-                                              )
+                                            : Promise.reject(new Error('Select at least one correct answer'))
                                       }
                                     ]}
                                   >
@@ -280,16 +256,10 @@ export default function InstructorQuizzes() {
                               );
                             }
 
-                            // -- Multiple Choice (Single) --
+                            // MULTIPLE_CHOICE_SINGLE
                             if (type === 'MULTIPLE_CHOICE_SINGLE') {
-                              const opts = form.getFieldValue([
-                                'questions',
-                                name,
-                                'options'
-                              ]) || [];
-                              const selOptions = opts
-                                .filter(o => o != null)
-                                .map(o => ({ label: o, value: o }));
+                              const opts = form.getFieldValue(['questions', name, 'options']) || [];
+                              const selOpts = opts.filter(o => o).map(o => ({ label: o, value: o }));
 
                               return (
                                 <>
@@ -297,29 +267,21 @@ export default function InstructorQuizzes() {
                                     {(optFields, { add: addOpt, remove: removeOpt }) => (
                                       <div className="options-list">
                                         {optFields.map(opt => {
-                                          const {
-                                            key: optKey,
-                                            name: optName,
-                                            fieldKey: optFieldKey,
-                                            ...restOptField
-                                          } = opt;
+                                          const { key: k, name: n, fieldKey: fkey, ...rf } = opt;
                                           return (
-                                            <Space key={optKey} align="baseline">
+                                            <Space key={k} align="baseline">
                                               <Form.Item
-                                                {...restOptField}
-                                                name={[optName]}
-                                                fieldKey={[optFieldKey]}
+                                                {...rf}
+                                                name={[n]}
+                                                fieldKey={[fkey]}
                                                 rules={[{ required: true, message: 'Option text' }]}
                                               >
                                                 <Input placeholder="Option" />
                                               </Form.Item>
-                                              <MinusCircleOutlined
-                                                onClick={() => removeOpt(optName)}
-                                              />
+                                              <MinusCircleOutlined onClick={() => removeOpt(n)} />
                                             </Space>
                                           );
                                         })}
-
                                         <Button
                                           type="dashed"
                                           onClick={() => addOpt()}
@@ -339,16 +301,13 @@ export default function InstructorQuizzes() {
                                     fieldKey={[fieldKey, 'correctAnswer']}
                                     rules={[{ required: true, message: 'Pick correct answer' }]}
                                   >
-                                    <Select
-                                      placeholder="Pick correct answer"
-                                      options={selOptions}
-                                    />
+                                    <Select placeholder="Pick correct answer" options={selOpts} />
                                   </Form.Item>
                                 </>
                               );
                             }
 
-                            // -- Essay --
+                            // ESSAY
                             if (type === 'ESSAY') {
                               return (
                                 <Form.Item
@@ -357,10 +316,7 @@ export default function InstructorQuizzes() {
                                   fieldKey={[fieldKey, 'correctAnswer']}
                                   rules={[{ required: true, message: 'Enter model answer' }]}
                                 >
-                                  <Input.TextArea
-                                    placeholder="Model answer / grading rubric"
-                                    autoSize
-                                  />
+                                  <Input.TextArea placeholder="Model answer / rubric" autoSize />
                                 </Form.Item>
                               );
                             }
@@ -374,12 +330,7 @@ export default function InstructorQuizzes() {
                 })}
 
                 <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    block
-                    icon={<PlusOutlined />}
-                  >
+                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                     Add Question
                   </Button>
                 </Form.Item>
@@ -388,12 +339,7 @@ export default function InstructorQuizzes() {
           </Form.List>
 
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={submitting}
-              block
-            >
+            <Button type="primary" htmlType="submit" loading={submitting} block>
               Create Quiz
             </Button>
           </Form.Item>

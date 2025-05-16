@@ -1,5 +1,3 @@
-// src/components/quizzes/QuizAttempt.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api/axios';
@@ -14,28 +12,28 @@ export default function QuizAttempt() {
   const [submission, setSubmission] = useState(null);
   const [error, setError] = useState('');
 
+  // load existing submission + quiz
   useEffect(() => {
     async function init() {
       try {
-        // 1) check for existing submission
         const { data: existing } = await api.get(
           `/submissions/quizzes/${quizId}/students/me`
         );
         setSubmission(existing);
       } catch (err) {
         if (err.response?.status !== 404) {
-          console.error('Error checking submission:', err);
-          setError('Failed to check submission status.');
+          console.error(err);
+          setError('Failed to check submission.');
+          setLoading(false);
+          return;
         }
-        // 404 → no submission yet
       }
 
-      // 2) fetch quiz data
       try {
         const { data } = await api.get(`/quizzes/${quizId}`);
         setQuiz(data);
 
-        // initialize answers state
+        // init empty answers
         const init = {};
         data.questions.forEach((q) => {
           init[q.id] = q.questionType.includes('MULTIPLE_CHOICE_MULTIPLE')
@@ -44,7 +42,7 @@ export default function QuizAttempt() {
         });
         setAnswers(init);
       } catch (err) {
-        console.error('Failed to load quiz:', err);
+        console.error(err);
         setError('Failed to load quiz.');
       } finally {
         setLoading(false);
@@ -56,7 +54,6 @@ export default function QuizAttempt() {
   const handleChange = (q, val) => {
     const curr = answers[q.id];
     if (Array.isArray(curr)) {
-      // multiple-choice-multiple
       setAnswers((a) => ({
         ...a,
         [q.id]: curr.includes(val)
@@ -64,7 +61,6 @@ export default function QuizAttempt() {
           : [...curr, val],
       }));
     } else {
-      // single-value
       setAnswers((a) => ({ ...a, [q.id]: val }));
     }
   };
@@ -73,7 +69,6 @@ export default function QuizAttempt() {
     e.preventDefault();
     setError('');
     try {
-      // flatten arrays into comma-separated strings
       const payload = quiz.questions.map((q) => {
         const ans = answers[q.id];
         return Array.isArray(ans) ? ans.join(',') : ans;
@@ -88,37 +83,98 @@ export default function QuizAttempt() {
       console.error(err);
       setError(
         err.response?.status === 400
-          ? 'You cannot submit this quiz again.'
+          ? 'You cannot submit again.'
           : 'Submission failed.'
       );
     }
   };
 
-  if (loading) return <p>Loading…</p>;
-  if (error) return <p className="error">{error}</p>;
+  if (loading) return <p className="qa-error">Loading…</p>;
+  if (error) return <p className="qa-error">{error}</p>;
 
-  // already submitted?
+  // If already submitted, show per-question breakdown
   if (submission) {
+    const studentArr = submission.answers;
     return (
       <div className="quiz-attempt">
-        <h1>{quiz?.title || 'Quiz'}</h1>
-        <p><strong>Your Score:</strong> {submission.score}</p>
-        <p><strong>Submitted:</strong> {new Date(submission.submissionDate).toLocaleString()}</p>
+        <h1 className="qa-title">{quiz.title}</h1>
+        <p className="qa-overall">
+          Your Score: <strong>{submission.score}</strong> /{' '}
+          <strong>
+            {quiz.questions.reduce((sum, q) => sum + (q.weight || 1), 0)}
+          </strong>
+        </p>
+
+        {quiz.questions.map((q, idx) => {
+          // parse
+          const rawStu = studentArr[idx] ?? '';
+          const stuSet = rawStu.split(',').map(s => s.trim()).filter(Boolean);
+          const corrSet = q.correctAnswer
+            .split(',')
+            .map(s => s.trim())
+            .filter(Boolean);
+
+          // compute earned
+          let earned = 0;
+          if (
+            q.questionType === 'TRUE_FALSE' ||
+            q.questionType === 'MULTIPLE_CHOICE_SINGLE'
+          ) {
+            earned =
+              (stuSet[0] || '').toLowerCase() ===
+              (corrSet[0] || '').toLowerCase()
+                ? q.weight || 1
+                : 0;
+          } else {
+            const got = new Set(stuSet.map(a => a.toLowerCase()));
+            const want = new Set(corrSet.map(a => a.toLowerCase()));
+            const full =
+              got.size === want.size && [...want].every(ans => got.has(ans));
+            earned = full ? q.weight || 1 : 0;
+          }
+
+          return (
+            <div key={q.id} className="qa-block">
+              <div className="qa-header">
+                <span className="qa-number">Q{idx + 1}.</span>
+                <span className="qa-text">{q.text}</span>
+                <span className="qa-weight">({q.weight || 1} pts)</span>
+              </div>
+              <div className="qa-row">
+                <span className="label">Your answer:</span>
+                <span>{stuSet.join(', ') || <em>(no answer)</em>}</span>
+              </div>
+              <div className="qa-row">
+                <span className="label">Correct:</span>
+                <span>{corrSet.join(', ')}</span>
+              </div>
+              <div className="qa-row">
+                <span className="label">Earned:</span>
+                <span>
+                  {earned} / {q.weight || 1} pts
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
 
-  // render the attempt form
+  // render attempt form
   return (
     <div className="quiz-attempt">
-      <h1>{quiz.title}</h1>
+      <h1 className="qa-title">{quiz.title}</h1>
       <form onSubmit={handleSubmit}>
         {quiz.questions.map((q, idx) => (
           <div key={q.id} className="question-block">
-            <p><strong>{idx + 1}.</strong> {q.text}</p>
+            <p>
+              <strong>{idx + 1}.</strong> {q.text}{' '}
+              <span className="qa-weight">({q.weight || 1} pts)</span>
+            </p>
 
             {q.questionType === 'TRUE_FALSE' &&
-              ['true', 'false'].map((val) => (
+              ['True', 'False'].map((val) => (
                 <label key={val}>
                   <input
                     type="radio"
@@ -130,7 +186,7 @@ export default function QuizAttempt() {
                 </label>
               ))}
 
-            {q.questionType.includes('MULTIPLE_CHOICE_SINGLE') &&
+            {q.questionType === 'MULTIPLE_CHOICE_SINGLE' &&
               q.options.map((opt) => (
                 <label key={opt}>
                   <input
@@ -143,7 +199,7 @@ export default function QuizAttempt() {
                 </label>
               ))}
 
-            {q.questionType.includes('MULTIPLE_CHOICE_MULTIPLE') &&
+            {q.questionType === 'MULTIPLE_CHOICE_MULTIPLE' &&
               q.options.map((opt) => (
                 <label key={opt}>
                   <input
@@ -157,7 +213,7 @@ export default function QuizAttempt() {
 
             {q.questionType === 'ESSAY' && (
               <textarea
-                rows={6}
+                rows={5}
                 value={answers[q.id]}
                 onChange={(e) => handleChange(q, e.target.value)}
                 placeholder="Your answer…"
