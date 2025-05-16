@@ -26,4 +26,11 @@ public class ContentService {
         return contentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Content with ID " + id + " not found"));
     }
+
+    public void deleteContent(Long id) {
+        if (!contentRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Content with ID " + id + " not found");
+        }
+        contentRepository.deleteById(id);
+    }
 }

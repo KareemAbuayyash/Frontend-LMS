@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table } from 'antd';
+import { Card, Table, Button } from 'antd';
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import './Courses.css';
 
@@ -37,7 +38,16 @@ const InstructorCourses = () => {
       title: 'Enrolled Students',
       dataIndex: 'enrollmentCount',
       key: 'enrollmentCount',
-    }
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, course) => (
+        <Link to={`/instructor/courses/${course.courseId}/content`}>
+          <Button type="link">Manage Content</Button>
+        </Link>
+      ),
+    },
   ];
 
   return (

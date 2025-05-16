@@ -5,6 +5,7 @@ import com.example.lms.dto.ContentUploadDTO;
 import com.example.lms.entity.Content;
 import com.example.lms.entity.Course;
 import com.example.lms.entity.Instructor;
+import com.example.lms.entity.User;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.ContentMapper;
 import com.example.lms.service.ContentNotificationService;
@@ -14,8 +15,10 @@ import com.example.lms.repository.InstructorRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -165,4 +168,33 @@ public class ContentController {
                 .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
                 .body(resource);
     }
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteContent(@PathVariable Long id, Authentication auth) {
+    logger.info("Request to delete content ID: {}", id);
+
+    Content content = contentService.getContentById(id);
+
+    // Optional: ensure that a non-admin instructor can only delete their own uploads
+    var user = (User) auth.getPrincipal();
+    boolean isAdmin = user.getRole().equals("ROLE_ADMIN");
+    boolean isUploader = content.getUploadedBy().getUser().getUsername()
+                         .equals(user.getUsername());
+    if (!isAdmin && !isUploader) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    // Remove physical file
+    File file = new File(content.getFilePath());
+    if (file.exists()) {
+        if (!file.delete()) {
+            logger.warn("Failed to delete file on disk: {}", file.getAbsolutePath());
+        }
+    }
+
+    // Remove DB record
+    contentService.deleteContent(id);
+    logger.info("Content ID {} deleted", id);
+    return ResponseEntity.noContent().build();
+}
 }

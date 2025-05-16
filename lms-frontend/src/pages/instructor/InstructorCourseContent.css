@@ -1,0 +1,16 @@
+.instructor-content {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.instructor-content h1 {
+  text-align: center;
+  color: #1890ff;
+  margin-bottom: 1rem;
+}
+
+.ant-card {
+  border-radius: 8px;
+}

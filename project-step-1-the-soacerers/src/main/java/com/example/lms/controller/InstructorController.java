@@ -113,4 +113,19 @@ public class InstructorController {
     List<CourseDTO> dtos = courseService.findByInstructorUsername(username);
     return ResponseEntity.ok(dtos);
   }
+  // inside InstructorController
+@PreAuthorize("hasAnyRole('INSTRUCTOR','ADMIN')")
+@GetMapping("/me")
+public ResponseEntity<InstructorDTO> getMyProfile(Authentication auth) {
+    // auth.getPrincipal() is your User
+    var user = (com.example.lms.entity.User) auth.getPrincipal();
+    Instructor inst = instructorRepository.findByUser(user);
+    if (inst == null) {
+        throw new ResourceNotFoundException(
+          "Instructor record not found for user: " + user.getUsername());
+    }
+    InstructorDTO dto = instructorMapper.toDTO(inst);
+    return ResponseEntity.ok(dto);
+}
+
 }
