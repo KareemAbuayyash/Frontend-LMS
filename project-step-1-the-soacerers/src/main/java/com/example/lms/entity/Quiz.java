@@ -2,10 +2,8 @@ package com.example.lms.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -29,4 +27,14 @@ public class Quiz {
         question.setQuiz(this);
         this.questions.add(question);
     }
+
+    // ← NEW FIELDS:
+    @Column(nullable = false)
+    private int pageSize = 1;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private NavigationMode navigationMode = NavigationMode.FREE;
+
+    public enum NavigationMode { FREE, LINEAR }
 }

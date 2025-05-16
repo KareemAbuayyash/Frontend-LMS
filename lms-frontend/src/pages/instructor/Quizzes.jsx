@@ -1,18 +1,7 @@
-// src/pages/instructor/Quizzes.jsx
 import React, { useState, useEffect } from 'react';
 import {
-  Card,
-  Form,
-  Input,
-  Button,
-  Select,
-  Space,
-  Divider,
-  message,
-  Radio,
-  Checkbox,
-  InputNumber,
-  Typography
+  Card, Form, Input, Button, Select, Space,
+  Divider, message, Radio, Checkbox, InputNumber, Typography
 } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/axios';
@@ -30,54 +19,34 @@ export default function InstructorQuizzes() {
   useEffect(() => {
     api.get('/instructors/courses')
       .then(res => setCourses(res.data))
-      .catch(err => console.error('Error fetching courses:', err))
+      .catch(() => message.error('Failed to load courses'))
       .finally(() => setLoadingCourses(false));
   }, []);
 
   const onFinish = async values => {
-    const { courseId, title, questions } = values;
-
-    // Build payload so that TRUE_FALSE questions always include ["True","False"]
-    const payloadQuestions = questions.map(q => {
-      if (q.questionType === 'TRUE_FALSE') {
-        return {
-          text: q.text,
-          questionType: q.questionType,
-          options: ['True', 'False'],
-          correctAnswer: q.correctAnswer,
-          weight: q.weight
-        };
-      }
-
-      // for all other types options must come from the form
-      const opts = q.options || [];
-      return {
-        text: q.text,
-        questionType: q.questionType,
-        options: opts,
-        correctAnswer:
-          q.questionType === 'MULTIPLE_CHOICE_MULTIPLE'
-            ? q.correctAnswers.join(',')
-            : q.correctAnswer,
-        weight: q.weight
-      };
-    });
+    const { courseId, title, pageSize, navigationMode, questions } = values;
+    const payloadQuestions = questions.map(q => ({
+      text: q.text,
+      questionType: q.questionType,
+      options: q.questionType === 'TRUE_FALSE'
+        ? ['True','False']
+        : q.options,
+      correctAnswer:
+        q.questionType === 'MULTIPLE_CHOICE_MULTIPLE'
+          ? q.correctAnswers.join(',')
+          : q.correctAnswer,
+      weight: q.weight
+    }));
 
     setSubmitting(true);
     try {
-      // baseURL is already "/api", so this goes to POST /api/quizzes/course/:courseId
       await api.post(`/quizzes/course/${courseId}`, {
-        title,
-        questions: payloadQuestions
+        title, pageSize, navigationMode, questions: payloadQuestions
       });
       message.success('Quiz created!');
       form.resetFields();
     } catch (err) {
-      console.error('Failed to create quiz:', err.response || err);
-      message.error(
-        err.response?.data?.message ||
-        'Failed to create quiz (check console for details)'
-      );
+      message.error(err.response?.data?.message || 'Create failed');
     } finally {
       setSubmitting(false);
     }
@@ -85,252 +54,244 @@ export default function InstructorQuizzes() {
 
   return (
     <div className="instructor-quizzes">
-      <Card title={<Title level={3}>Create New Quiz</Title>} className="quiz-card-wrapper">
+      <Card title={<Title level={3}>Create New Quiz</Title>}>
         <Form
           form={form}
           layout="vertical"
           onFinish={onFinish}
-          initialValues={{ questions: [] }}
+          initialValues={{ questions: [], pageSize: 1, navigationMode: 'FREE' }}
         >
-          <Form.Item
-            name="courseId"
-            label="Course"
-            rules={[{ required: true, message: 'Select a course' }]}
-          >
+          {/* Course select */}
+          <Form.Item name="courseId" label="Course" rules={[{ required: true }]}>
             <Select loading={loadingCourses} placeholder="Select course">
-              {courses.map(c => (
+              {courses.map(c =>
                 <Option key={c.courseId} value={c.courseId}>
                   {c.courseName}
                 </Option>
-              ))}
+              )}
             </Select>
           </Form.Item>
 
-          <Form.Item
-            name="title"
-            label="Quiz Title"
-            rules={[{ required: true, message: 'Enter a title' }]}
-          >
+          {/* Title */}
+          <Form.Item name="title" label="Quiz Title" rules={[{ required: true }]}>
             <Input placeholder="e.g. Midterm Review" />
           </Form.Item>
 
-          <Divider>Questions</Divider>
+          {/* pageSize + navMode */}
+          <Form.Item
+            name="pageSize"
+            label="Questions per Page"
+            rules={[{ required: true, type:'number', min:1 }]}
+          >
+            <InputNumber min={1} style={{ width: 120 }} />
+          </Form.Item>
+          <Form.Item
+            name="navigationMode"
+            label="Navigation Mode"
+            rules={[{ required: true }]}
+          >
+            <Select style={{ width: 200 }}>
+              <Option value="FREE">Free (back & forth)</Option>
+              <Option value="LINEAR">Linear (no back)</Option>
+            </Select>
+          </Form.Item>
 
+          <Divider>Questions</Divider>
           <Form.List name="questions">
             {(fields, { add, remove }) => (
               <>
-                {fields.map((field, idx) => {
-                  const { key, name, fieldKey, ...restField } = field;
-                  return (
-                    <Card
-                      key={key}
-                      type="inner"
-                      size="small"
-                      className="question-card"
-                      title={`Question ${idx + 1}`}
-                    >
-                      <Space align="baseline" wrap className="question-space">
-                        {/* Question Text */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, 'text']}
-                          fieldKey={[fieldKey, 'text']}
-                          rules={[{ required: true, message: 'Question text' }]}
-                          style={{ flex: 2 }}
-                        >
-                          <Input placeholder="Question text" />
-                        </Form.Item>
+                {fields.map(({ key, name, fieldKey, ...restField }, idx) => (
+                  <Card
+                    key={key}
+                    type="inner"
+                    size="small"
+                    title={`Question ${idx+1}`}
+                    className="question-card"
+                  >
+                    <Space align="baseline" wrap className="question-space">
+                      {/* Text */}
+                      <Form.Item
+                        name={[name,'text']}
+                        fieldKey={[fieldKey,'text']}
+                        {...restField}
+                        rules={[{ required: true, message:'Enter text' }]}
+                        style={{ flex: 2 }}
+                      >
+                        <Input placeholder="Question text" />
+                      </Form.Item>
 
-                        {/* Question Type */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, 'questionType']}
-                          fieldKey={[fieldKey, 'questionType']}
-                          rules={[{ required: true, message: 'Select type' }]}
-                        >
-                          <Select style={{ width: 180 }}>
-                            <Option value="TRUE_FALSE">True / False</Option>
-                            <Option value="MULTIPLE_CHOICE_SINGLE">Single Choice</Option>
-                            <Option value="MULTIPLE_CHOICE_MULTIPLE">Multiple Choice</Option>
-                            <Option value="ESSAY">Essay</Option>
-                          </Select>
-                        </Form.Item>
+                      {/* Type */}
+                      <Form.Item
+                        name={[name,'questionType']}
+                        fieldKey={[fieldKey,'questionType']}
+                        {...restField}
+                        rules={[{ required: true }]}
+                      >
+                        <Select style={{ width:180 }}>
+                          <Option value="TRUE_FALSE">True / False</Option>
+                          <Option value="MULTIPLE_CHOICE_SINGLE">Single Choice</Option>
+                          <Option value="MULTIPLE_CHOICE_MULTIPLE">Multiple Choice</Option>
+                          <Option value="ESSAY">Essay</Option>
+                        </Select>
+                      </Form.Item>
 
-                        {/* Points (weight) */}
-                        <Form.Item
-                          {...restField}
-                          name={[name, 'weight']}
-                          fieldKey={[fieldKey, 'weight']}
-                          rules={[{ required: true, message: 'Set points' }]}
-                          initialValue={1}
-                        >
-                          <InputNumber min={1} />
-                        </Form.Item>
+                      {/* Weight */}
+                      <Form.Item
+                        name={[name,'weight']}
+                        fieldKey={[fieldKey,'weight']}
+                        {...restField}
+                        rules={[{ required: true, type:'number', min:1 }]}
+                        initialValue={1}
+                      >
+                        <InputNumber min={1} />
+                      </Form.Item>
 
-                        {/* Remove Question */}
-                        <Button
-                          type="text"
-                          danger
-                          icon={<MinusCircleOutlined />}
-                          onClick={() => remove(name)}
-                        />
+                      {/* Remove */}
+                      <MinusCircleOutlined
+                        onClick={() => remove(name)}
+                        style={{ color:'red', fontSize:'1.2rem' }}
+                      />
 
-                        {/* Dynamic Correct-Answer / Options */}
-                        <Form.Item noStyle shouldUpdate>
-                          {() => {
-                            const type = form.getFieldValue(['questions', name, 'questionType']);
-                            if (!type) return null;
+                      {/* Dynamic answer inputs */}
+                      <Form.Item noStyle shouldUpdate>
+                        {() => {
+                          const type = form.getFieldValue(['questions',name,'questionType']);
+                          if (!type) return null;
 
-                            // TRUE_FALSE
-                            if (type === 'TRUE_FALSE') {
-                              return (
+                          // TRUE_FALSE
+                          if (type === 'TRUE_FALSE') {
+                            return (
+                              <Form.Item
+                                name={[name,'correctAnswer']}
+                                fieldKey={[fieldKey,'correctAnswer']}
+                                {...restField}
+                                rules={[{ required:true }]}
+                              >
+                                <Radio.Group>
+                                  <Radio value="True">True</Radio>
+                                  <Radio value="False">False</Radio>
+                                </Radio.Group>
+                              </Form.Item>
+                            );
+                          }
+
+                          // MULTIPLE_CHOICE_MULTIPLE
+                          if (type === 'MULTIPLE_CHOICE_MULTIPLE') {
+                            const opts = form.getFieldValue(['questions',name,'options']) || [];
+                            const cbOpts = opts.filter(o => o).map(o => ({ label: o, value: o }));
+                            return (
+                              <>
+                                <Form.List name={[name,'options']}>
+                                  {(optFields, { add: ao, remove: ro }) => (
+                                    <div className="options-list">
+                                      {optFields.map(opt => (
+                                        <Space key={opt.key} align="baseline">
+                                          <Form.Item
+                                            {...opt}
+                                            rules={[{ required:true }]}
+                                          >
+                                            <Input placeholder="Option" />
+                                          </Form.Item>
+                                          <MinusCircleOutlined onClick={() => ro(opt.name)} />
+                                        </Space>
+                                      ))}
+                                      <Button
+                                        type="dashed"
+                                        onClick={() => ao()}
+                                        block
+                                        icon={<PlusOutlined />}
+                                        size="small"
+                                      >
+                                        Add Option
+                                      </Button>
+                                    </div>
+                                  )}
+                                </Form.List>
                                 <Form.Item
+                                  name={[name,'correctAnswers']}
+                                  fieldKey={[fieldKey,'correctAnswers']}
                                   {...restField}
-                                  name={[name, 'correctAnswer']}
-                                  fieldKey={[fieldKey, 'correctAnswer']}
-                                  rules={[{ required: true, message: 'Select answer' }]}
+                                  rules={[{ required:true, type:'array', min:1 }]}
                                 >
-                                  <Radio.Group>
-                                    <Radio value="True">True</Radio>
-                                    <Radio value="False">False</Radio>
-                                  </Radio.Group>
+                                  <Checkbox.Group options={cbOpts} />
                                 </Form.Item>
-                              );
-                            }
+                              </>
+                            );
+                          }
 
-                            // MULTIPLE_CHOICE_MULTIPLE
-                            if (type === 'MULTIPLE_CHOICE_MULTIPLE') {
-                              const opts = form.getFieldValue(['questions', name, 'options']) || [];
-                              const cbOptions = opts.filter(o => o).map(o => ({ label: o, value: o }));
-
-                              return (
-                                <>
-                                  <Form.List name={[name, 'options']}>
-                                    {(optFields, { add: addOpt, remove: removeOpt }) => (
-                                      <div className="options-list">
-                                        {optFields.map(opt => {
-                                          const { key: k, name: n, fieldKey: fkey, ...rf } = opt;
-                                          return (
-                                            <Space key={k} align="baseline">
-                                              <Form.Item
-                                                {...rf}
-                                                name={[n]}
-                                                fieldKey={[fkey]}
-                                                rules={[{ required: true, message: 'Option text' }]}
-                                              >
-                                                <Input placeholder="Option" />
-                                              </Form.Item>
-                                              <MinusCircleOutlined onClick={() => removeOpt(n)} />
-                                            </Space>
-                                          );
-                                        })}
-                                        <Button
-                                          type="dashed"
-                                          onClick={() => addOpt()}
-                                          block
-                                          icon={<PlusOutlined />}
-                                          size="small"
-                                        >
-                                          Add Option
-                                        </Button>
-                                      </div>
-                                    )}
-                                  </Form.List>
-
-                                  <Form.Item
-                                    {...restField}
-                                    name={[name, 'correctAnswers']}
-                                    fieldKey={[fieldKey, 'correctAnswers']}
-                                    rules={[
-                                      {
-                                        validator: (_, vals) =>
-                                          vals && vals.length > 0
-                                            ? Promise.resolve()
-                                            : Promise.reject(new Error('Select at least one correct answer'))
-                                      }
-                                    ]}
-                                  >
-                                    <Checkbox.Group options={cbOptions} />
-                                  </Form.Item>
-                                </>
-                              );
-                            }
-
-                            // MULTIPLE_CHOICE_SINGLE
-                            if (type === 'MULTIPLE_CHOICE_SINGLE') {
-                              const opts = form.getFieldValue(['questions', name, 'options']) || [];
-                              const selOpts = opts.filter(o => o).map(o => ({ label: o, value: o }));
-
-                              return (
-                                <>
-                                  <Form.List name={[name, 'options']}>
-                                    {(optFields, { add: addOpt, remove: removeOpt }) => (
-                                      <div className="options-list">
-                                        {optFields.map(opt => {
-                                          const { key: k, name: n, fieldKey: fkey, ...rf } = opt;
-                                          return (
-                                            <Space key={k} align="baseline">
-                                              <Form.Item
-                                                {...rf}
-                                                name={[n]}
-                                                fieldKey={[fkey]}
-                                                rules={[{ required: true, message: 'Option text' }]}
-                                              >
-                                                <Input placeholder="Option" />
-                                              </Form.Item>
-                                              <MinusCircleOutlined onClick={() => removeOpt(n)} />
-                                            </Space>
-                                          );
-                                        })}
-                                        <Button
-                                          type="dashed"
-                                          onClick={() => addOpt()}
-                                          block
-                                          icon={<PlusOutlined />}
-                                          size="small"
-                                        >
-                                          Add Option
-                                        </Button>
-                                      </div>
-                                    )}
-                                  </Form.List>
-
-                                  <Form.Item
-                                    {...restField}
-                                    name={[name, 'correctAnswer']}
-                                    fieldKey={[fieldKey, 'correctAnswer']}
-                                    rules={[{ required: true, message: 'Pick correct answer' }]}
-                                  >
-                                    <Select placeholder="Pick correct answer" options={selOpts} />
-                                  </Form.Item>
-                                </>
-                              );
-                            }
-
-                            // ESSAY
-                            if (type === 'ESSAY') {
-                              return (
+                          // MULTIPLE_CHOICE_SINGLE
+                          if (type === 'MULTIPLE_CHOICE_SINGLE') {
+                            const opts = form.getFieldValue(['questions',name,'options']) || [];
+                            const selOpts = opts.filter(o => o).map(o => ({ label: o, value: o }));
+                            return (
+                              <>
+                                <Form.List name={[name,'options']}>
+                                  {(optFields, { add: ao, remove: ro }) => (
+                                    <div className="options-list">
+                                      {optFields.map(opt => (
+                                        <Space key={opt.key} align="baseline">
+                                          <Form.Item
+                                            {...opt}
+                                            rules={[{ required:true }]}
+                                          >
+                                            <Input placeholder="Option" />
+                                          </Form.Item>
+                                          <MinusCircleOutlined onClick={() => ro(opt.name)} />
+                                        </Space>
+                                      ))}
+                                      <Button
+                                        type="dashed"
+                                        onClick={() => ao()}
+                                        block
+                                        icon={<PlusOutlined />}
+                                        size="small"
+                                      >
+                                        Add Option
+                                      </Button>
+                                    </div>
+                                  )}
+                                </Form.List>
                                 <Form.Item
+                                  name={[name,'correctAnswer']}
+                                  fieldKey={[fieldKey,'correctAnswer']}
                                   {...restField}
-                                  name={[name, 'correctAnswer']}
-                                  fieldKey={[fieldKey, 'correctAnswer']}
-                                  rules={[{ required: true, message: 'Enter model answer' }]}
+                                  rules={[{ required:true }]}
                                 >
-                                  <Input.TextArea placeholder="Model answer / rubric" autoSize />
+                                  <Select placeholder="Pick correct answer" options={selOpts} />
                                 </Form.Item>
-                              );
-                            }
+                              </>
+                            );
+                          }
 
-                            return null;
-                          }}
-                        </Form.Item>
-                      </Space>
-                    </Card>
-                  );
-                })}
+                          // ESSAY
+                          if (type === 'ESSAY') {
+                            return (
+                              <Form.Item
+                                name={[name,'correctAnswer']}
+                                fieldKey={[fieldKey,'correctAnswer']}
+                                {...restField}
+                                rules={[{ required:true }]}
+                              >
+                                <Input.TextArea placeholder="Model answer" autoSize />
+                              </Form.Item>
+                            );
+                          }
 
+                          return null;
+                        }}
+                      </Form.Item>
+                    </Space>
+                  </Card>
+                ))}
+
+                {/* “Add Question” */}
                 <Form.Item>
-                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                  <Button
+                    type="dashed"
+                    onClick={() => add()}
+                    block
+                    icon={<PlusOutlined />}
+                  >
                     Add Question
                   </Button>
                 </Form.Item>
@@ -338,6 +299,7 @@ export default function InstructorQuizzes() {
             )}
           </Form.List>
 
+          {/* Submit */}
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={submitting} block>
               Create Quiz

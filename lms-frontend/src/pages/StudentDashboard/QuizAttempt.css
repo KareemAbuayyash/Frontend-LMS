@@ -111,3 +111,77 @@
   color: #888;
   margin-left: 0.5rem;
 }
+.quiz-attempt {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.qa-title {
+  text-align: center;
+  color: #1890ff;
+  margin-bottom: 1.5rem;
+}
+
+.question-card {
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #f9f9f9;
+  border: 1px solid #ececec;
+}
+
+.qa-header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+.qa-number {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+.qa-text {
+  flex: 1;
+}
+.qa-weight {
+  font-size: 0.9rem;
+  color: #888;
+  margin-left: 0.5rem;
+}
+
+.question-card label {
+  display: block;
+  margin: 0.5rem 0;
+  cursor: pointer;
+}
+.question-card input[type="radio"],
+.question-card input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.question-card textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+  margin-top: 0.5rem;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  margin: 2rem 0;
+}
+
+.qa-error {
+  text-align: center;
+  color: #dc3545;
+}
+
+.qa-overall {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}

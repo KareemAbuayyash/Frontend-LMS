@@ -94,3 +94,21 @@
 .instructor-quizzes .ant-btn {
   transition: all 0.2s ease;
 }
+.instructor-quizzes {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+.question-card {
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fafafa;
+  border: 1px solid #ececec;
+}
+.question-space .ant-form-item {
+  margin-right: 12px;
+}
+.options-list {
+  margin-top: 12px;
+}
