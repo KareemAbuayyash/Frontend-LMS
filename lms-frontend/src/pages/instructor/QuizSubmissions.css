@@ -1,0 +1,105 @@
+/* QuizSubmissions.css */
+:root {
+  --primary-color: #1890ff;
+  --bg-light: #f7f9fb;
+  --text: #333;
+  --radius: 6px;
+  --gap: 16px;
+}
+
+.quiz-submissions-page {
+  background: var(--bg-light);
+  min-height: 100vh;
+  padding: var(--gap);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.top-controls {
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  margin-bottom: var(--gap);
+}
+
+.top-controls .ant-select {
+  flex: 1;
+  min-width: 240px;
+}
+
+.quiz-table-card,
+.submissions-table-card {
+  margin-bottom: var(--gap);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.quiz-table-card .ant-card-body,
+.submissions-table-card .ant-card-body {
+  padding: var(--gap);
+}
+
+.quiz-table-card .ant-table,
+.submissions-table-card .ant-table {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.drawer-content {
+  padding: var(--gap);
+  background: #fff;
+  min-height: 100%;
+}
+
+.drawer-content h3 {
+  margin-bottom: var(--gap);
+  color: var(--primary-color);
+}
+
+/* src/pages/instructor/QuizSubmissions.css */
+
+.drawer-content ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.drawer-content li {
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+/* correct = green */
+.drawer-content li.correct {
+  background: #f6ffed;
+  border-color: #b7eb8f;
+}
+
+/* wrong = red */
+.drawer-content li.wrong {
+  background: #fff1f0;
+  border-color: #ffa39e;
+}
+
+/* fine-tune the text */
+.drawer-content li p {
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.drawer-content li p strong {
+  display: inline-block;
+  width: 110px;
+}
+
+
+.drawer-content .student-answer,
+.drawer-content .correct-answer {
+  margin: 0.25rem 0;
+}
+
+.drawer-content .label {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}

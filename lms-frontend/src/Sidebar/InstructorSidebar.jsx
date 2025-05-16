@@ -11,6 +11,7 @@ const NAV = [
   { label: 'Dashboard',   to: '/instructor/dashboard',   icon: <FiGrid/>      },
   { label: 'Courses',     to: '/instructor/courses',     icon: <FiFileText/>  },
   { label: 'Quizzes',     to: '/instructor/quizzes',     icon: <FiFileText/>  },
+  { label: 'Quiz Submissions', to: '/instructor/quiz-submissions', icon: <FiFileText/> },
   { label: 'Submissions', to: '/instructor/submissions', icon: <FiFileText/>  },
   { label: 'Students',    to: '/instructor/students',    icon: <FiUser/>      },
   { label: 'Analytics',   to: '/instructor/analytics',   icon: <FiBarChart2/> },

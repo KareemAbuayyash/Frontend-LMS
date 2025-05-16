@@ -26,7 +26,7 @@ import InstructorStudents from './pages/instructor/Students';
 import InstructorAnalytics from './pages/instructor/Analytics';
 import InstructorSettings from './pages/instructor/Settings';
 import InstructorQuizzes from './pages/instructor/Quizzes';
-
+import QuizSubmissions from './pages/instructor/QuizSubmissions';
 // Student pages
 import StudentDashboard from './pages/StudentDashboard/StudentDashboard';
 import StudentCourses from './pages/StudentDashboard/StudentCourses';
@@ -81,6 +81,7 @@ export default function App() {
         <Route path="dashboard"   element={<InstructorDashboard />} />
         <Route path="courses"     element={<InstructorCourses />} />
         <Route path="quizzes"     element={<InstructorQuizzes />} />
+        <Route path="quiz-submissions" element={<QuizSubmissions />} />
         <Route path="submissions" element={<InstructorSubmissions />} />
         <Route path="students"    element={<InstructorStudents />} />
         <Route path="analytics"   element={<InstructorAnalytics />} />
