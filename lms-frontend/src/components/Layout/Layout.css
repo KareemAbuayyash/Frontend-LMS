@@ -13,7 +13,7 @@
 /* ------------------------------------------------------------------
    SIDEBAR
 ------------------------------------------------------------------- */
-.sidebar            { width: 190px; background:#672072; color:#eef2ff; display:flex; flex-direction:column; transition:width .3s ease; }
+.sidebar            { width: 250px; background:#672072; color:#eef2ff; display:flex; flex-direction:column; transition:width .3s ease; }
 .sidebar.collapsed  { width: 70px; }
 
 /* ── header (logo + toggle) ─────────────────────────────────────── */

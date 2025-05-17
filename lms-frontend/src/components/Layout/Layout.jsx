@@ -37,7 +37,7 @@ export default function Layout({
 
   /* ——— Auto-collapse sidebar on narrow screens ——— */
   useEffect(() => {
-    const mq = window.matchMedia('(max-width:600px)');
+    const mq = window.matchMedia('(max-width:700px)');
     const onChange = e => setCollapsed(e.matches);
     mq.addEventListener('change', onChange);
     onChange(mq);

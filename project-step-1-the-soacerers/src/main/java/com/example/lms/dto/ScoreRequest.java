@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 public class ScoreRequest {
-  @Min(value = 0, message = "Score must be zero or positive")
+  @Min(value = 0, message = "Score must be ≥ 0")
   private int score;
-
 }

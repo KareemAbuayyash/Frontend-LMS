@@ -1,0 +1,199 @@
+/* ===================================================
+   InstructorAssignments.css
+   =================================================== */
+
+/* ---------- Base Styles ---------- */
+.instructor-assignments {
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* Card backgrounds & shadows */
+.filter-card,
+.form-card,
+.table-card {
+  margin-bottom: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.ant-card-head {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ant-card-body {
+  padding: 16px;
+}
+
+/* ---------- Typography ---------- */
+.ant-typography {
+  line-height: 1.4;
+}
+
+.ant-typography h1,
+.instructor-assignments h1 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+/* Required asterisk styling */
+.ant-form-item-required::before {
+  content: "*";
+  color: #f5222d;
+  margin-right: 4px;
+  font-size: 14px;
+}
+
+/* ---------- Form Layout ---------- */
+/* Inline form as flex with wrapping */
+.form-card .ant-form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.form-card .ant-form-inline .ant-form-item {
+  margin-right: 16px;
+  margin-bottom: 12px;
+}
+
+.form-card .ant-form-item-label > label {
+  font-weight: 500;
+}
+
+/* Restore natural width for inline controls */
+.form-card .ant-form-inline .ant-form-item-control-input {
+  width: auto;
+}
+.form-card .ant-form-inline .ant-form-item-label {
+  margin-right: 12px;
+}
+/* Only make form fields full-width when stacking on very small screens */
+@media (max-width: 400px) {
+  .form-card .ant-form-inline .ant-form-item-control-input input,
+  .form-card .ant-form-inline .ant-form-item-control-input .ant-picker,
+  .form-card .ant-form-inline .ant-form-item-control-input .ant-select-selector,
+  .form-card .ant-form-inline .ant-form-item-control-input .ant-input-number,
+  .form-card .ant-form-inline .ant-form-item-control-input .ant-input {
+    width: 100% !important;
+  }
+}
+
+/* Button styles */
+.ant-btn {
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.ant-btn-link {
+  padding: 4px;
+}
+
+.ant-btn[icon] {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* “Save Changes” full-width style */
+.form-card .ant-btn-primary[block] {
+  margin-top: 8px;
+}
+
+/* Upload button adjustments */
+.ant-upload .ant-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---------- Table Styles ---------- */
+.table-card .ant-table-wrapper {
+  overflow-x: auto;
+}
+
+.ant-table {
+  background: #fff;
+}
+
+.ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+}
+
+.ant-table-tbody > tr > td {
+  vertical-align: middle;
+}
+
+/* Smaller table on narrow screens */
+@media (max-width: 600px) {
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+/* ---------- Loader ---------- */
+.drawer-spin {
+  text-align: center;
+  padding: 40px 0;
+}
+
+/* ---------- Responsive: Tablet & Below ---------- */
+@media (max-width: 768px) {
+  .instructor-assignments {
+    padding: 16px;
+  }
+
+  .filter-card,
+  .form-card,
+  .table-card {
+    margin-bottom: 16px;
+  }
+
+  .form-card .ant-form-inline .ant-form-item {
+    margin-right: 8px;
+  }
+
+  .ant-btn {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+}
+
+/* ---------- Responsive: Smartphone (≤400px) ---------- */
+@media (max-width: 400px) {
+  .instructor-assignments {
+    padding: 8px;
+  }
+
+  /* Stack the inline form items vertically */
+  .form-card .ant-form-inline {
+    flex-direction: column;
+  }
+  .form-card .ant-form-inline .ant-form-item {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+
+  /* Shrink typography and controls */
+  .ant-typography h1,
+  .instructor-assignments h1 {
+    font-size: 20px;
+  }
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    font-size: 11px;
+    padding: 6px;
+  }
+
+  .ant-btn {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}

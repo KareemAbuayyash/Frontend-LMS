@@ -47,6 +47,7 @@ public class SecurityConfig {
       .requestMatchers(HttpMethod.GET, "/api/content/*/download").permitAll()
         // allow anyone to fetch static uploads:
         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
 
         // your existing public endpoints:
         .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()

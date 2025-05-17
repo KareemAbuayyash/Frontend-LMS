@@ -1,8 +1,8 @@
 package com.example.lms.dto;
 
-import java.time.LocalDateTime;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Data
 public class AssignmentDTO {
@@ -11,21 +11,23 @@ public class AssignmentDTO {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotBlank(message = "Description is required")
     private String description;
-
-    @Min(value = 0, message = "Score must be zero or positive")
-    private int score;
-
-    private boolean graded;
-
-    @Min(value = 1, message = "Total points must be at least 1")
-    private int totalPoints;
 
     @NotNull(message = "Due date is required")
     @Future(message = "Due date must be in the future")
     private LocalDateTime dueDate;
 
-    @NotNull(message = "Course ID is required")
+    @Min(value = 1, message = "Total points must be ≥ 1")
+    private int totalPoints;
+
+    private int score;
+    private boolean graded;
+
+    // ↪️ removed @NotNull here (we always set it server-side)
     private Long courseId;
+
+    /**
+     * If instructor uploaded one, this will be "/files/…"
+     */
+    private String attachmentUrl;
 }

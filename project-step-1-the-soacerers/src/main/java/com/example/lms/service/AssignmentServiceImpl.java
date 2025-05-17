@@ -1,77 +1,167 @@
 package com.example.lms.service;
 
 import com.example.lms.dto.AssignmentDTO;
+import com.example.lms.dto.SubmissionDTO;
 import com.example.lms.entity.Assignment;
 import com.example.lms.entity.Course;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.AssignmentMapper;
+import com.example.lms.mapper.AssignmentSubmissionMapper;
 import com.example.lms.repository.AssignmentRepository;
 import com.example.lms.repository.CourseRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
+import java.nio.file.*;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AssignmentServiceImpl implements AssignmentService {
+  private final AssignmentRepository assignmentRepo;
+  private final CourseRepository courseRepo;
+  private final AssignmentSubmissionService submissionService;
 
-  private static final Logger logger = LoggerFactory.getLogger(AssignmentServiceImpl.class);
-
-  private final AssignmentRepository assignmentRepository;
-  private final CourseRepository courseRepository;
-
-  @Override
-  public Assignment createAssignment(Assignment assignment) {
-    logger.info("Creating a new assignment with title: {}", assignment.getTitle());
-    Assignment savedAssignment = assignmentRepository.save(assignment);
-    logger.info("Assignment created successfully with ID: {}", savedAssignment.getId());
-    return savedAssignment;
-  }
+  private final Path uploads = Paths.get("uploads");
 
   @Override
-  public AssignmentDTO gradeAssignment(Long assignmentId, int score) {
-    logger.info("Grading assignment with ID: {} to score: {}", assignmentId, score);
-    Assignment assignment = assignmentRepository.findById(assignmentId)
-        .orElseThrow(() -> new ResourceNotFoundException(
-            "Assignment not found with ID: " + assignmentId));
+  public AssignmentDTO createAssignmentWithAttachment(Long courseId, AssignmentDTO dto, MultipartFile file) {
+    Course course = courseRepo.findById(courseId)
+        .orElseThrow(() -> new ResourceNotFoundException("Course not found: " + courseId));
+    Assignment entity = AssignmentMapper.toEntity(dto, course);
 
-    assignment.setScore(score);
-    assignment.setGraded(true);
+    if (file != null && !file.isEmpty()) {
+      try {
+        Files.createDirectories(uploads);
+        String fn = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        try (InputStream in = file.getInputStream()) {
+          Files.copy(in, uploads.resolve(fn), StandardCopyOption.REPLACE_EXISTING);
+        }
+        entity.setAttachmentUrl("/files/" + fn);
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to store file", e);
+      }
+    }
 
-    Assignment saved = assignmentRepository.save(assignment);
-    logger.info("Assignment {} graded successfully", assignmentId);
-
+    Assignment saved = assignmentRepo.save(entity);
     return AssignmentMapper.toDTO(saved);
-  }
-
-  @Override
-  public Assignment getAssignmentById(Long assignmentId) {
-    logger.info("Fetching assignment with ID: {}", assignmentId);
-    Assignment assignment = assignmentRepository.findById(assignmentId)
-        .orElseThrow(() -> {
-          logger.error("Assignment with ID: {} not found", assignmentId);
-          return new ResourceNotFoundException("Assignment not found");
-        });
-    logger.info("Assignment with ID: {} fetched successfully", assignmentId);
-    return assignment;
-  }
-
-  @Override
-  public List<Assignment> getAssignmentsByCourse(Long courseId) {
-    logger.info("Fetching assignments for course with ID: {}", courseId);
-    List<Assignment> assignments = assignmentRepository.findByCourseId(courseId);
-    logger.info("Fetched {} assignments for course with ID: {}", assignments.size(), courseId);
-    return assignments;
   }
 
   @Override
   public AssignmentDTO createAssignmentForCourse(Long courseId, AssignmentDTO dto) {
-    Course course = courseRepository.findById(courseId)
-        .orElseThrow(() -> new ResourceNotFoundException("Course not found: " + courseId));
-    Assignment assignment = AssignmentMapper.toEntity(dto, course);
-    Assignment saved = assignmentRepository.save(assignment);
-    return AssignmentMapper.toDTO(saved);
+    return createAssignmentWithAttachment(courseId, dto, null);
   }
+
+  @Override
+  public List<AssignmentDTO> getAssignmentsByCourse(Long courseId) {
+    return assignmentRepo.findByCourseId(courseId)
+        .stream().map(AssignmentMapper::toDTO).toList();
+  }
+
+  @Override
+  public AssignmentDTO gradeAssignment(Long assignmentId, int score) {
+    Assignment a = assignmentRepo.findById(assignmentId)
+        .orElseThrow(() -> new ResourceNotFoundException("Assignment not found: " + assignmentId));
+    a.setScore(score);
+    a.setGraded(true);
+    return AssignmentMapper.toDTO(assignmentRepo.save(a));
+  }
+
+  @Override
+  public AssignmentDTO getAssignmentById(Long assignmentId) {
+    Assignment a = assignmentRepo.findById(assignmentId)
+        .orElseThrow(() -> new ResourceNotFoundException("Assignment not found: " + assignmentId));
+    return AssignmentMapper.toDTO(a);
+  }
+
+  @Override
+  public List<SubmissionDTO> getSubmissionsForAssignment(Long assignmentId) {
+    return submissionService.getSubmissionsByAssignment(assignmentId)
+        .stream().map(AssignmentSubmissionMapper::toDTO).toList();
+  }
+  @Transactional
+  @Override
+  public AssignmentDTO updateAssignment(AssignmentDTO dto) {
+    Assignment entity = assignmentRepo.findById(dto.getId())
+      .orElseThrow(() -> new EntityNotFoundException("Assignment not found"));
+
+    entity.setTitle(dto.getTitle());
+    entity.setDescription(dto.getDescription());
+    entity.setDueDate(dto.getDueDate());
+    entity.setTotalPoints(dto.getTotalPoints());
+    // (we’re not touching the file on edit)
+
+    assignmentRepo.save(entity);
+    return AssignmentMapper.toDTO(entity);
+  }
+  @Override
+  @Transactional
+  public AssignmentDTO updateAssignmentWithAttachment(AssignmentDTO dto, MultipartFile file) {
+    Assignment entity = assignmentRepo.findById(dto.getId())
+        .orElseThrow(() -> new ResourceNotFoundException("Assignment not found " + dto.getId()));
+
+    // update metadata
+    entity.setTitle(dto.getTitle());
+    entity.setDescription(dto.getDescription());
+    entity.setDueDate(dto.getDueDate());
+    entity.setTotalPoints(dto.getTotalPoints());
+
+    // if new file present, delete old + store new
+    if (file != null && !file.isEmpty()) {
+      // delete old
+      String oldUrl = entity.getAttachmentUrl();
+      if (oldUrl != null) {
+        try {
+          Path old = uploads.resolve(Paths.get(oldUrl).getFileName());
+          Files.deleteIfExists(old);
+        } catch (IOException e) { /* log */ }
+      }
+      // store new
+      try {
+        Files.createDirectories(uploads);
+        String fn = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        try (InputStream in = file.getInputStream()) {
+          Files.copy(in, uploads.resolve(fn), StandardCopyOption.REPLACE_EXISTING);
+        }
+        entity.setAttachmentUrl("/files/" + fn);
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to store new file", e);
+      }
+    }
+
+    assignmentRepo.save(entity);
+    return AssignmentMapper.toDTO(entity);
+  }
+
+  @Override
+@Transactional
+public void deleteAssignment(Long assignmentId) {
+  // 1) blow away all child submissions
+  submissionService.deleteSubmissionsByAssignment(assignmentId);
+
+  // 2) delete the file on disk, if any
+  Assignment entity = assignmentRepo.findById(assignmentId)
+    .orElseThrow(() -> new ResourceNotFoundException("Assignment not found: " + assignmentId));
+
+  String url = entity.getAttachmentUrl();
+  if (url != null) {
+    try {
+      Path p = uploads.resolve(Paths.get(url).getFileName());
+      Files.deleteIfExists(p);
+    } catch (IOException e) {
+      // log and continue
+    }
+  }
+
+  // 3) **finally remove the assignment row itself**
+  assignmentRepo.delete(entity);
+}
+
 }

@@ -21,13 +21,14 @@ import Enrollments from './pages/AdminDashboard/Enrollments';
 // Instructor pages
 import InstructorDashboard from './pages/instructor/Dashboard';
 import InstructorCourses from './pages/instructor/Courses';
-import InstructorSubmissions from './pages/instructor/Submissions';
 import InstructorStudents from './pages/instructor/Students';
 import InstructorAnalytics from './pages/instructor/Analytics';
 import InstructorSettings from './pages/instructor/Settings';
 import InstructorQuizzes from './pages/instructor/Quizzes';
 import QuizSubmissions from './pages/instructor/QuizSubmissions';
 import InstructorCourseContent from './pages/instructor/InstructorCourseContent';
+import CreateOrEditAssignment from './pages/instructor/CreateOrEditAssignment';
+import AssignmentSubmissions from './pages/instructor/AssignmentSubmissions';
 // Student pages
 import StudentDashboard from './pages/StudentDashboard/StudentDashboard';
 import StudentCourses from './pages/StudentDashboard/StudentCourses';
@@ -81,9 +82,11 @@ export default function App() {
       >
         <Route path="dashboard"   element={<InstructorDashboard />} />
         <Route path="courses"     element={<InstructorCourses />} />
+        <Route path="assignments" element={<CreateOrEditAssignment />} />
+        <Route path="create-assignment"      element={<CreateOrEditAssignment />} />
+        <Route path="assignments/:assignmentId/submissions" element={<AssignmentSubmissions />} />
         <Route path="quizzes"     element={<InstructorQuizzes />} />
         <Route path="quiz-submissions" element={<QuizSubmissions />} />
-        <Route path="submissions" element={<InstructorSubmissions />} />
         <Route path="students"    element={<InstructorStudents />} />
         <Route path="analytics"   element={<InstructorAnalytics />} />
         <Route path="settings"    element={<InstructorSettings />} />
