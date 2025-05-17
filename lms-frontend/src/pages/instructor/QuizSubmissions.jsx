@@ -1,3 +1,4 @@
+// src/components/QuizSubmissions.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -29,7 +30,6 @@ export default function QuizSubmissions() {
   const [loadingSubs, setLoadingSubs] = useState(false);
   const [savingId, setSavingId] = useState();
 
-  // load courses
   useEffect(() => {
     api.get('/instructors/courses')
       .then(r => setCourses(r.data))
@@ -37,7 +37,6 @@ export default function QuizSubmissions() {
       .finally(() => setLoadingCourses(false));
   }, []);
 
-  // load quizzes for selected course
   useEffect(() => {
     setQuizzes([]);
     setSelectedQuiz(undefined);
@@ -49,7 +48,6 @@ export default function QuizSubmissions() {
       .finally(() => setLoadingQuizzes(false));
   }, [selectedCourse]);
 
-  // load submissions & quiz details
   useEffect(() => {
     if (!selectedQuiz) return;
     setLoadingSubs(true);
@@ -63,7 +61,6 @@ export default function QuizSubmissions() {
       .catch(() => message.error('Failed to load quiz details'));
   }, [selectedQuiz]);
 
-  // grade update
   const handleScoreChange = (id, score) => {
     setSavingId(id);
     api.put(`/submissions/quizzes/${selectedQuiz}/submissions/${id}/grade`, { score })
@@ -75,13 +72,13 @@ export default function QuizSubmissions() {
       .finally(() => setSavingId(null));
   };
 
-  // calculate max total points
   const maxTotal = quizDetails
     ? quizDetails.questions.reduce((sum, q) => sum + (q.weight || 1), 0)
     : 0;
 
   const subColumns = [
-    { title: 'Student ID', dataIndex: 'studentId', key: 'studentId' },
+    // show the student’s display name
+    { title: 'Student', dataIndex: 'studentName', key: 'studentName' },
     {
       title: 'Submitted At',
       dataIndex: 'submissionDate',
@@ -118,7 +115,7 @@ export default function QuizSubmissions() {
 
   return (
     <div className="quiz-submissions-page">
-      <Card className="quiz-table-card" title="Select Quiz">
+      <Card title="Select Quiz" className="quiz-table-card">
         <Row gutter={16} className="top-controls">
           <Col xs={24} sm={12}>
             <Select
@@ -157,7 +154,10 @@ export default function QuizSubmissions() {
       </Card>
 
       {selectedQuiz && (
-        <Card className="submissions-table-card" title={`Submissions: ${quizDetails?.title || ''}`}>
+        <Card
+          className="submissions-table-card"
+          title={`Submissions: ${quizDetails?.title || ''}`}
+        >
           <Table
             dataSource={subs}
             columns={subColumns}
@@ -168,50 +168,61 @@ export default function QuizSubmissions() {
         </Card>
       )}
 
-     <Drawer
-  title={`Answers: Student ${currentRecord?.studentId}`}
-  visible={drawerVisible}
-  width={600}
-  onClose={() => setDrawerVisible(false)}
->
-  <div className="drawer-content">
-    <h3>{quizDetails?.title}</h3>
-    <ol>
-      {quizDetails?.questions.map((q, i) => {
-        const raw       = currentRecord?.answers[i] ?? '';
-        const weight    = q.weight || 1;
-        const studentArr = raw.split(',').map(a => a.trim()).filter(Boolean);
-        const correctArr = q.correctAnswer.split(',').map(a => a.trim());
+      <Drawer
+        title={`Answers: ${currentRecord?.studentName}`}
+        visible={drawerVisible}
+        width={600}
+        onClose={() => setDrawerVisible(false)}
+      >
+        <div className="drawer-content">
+          <h3>{quizDetails?.title}</h3>
+          <ol>
+            {quizDetails?.questions.map((q, i) => {
+              const raw = currentRecord?.answers[i] ?? '';
+              const weight = q.weight || 1;
+              const studentArr = raw.split(',').map(a => a.trim()).filter(Boolean);
+              const correctArr = q.correctAnswer.split(',').map(a => a.trim());
 
-        let earned = 0;
-        if (q.questionType === 'TRUE_FALSE' ||
-            q.questionType === 'MULTIPLE_CHOICE_SINGLE') {
-          // simple full-credit
-          if ((studentArr[0] || '').toLowerCase() === (correctArr[0] || '').toLowerCase()) {
-            earned = weight;
-          }
-        } else {
-          // all-or-nothing for MULTIPLE_CHOICE_MULTIPLE
-          const gotSet  = new Set(studentArr.map(a => a.toLowerCase()));
-          const wantSet = new Set(correctArr.map(a => a.toLowerCase()));
-          const exactlyMatches =
-            gotSet.size === wantSet.size &&
-            [...wantSet].every(ans => gotSet.has(ans));
-          earned = exactlyMatches ? weight : 0;
-        }
+              let earned = 0;
+              if (
+                q.questionType === 'TRUE_FALSE' ||
+                q.questionType === 'MULTIPLE_CHOICE_SINGLE'
+              ) {
+                if (
+                  (studentArr[0] || '').toLowerCase() ===
+                  (correctArr[0] || '').toLowerCase()
+                ) {
+                  earned = weight;
+                }
+              } else {
+                const gotSet = new Set(studentArr.map(a => a.toLowerCase()));
+                const wantSet = new Set(correctArr.map(a => a.toLowerCase()));
+                const exactlyMatches =
+                  gotSet.size === wantSet.size &&
+                  [...wantSet].every(ans => gotSet.has(ans));
+                earned = exactlyMatches ? weight : 0;
+              }
 
-        return (
-          <li key={q.id} className={earned === weight ? 'correct' : 'wrong'}>
-            <p><strong>Q{i+1} ({weight} pts):</strong> {q.text}</p>
-            <p><strong>Their answer:</strong> {studentArr.join(', ')}</p>
-            <p><strong>Correct answer:</strong> {correctArr.join(', ')}</p>
-            <p style={{ fontStyle: 'italic' }}>Earned: {earned} / {weight}</p>
-          </li>
-        );
-      })}
-    </ol>
-  </div>
-</Drawer>
+              return (
+                <li key={q.id} className={earned === weight ? 'correct' : 'wrong'}>
+                  <p>
+                    <strong>Q{i + 1} ({weight} pts):</strong> {q.text}
+                  </p>
+                  <p>
+                    <strong>Their answer:</strong> {studentArr.join(', ')}
+                  </p>
+                  <p>
+                    <strong>Correct answer:</strong> {correctArr.join(', ')}
+                  </p>
+                  <p style={{ fontStyle: 'italic' }}>
+                    Earned: {earned} / {weight}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </Drawer>
     </div>
   );
 }

@@ -15,4 +15,13 @@ public class SubmissionMapper {
         response.setSubmissionDate(submission.getSubmissionDate());
         return response;
     }
+
+    public static SubmissionResponse toResponse(
+        Submission submission,
+        String studentName
+    ) {
+        SubmissionResponse dto = toResponse(submission);
+        dto.setStudentName(studentName);
+        return dto;
+    }
 }

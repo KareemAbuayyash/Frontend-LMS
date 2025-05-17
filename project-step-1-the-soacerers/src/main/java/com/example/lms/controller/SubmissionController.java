@@ -1,10 +1,11 @@
+// src/main/java/com/example/lms/controller/SubmissionController.java
 package com.example.lms.controller;
 
+import com.example.lms.dto.SubmissionResponse;
 import com.example.lms.dto.QuizSubmissionRequest;
 import com.example.lms.dto.ScoreRequest;
-import com.example.lms.dto.SubmissionResponse;
-import com.example.lms.entity.Student;
 import com.example.lms.entity.Submission;
+import com.example.lms.entity.Student;
 import com.example.lms.entity.User;
 import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.SubmissionMapper;
@@ -33,15 +34,28 @@ public class SubmissionController {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
 
+    // helper to map + look up name
+    private SubmissionResponse toDtoWithName(Submission sub) {
+        SubmissionResponse dto = SubmissionMapper.toResponse(sub);
+        String name = studentRepository.findById(sub.getStudentId())
+                        .map(Student::getUser)
+                        .map(User::getUsername)
+                        .orElse("‹unknown›");
+        dto.setStudentName(name);
+        return dto;
+    }
+
     // ------------------------------------------------
     // Fetch any submission by its ID (admins & instructors)
     // ------------------------------------------------
     @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
     @GetMapping("/{submissionId}")
-    public ResponseEntity<SubmissionResponse> getSubmissionById(@PathVariable Long submissionId) {
+    public ResponseEntity<SubmissionResponse> getSubmissionById(
+            @PathVariable Long submissionId) {
+
         logger.info("Fetching submission with ID: {}", submissionId);
         Submission submission = quizService.getSubmissionById(submissionId);
-        return ResponseEntity.ok(SubmissionMapper.toResponse(submission));
+        return ResponseEntity.ok(toDtoWithName(submission));
     }
 
     // ------------------------------------------------
@@ -55,7 +69,7 @@ public class SubmissionController {
     ) {
         logger.info("Updating submission with ID: {}", submissionId);
         Submission updated = quizService.updateSubmission(submissionId, request.getAnswers());
-        return ResponseEntity.ok(SubmissionMapper.toResponse(updated));
+        return ResponseEntity.ok(toDtoWithName(updated));
     }
 
     // ------------------------------------------------
@@ -70,7 +84,7 @@ public class SubmissionController {
         logger.info("Fetching submissions for quiz {} and student {}", quizId, studentId);
         List<Submission> subs = quizService.getSubmissionsByQuizAndStudent(quizId, studentId);
         List<SubmissionResponse> resp = subs.stream()
-            .map(SubmissionMapper::toResponse)
+            .map(this::toDtoWithName)
             .collect(Collectors.toList());
         return ResponseEntity.ok(resp);
     }
@@ -87,14 +101,12 @@ public class SubmissionController {
     ) {
         logger.info("Instructor submitting quiz {} for student {}", quizId, studentId);
         Submission saved = quizService.submitQuiz(quizId, studentId, request.getAnswers());
-        return ResponseEntity.ok(SubmissionMapper.toResponse(saved));
+        return ResponseEntity.ok(toDtoWithName(saved));
     }
 
     // ------------------------------------------------
     // “Me” endpoints for students
     // ------------------------------------------------
-
-    // Check if the current student already has a submission
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping("/quizzes/{quizId}/students/me")
     public ResponseEntity<SubmissionResponse> getMySubmission(
@@ -113,10 +125,9 @@ public class SubmissionController {
         if (subs.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(SubmissionMapper.toResponse(subs.get(0)));
+        return ResponseEntity.ok(toDtoWithName(subs.get(0)));
     }
 
-    // Submit the quiz as “me” (students only)
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping("/quizzes/{quizId}/students/me")
     public ResponseEntity<SubmissionResponse> submitQuizAsMe(
@@ -125,16 +136,15 @@ public class SubmissionController {
             @RequestBody QuizSubmissionRequest request
     ) {
         logger.info("Student {} submitting quiz {}", auth.getName(), quizId);
-        String username = auth.getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + auth.getName()));
         Student student = studentRepository.findByUser(user);
         if (student == null) {
-            throw new ResourceNotFoundException("Student record not found for user: " + username);
+            throw new ResourceNotFoundException("Student record not found for user: " + auth.getName());
         }
 
         Submission saved = quizService.submitQuiz(quizId, student.getId(), request.getAnswers());
-        return ResponseEntity.ok(SubmissionMapper.toResponse(saved));
+        return ResponseEntity.ok(toDtoWithName(saved));
     }
 
     // ------------------------------------------------
@@ -150,7 +160,7 @@ public class SubmissionController {
         logger.info("Grading submission {} of quiz {} → score {}",
                 submissionId, quizId, scoreRequest.getScore());
         Submission graded = quizService.gradeQuizSubmission(submissionId, scoreRequest.getScore());
-        return ResponseEntity.ok(SubmissionMapper.toResponse(graded));
+        return ResponseEntity.ok(toDtoWithName(graded));
     }
 
     // ------------------------------------------------
@@ -158,11 +168,13 @@ public class SubmissionController {
     // ------------------------------------------------
     @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
     @GetMapping("/quizzes/course/{courseId}")
-    public ResponseEntity<List<SubmissionResponse>> getSubmissionsByCourse(@PathVariable Long courseId) {
+    public ResponseEntity<List<SubmissionResponse>> getSubmissionsByCourse(
+            @PathVariable Long courseId
+    ) {
         logger.info("Fetching all submissions for course {}", courseId);
         List<Submission> subs = quizService.getSubmissionsByCourse(courseId);
         List<SubmissionResponse> resp = subs.stream()
-            .map(SubmissionMapper::toResponse)
+            .map(this::toDtoWithName)
             .collect(Collectors.toList());
         return ResponseEntity.ok(resp);
     }
@@ -172,11 +184,13 @@ public class SubmissionController {
     // ------------------------------------------------
     @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
     @GetMapping("/quizzes/{quizId}")
-    public ResponseEntity<List<SubmissionResponse>> getSubmissionsForQuiz(@PathVariable Long quizId) {
+    public ResponseEntity<List<SubmissionResponse>> getSubmissionsForQuiz(
+            @PathVariable Long quizId
+    ) {
         logger.info("Fetching all submissions for quiz {}", quizId);
         List<Submission> subs = quizService.getSubmissionsByQuiz(quizId);
         List<SubmissionResponse> resp = subs.stream()
-            .map(SubmissionMapper::toResponse)
+            .map(this::toDtoWithName)
             .collect(Collectors.toList());
         return ResponseEntity.ok(resp);
     }
@@ -193,7 +207,7 @@ public class SubmissionController {
         logger.info("Fetching submissions for quiz {} in course {}", quizId, courseId);
         List<Submission> subs = quizService.getSubmissionsByQuizAndCourse(quizId, courseId);
         List<SubmissionResponse> resp = subs.stream()
-            .map(SubmissionMapper::toResponse)
+            .map(this::toDtoWithName)
             .collect(Collectors.toList());
         return ResponseEntity.ok(resp);
     }

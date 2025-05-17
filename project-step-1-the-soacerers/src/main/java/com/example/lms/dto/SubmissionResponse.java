@@ -14,6 +14,8 @@ public class SubmissionResponse {
     @NotNull(message = "Student ID is required")
     private Long studentId;
 
+    private String studentName;
+
     @NotNull(message = "Quiz ID is required")
     private Long quizId;
 
