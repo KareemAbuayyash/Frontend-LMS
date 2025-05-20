@@ -6,6 +6,7 @@ import com.example.lms.dto.StudentUpdateDTO;
 import com.example.lms.entity.Course;
 import com.example.lms.entity.Student;
 import com.example.lms.entity.User;
+import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.mapper.CourseMapper;
 import com.example.lms.mapper.StudentMapper;
 import com.example.lms.repository.StudentRepository;
@@ -97,5 +98,32 @@ public ResponseEntity<List<CourseSummaryDTO>> getEnrolledCourses(Authentication 
 
     return ResponseEntity.ok(dtos);
 }
+@PreAuthorize("hasRole('STUDENT')")
+  @GetMapping("/me")
+  public ResponseEntity<StudentDTO> getMyProfile(Authentication auth) {
+    User   user    = (User) auth.getPrincipal();
+    Student student = studentRepository.findByUser(user);
+    if (student == null) {
+      throw new ResourceNotFoundException("Student record not found for " + user.getUsername());
+    }
+    return ResponseEntity.ok(StudentMapper.toDTO(student));
+  }
 
+  @PreAuthorize("hasRole('STUDENT')")
+  @PutMapping("/me")
+  public ResponseEntity<StudentDTO> updateMyProfile(
+      @RequestBody @Valid StudentUpdateDTO dto,
+      Authentication auth
+  ) {
+    User    user    = (User) auth.getPrincipal();
+    Student student = studentRepository.findByUser(user);
+    if (student == null) {
+      throw new ResourceNotFoundException("Student record not found for " + user.getUsername());
+    }
+    // apply your updates
+    student.setHobbies(dto.getHobbies());
+    // if you ever allow them to re‐enroll or drop courses, handle enrolledCourseIds here
+    Student saved = studentRepository.save(student);
+    return ResponseEntity.ok(StudentMapper.toDTO(saved));
+  }
 }

@@ -14,9 +14,6 @@ const NAV = [
   { label: 'Quiz Submissions', to: '/instructor/quiz-submissions', icon: <FiFileText/> },
   { label: 'Create Assignment', to: '/instructor/assignments',           icon: <FiFileText/> },
   { label: 'Assignment Submissions', to: '/instructor/assignments/1/submissions', icon: <FiFileText/> },
-  { label: 'Students',    to: '/instructor/students',    icon: <FiUser/>      },
-  { label: 'Analytics',   to: '/instructor/analytics',   icon: <FiBarChart2/> },
-  { label: 'Settings',    to: '/instructor/settings',    icon: <FiSettings/>  },
 ];
 
 export default function InstructorSidebar({ collapsed, onToggle }) {
