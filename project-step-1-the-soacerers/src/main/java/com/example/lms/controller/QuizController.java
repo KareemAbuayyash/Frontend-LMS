@@ -63,4 +63,20 @@ public class QuizController {
         logger.info("Quiz with ID: {} fetched successfully", quizId);
         return ResponseEntity.ok(quizDTO);
     }
+
+      @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
+  @PutMapping("/{id}")
+  public QuizDTO updateQuiz(
+    @PathVariable Long id,
+    @Valid @RequestBody QuizDTO dto
+  ) {
+    return quizService.updateQuiz(id, dto);
+  }
+
+  @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
+  @DeleteMapping("/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteQuiz(@PathVariable Long id) {
+    quizService.deleteQuiz(id);
+  }
 }

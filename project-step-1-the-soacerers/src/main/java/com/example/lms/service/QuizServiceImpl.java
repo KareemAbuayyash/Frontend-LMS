@@ -247,6 +247,17 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
+  @Transactional
+  public void deleteQuiz(Long id) {
+    if (!quizRepository.existsById(id)) {
+      throw new QuizNotFoundException(id);
+    }
+    quizRepository.deleteById(id);
+  }
+
+
+
+    @Override
     @Transactional
     public Submission updateSubmission(Long submissionId, List<String> updatedAnswers) {
         logger.info("Updating submission with ID: {}", submissionId);

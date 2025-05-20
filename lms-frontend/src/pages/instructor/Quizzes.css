@@ -1,114 +1,87 @@
-/* Fade-in animation for new question blocks */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.question-block {
-  animation: fadeInUp 0.3s ease-out both;
+/* src/pages/instructor/Quizzes.css */
+.instructor-quizzes {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
 }
 
-/* zebra-striping */
-.question-block:nth-child(odd) {
-  background: #fbfbfb;
+/* Card styling */
+.form-card,
+.table-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+  overflow: hidden;
 }
-.question-block:nth-child(even) {
+
+/* Table header */
+.table-card .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Drawer tweaks */
+.quiz-detail-drawer .ant-drawer-body {
+  padding: 24px;
   background: #fff;
 }
 
-/* input focus outlines */
-.instructor-quizzes .ant-input:focus,
-.instructor-quizzes .ant-input-focused {
-  border-color: #40a9ff;
-  box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+.quiz-detail-drawer .detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
-/* select focus outline */
-.instructor-quizzes .ant-select-focused .ant-select-selector {
-  border-color: #40a9ff !important;
-  box-shadow: 0 0 0 2px rgba(24,144,255,0.2) !important;
+.quiz-detail-drawer .detail-header .ant-typography {
+  margin: 0;
 }
 
-/* radio hover */
-.instructor-quizzes .ant-radio-wrapper:hover .ant-radio-inner {
-  border-color: #1890ff;
-}
-.instructor-quizzes .ant-radio-checked .ant-radio-inner {
-  background-color: #1890ff;
-  border-color: #1890ff;
+.quiz-detail-drawer .detail-section {
+  margin-bottom: 24px;
 }
 
-/* error text styling */
-.instructor-quizzes .ant-form-item-explain-error {
-  color: #ff4d4f;
-  font-size: 0.9rem;
-  margin-top: 4px;
-}
-
-/* dashed “Add Question” spacing */
-.instructor-quizzes .ant-btn-dashed {
-  margin-top: 1rem;
-}
-
-/* subtle button press effect */
-.instructor-quizzes .ant-btn:active {
-  transform: translateY(1px);
-}
-
-/* improve the divider text style */
-.instructor-quizzes .ant-divider-inner-text {
-  font-weight: 500;
-  color: #1890ff;
-}
-
-/* Make Remove icon a bit larger and centered */
-.question-block > .anticon-minus-circle {
-  font-size: 1.4rem;
-  margin-top: 0.6rem;
-  grid-column: 3;
-}
-
-/* Responsive grid tweak: collapse dynamic field under type on tablet */
-@media (max-width: 768px) {
-  .question-block {
-    grid-template-columns: 1fr 120px auto;
-    grid-template-rows: auto auto;
-    grid-template-areas:
-      "text type remove"
-      "answer answer answer";
-  }
-  .question-block .ant-form-item-control-input {
-    grid-area: answer !important;
-  }
-}
-
-/* smoother transitions everywhere */
-.instructor-quizzes .ant-form-item-control-input,
-.instructor-quizzes .ant-select-selector,
-.instructor-quizzes .ant-input,
-.instructor-quizzes .ant-btn {
-  transition: all 0.2s ease;
-}
-.instructor-quizzes {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-.question-card {
-  margin-bottom: 1.5rem;
-  border-radius: 8px;
-  padding: 1rem;
+.quiz-detail-drawer .question-item {
+  padding: 16px;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
   background: #fafafa;
-  border: 1px solid #ececec;
+  margin-bottom: 12px;
 }
-.question-space .ant-form-item {
-  margin-right: 12px;
+
+.quiz-detail-drawer .question-item:last-child {
+  margin-bottom: 0;
 }
-.options-list {
-  margin-top: 12px;
+
+.quiz-detail-drawer .question-item h4 {
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.quiz-detail-drawer .question-item .meta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.quiz-detail-drawer .question-item ul {
+  margin: 4px 0 8px 20px;
+  padding: 0;
+}
+
+.quiz-detail-drawer .question-item .answer {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .quiz-detail-drawer .question-item {
+    padding: 12px;
+  }
 }

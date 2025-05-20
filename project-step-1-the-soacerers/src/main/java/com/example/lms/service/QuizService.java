@@ -20,5 +20,6 @@ public interface QuizService {
     List<Submission> getSubmissionsByQuiz(Long quizId);
     List<Submission> getSubmissionsByQuizAndCourse(Long quizId, Long courseId);
 List<Quiz> findByCourseId(Long courseId);
+  void deleteQuiz(Long id);
 
 }
