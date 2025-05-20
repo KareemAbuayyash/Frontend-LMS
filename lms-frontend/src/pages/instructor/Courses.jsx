@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button } from 'antd';
+import { Card, Table, Button, Row, Col } from 'antd';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import './Courses.css';
@@ -52,10 +52,11 @@ const InstructorCourses = () => {
 
   return (
     <div className="instructor-courses">
-      <div className="courses-header">
-        <h1>My Courses</h1>
-      </div>
-
+      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+        <Col>
+          <h1>My Courses</h1>
+        </Col>
+      </Row>
       <Card>
         <Table
           columns={columns}

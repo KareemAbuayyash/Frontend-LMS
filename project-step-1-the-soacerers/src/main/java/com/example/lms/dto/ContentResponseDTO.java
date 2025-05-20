@@ -10,5 +10,5 @@ public class ContentResponseDTO {
     private String filePath;
     private String fileType;
     private Long courseId;
-    private Long instructorId;  
+    private Long instructorId;
 }

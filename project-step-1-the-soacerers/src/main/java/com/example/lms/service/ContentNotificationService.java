@@ -15,14 +15,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ContentNotificationService {
-
     private static final Logger logger = LoggerFactory.getLogger(ContentNotificationService.class);
     private final NotificationService notificationService;
 
     public void notifyEnrolledStudents(Course course, Content savedContent) {
         if (course.getStudents() != null && !course.getStudents().isEmpty()) {
             List<Notification> notifications = NotificationMapper.mapContentNotification(course, savedContent);
-            notifications.stream().forEach(notification -> {
+            notifications.forEach(notification -> {
                 notificationService.sendNotification(notification);
                 logger.info("Notification sent to: {}", notification.getTo());
             });
