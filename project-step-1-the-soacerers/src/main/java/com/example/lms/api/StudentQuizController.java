@@ -1,15 +1,20 @@
 // src/main/java/com/example/lms/api/StudentQuizController.java
 package com.example.lms.api;
 
+import com.example.lms.dto.QuizDTO;
 import com.example.lms.dto.SubmissionResponse;
+import com.example.lms.entity.Course;
 import com.example.lms.entity.Student;
 import com.example.lms.entity.Submission;
 import com.example.lms.entity.User;
 import com.example.lms.exception.ResourceNotFoundException;
+import com.example.lms.mapper.QuizMapper;
 import com.example.lms.mapper.SubmissionMapper;
 import com.example.lms.repository.StudentRepository;
 import com.example.lms.repository.SubmissionRepository;
 import com.example.lms.repository.UserRepository;
+import com.example.lms.service.QuizService;
+
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -27,6 +32,7 @@ public class StudentQuizController {
     private final SubmissionRepository submissionRepo;
     private final UserRepository userRepo;
     private final StudentRepository studentRepo;
+    private final QuizService quizService; // Add QuizService as a dependency
 
     /**
      * Fetch the current student's submission (with score) for a given quiz.
@@ -59,4 +65,31 @@ public class StudentQuizController {
         SubmissionResponse dto = SubmissionMapper.toResponse(submission);
         return ResponseEntity.ok(dto);
     }
+    // StudentQuizController.java
+@PreAuthorize("hasRole('STUDENT')")
+@GetMapping                      //  ←  matches  /api/students/quizzes
+public ResponseEntity<List<QuizDTO>> getMyQuizzes(Authentication auth) {
+
+    // 1) identify the student
+    User user = userRepo.findByUsername(auth.getName())
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    Student student = studentRepo.findByUser(user);
+    if (student == null) {
+        throw new ResourceNotFoundException("Student record not found");
+    }
+
+    // 2) fetch quizzes for *all* courses they are enrolled in
+    List<Long> courseIds = student.getEnrolledCourses()
+                                  .stream()
+                                  .map(Course::getId)
+                                  .toList();
+
+    List<QuizDTO> quizzes = courseIds.stream()
+        .flatMap(cid -> quizService.findByCourseId(cid).stream())
+        .map(QuizMapper::toDTO)
+        .toList();
+
+    return ResponseEntity.ok(quizzes);
+}
+
 }
