@@ -5,7 +5,7 @@ import './StudentCourseDetails.css';
 
 export default function StudentCourseDetails() {
   const { courseId } = useParams();
-  const navigate      = useNavigate();
+  const navigate     = useNavigate();
   const [assignments, setAssignments] = useState([]);
   const [quizzes,     setQuizzes]     = useState([]);
   const [content,     setContent]     = useState([]);
@@ -37,9 +37,8 @@ export default function StudentCourseDetails() {
     fetchAll();
   }, [courseId]);
 
-  // navigate to coursework & auto-open modal for this assignment
-  const goToSubmit = (assignmentId) => {
-    navigate('/student/coursework', { state: { assignmentId } });
+  const goToAssignment = assignmentId => {
+    navigate(`/student/courses/${courseId}/assignments/${assignmentId}`);
   };
 
   if (loading) return <p>Loading…</p>;
@@ -59,14 +58,15 @@ export default function StudentCourseDetails() {
           <div className="section-content">
             {assignments.length === 0
               ? <p>No assignments.</p>
-              : <ul>
+              : (
+                <ul>
                   {assignments.map(a => (
                     <li
                       key={a.id}
                       className="assignment-item"
-                      onClick={() => !a.submitted && goToSubmit(a.id)}
-                      style={{ cursor: a.submitted ? 'default' : 'pointer' }}
-                      title={a.submitted ? 'Already submitted' : 'Click to submit'}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => goToAssignment(a.id)}
+                      title="View & submit"
                     >
                       <div className="assignment-details">
                         <span className="assignment-title">{a.title}</span>
@@ -74,13 +74,11 @@ export default function StudentCourseDetails() {
                           Due: {new Date(a.dueDate).toLocaleDateString()}
                         </span>
                       </div>
-                      {a.submitted && (
-                        <span className="status">Submitted</span>
-                      )}
+                      {a.submitted && <span className="status">Submitted</span>}
                     </li>
                   ))}
                 </ul>
-            }
+              )}
           </div>
         )}
       </div>
@@ -95,17 +93,20 @@ export default function StudentCourseDetails() {
           <div className="section-content">
             {quizzes.length === 0
               ? <p>No quizzes.</p>
-              : <ul>
+              : (
+                <ul>
                   {quizzes.map(q => (
                     <li key={q.id} className="quiz-item">
-                      <Link className="quiz-link"
-                            to={`/student/courses/${courseId}/quizzes/${q.id}`}>
+                      <Link
+                        className="quiz-link"
+                        to={`/student/courses/${courseId}/quizzes/${q.id}`}
+                      >
                         {q.title}
                       </Link>
                     </li>
                   ))}
                 </ul>
-            }
+              )}
           </div>
         )}
       </div>
@@ -120,7 +121,8 @@ export default function StudentCourseDetails() {
           <div className="section-content">
             {content.length === 0
               ? <p>No content available.</p>
-              : <ul>
+              : (
+                <ul>
                   {content.map(item => (
                     <li key={item.id} className="content-item">
                       <strong>{item.title}</strong>
@@ -128,10 +130,13 @@ export default function StudentCourseDetails() {
                       <button
                         className="download-button"
                         onClick={async () => {
-                          const resp = await api.get(`/content/${item.id}/download`, { responseType: 'blob' });
-                          const url  = window.URL.createObjectURL(resp.data);
-                          const a    = document.createElement('a');
-                          a.href     = url;
+                          const resp = await api.get(
+                            `/content/${item.id}/download`,
+                            { responseType: 'blob' }
+                          );
+                          const url = window.URL.createObjectURL(resp.data);
+                          const a = document.createElement('a');
+                          a.href = url;
                           a.download = item.title + '.pdf';
                           document.body.appendChild(a);
                           a.click();
@@ -144,7 +149,10 @@ export default function StudentCourseDetails() {
                       <button
                         className="view-button"
                         onClick={async () => {
-                          const resp = await api.get(`/content/${item.id}/download`, { responseType: 'blob' });
+                          const resp = await api.get(
+                            `/content/${item.id}/download`,
+                            { responseType: 'blob' }
+                          );
                           const url = window.URL.createObjectURL(resp.data);
                           window.open(url, '_blank');
                           setTimeout(() => window.URL.revokeObjectURL(url), 60000);
@@ -155,7 +163,7 @@ export default function StudentCourseDetails() {
                     </li>
                   ))}
                 </ul>
-            }
+              )}
           </div>
         )}
       </div>

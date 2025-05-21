@@ -29,19 +29,20 @@ import AssignmentSubmissions     from './pages/instructor/AssignmentSubmissions'
 import InstructorProfileSettings from './pages/instructor/InstructorProfileSettings';
 
 // Student pages
-import StudentDashboard        from './pages/StudentDashboard/StudentDashboard';
-import StudentCourses          from './pages/StudentDashboard/StudentCourses';
-import Coursework              from './pages/StudentDashboard/Coursework';
-import StudentCourseDetails    from './pages/StudentDashboard/StudentCourseDetails';
-import QuizAttempt             from './pages/StudentDashboard/QuizAttempt';
-import StudentProfileSettings  from './pages/StudentDashboard/StudentProfileSettings';
+import StudentDashboard         from './pages/StudentDashboard/StudentDashboard';
+import StudentCourses           from './pages/StudentDashboard/StudentCourses';
+import Coursework               from './pages/StudentDashboard/Coursework';
+import StudentCourseDetails     from './pages/StudentDashboard/StudentCourseDetails';
+import QuizAttempt              from './pages/StudentDashboard/QuizAttempt';
+import StudentAssignmentDetail  from './pages/StudentDashboard/StudentAssignmentDetails';
+import StudentProfileSettings   from './pages/StudentDashboard/StudentProfileSettings';
 
 export default function App() {
   return (
     <Routes>
       {/* PUBLIC */}
       <Route path="/login" element={<Login />} />
-      <Route path="/"      element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* ADMIN */}
       <Route
@@ -54,14 +55,11 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route index        element={<AdminDashboard />} />
-        <Route path="courses"     element={<Courses />} />
-        <Route path="users"       element={<AdminUsers />} />
+        <Route index element={<AdminDashboard />} />
+        <Route path="courses" element={<Courses />} />
+        <Route path="users" element={<AdminUsers />} />
         <Route path="enrollments" element={<Enrollments />} />
-
-        {/* must come before wildcard */}
-        <Route path="settings"    element={<AdminProfileSettings />} />
-
+        <Route path="settings" element={<AdminProfileSettings />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
 
@@ -77,18 +75,15 @@ export default function App() {
         }
       >
         <Route path="dashboard" element={<InstructorDashboard />} />
-        <Route path="courses"   element={<InstructorCourses />} />
+        <Route path="courses" element={<InstructorCourses />} />
         <Route path="assignments" element={<CreateOrEditAssignment />} />
         <Route path="create-assignment" element={<CreateOrEditAssignment />} />
         <Route path="assignments/:assignmentId/submissions" element={<AssignmentSubmissions />} />
-        <Route path="quizzes"             element={<InstructorQuizzes />} />
-        <Route path="quiz-submissions"    element={<QuizSubmissions />} />
+        <Route path="quizzes" element={<InstructorQuizzes />} />
+        <Route path="quiz-submissions" element={<QuizSubmissions />} />
         <Route path="courses/:courseId/content" element={<InstructorCourseContent />} />
-        <Route path="courses/:courseId"         element={<StudentCourseDetails />} />
-
-        {/* must come before wildcard */}
+        <Route path="courses/:courseId" element={<StudentCourseDetails />} />
         <Route path="settings" element={<InstructorProfileSettings />} />
-
         <Route path="*" element={<Navigate to="/instructor/dashboard" replace />} />
       </Route>
 
@@ -104,14 +99,15 @@ export default function App() {
         }
       >
         <Route path="dashboard" element={<StudentDashboard />} />
-        <Route path="courses"   element={<StudentCourses />} />
+        <Route path="courses" element={<StudentCourses />} />
         <Route path="coursework" element={<Coursework />} />
         <Route path="courses/:courseId" element={<StudentCourseDetails />} />
         <Route path="courses/:courseId/quizzes/:quizId" element={<QuizAttempt />} />
-
-        {/* must come before wildcard */}
+        <Route
+          path="courses/:courseId/assignments/:assignmentId"
+          element={<StudentAssignmentDetail />}
+        />
         <Route path="settings" element={<StudentProfileSettings />} />
-
         <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
       </Route>
 

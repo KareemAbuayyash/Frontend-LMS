@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './StudentCourses.css'; // Or StudentDashboard.css
 
 export default function StudentCourses() {
-  const [courses, setCourses] = useState([/* your course data */]);
+  const [courses] = useState([/* your course data */]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
