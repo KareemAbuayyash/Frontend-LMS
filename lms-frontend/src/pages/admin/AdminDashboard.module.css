@@ -48,12 +48,16 @@ html, body {
   font-size: 1.2rem;
   margin-left: 8px;
   cursor: pointer;
-  color: var(--primary);
+  color: #644191;  /* Changed from var(--primary) */
   transition: color 0.2s, transform 0.2s;
 }
-.iconButton:hover { color: var(--secondary); transform: scale(1.1); }
+.iconButton:hover {
+  color: #7a4fb3;
+}
 .dark .iconButton { color: #aaa; }
-.dark .iconButton:hover { color: var(--accent); }
+.dark .iconButton:hover { 
+    color: #644191;  /* Changed from var(--accent) */
+}
 
 /* Loading */
 .loading { text-align: center; padding: 100px; }
@@ -146,7 +150,7 @@ html, body {
 /* “View All” button */
 .viewAllBtn {
   padding: 6px 14px;
-  background: var(--primary);
+  background: #644191;  /* Changed from var(--primary) */
   color: white;
   border: none;
   border-radius: 6px;
@@ -155,9 +159,7 @@ html, body {
   transition: background 0.2s, transform 0.2s;
 }
 .viewAllBtn:hover {
-  background: var(--secondary);
-  transform: translateY(-1px);
-  color: aliceblue;
+  background: #7a4fb3;
 }
 .viewAllBtn:focus {
   outline: 2px solid var(--accent);
@@ -183,7 +185,7 @@ html, body {
 .userItem:hover { background: rgba(0,0,0,0.03); }
 .dark .userItem:hover { background: rgba(255,255,255,0.05); }
 .avatar {
-  background: var(--primary);
+  background: #644191; /* Changed from var(--primary) */
   color: #fff;
   width: 36px;
   height: 36px;
@@ -205,10 +207,15 @@ html, body {
   border-radius: 8px;
   font-size: 0.7rem;
   text-transform: uppercase;
+  background: #f4e3f5;
+  color: #644191;
 }
-.student    { background: #d4f5d4; color: #2f8f2f; }
-.instructor { background: #d4e8f5; color: #2f4e8f; }
-.admin       { background: #eed4f5; color: #7f2f8f; }
+.student,
+.instructor,
+.admin {
+  background: #f4e3f5 !important;
+  color: #644191 !important;
+}
 .email {
   display: block;
   font-size: 0.85rem;
@@ -237,7 +244,7 @@ html, body {
 }
 .simpleTable thead th,
 .activityTable thead th {
-  background: var(--primary);
+  background: #644191;  /* Changed from var(--primary) */
   color: white;
   font-weight: 600;
   text-transform: uppercase;
@@ -258,13 +265,14 @@ html, body {
 .dark .activityTable tbody tr td {
   background: var(--card-bg-dark);
 }
+/* Table hover states */
 .simpleTable tbody tr:hover td,
 .activityTable tbody tr:hover td {
-  background: rgba(0,0,0,0.04);
+  background: #e3cce4;  /* Changed from #f4e3f8 */
 }
 .dark .simpleTable tbody tr:hover td,
 .dark .activityTable tbody tr:hover td {
-  background: rgba(255,255,255,0.05);
+  background: #e3cce4;  /* Changed from #f4e3f8 */
 }
 
 /* Recent Courses & Calendar Layout */
