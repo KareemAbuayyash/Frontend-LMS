@@ -1,3 +1,4 @@
+// src/pages/instructor/AssignmentSubmissions.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -12,8 +13,7 @@ import {
   Typography,
   Descriptions,
   Row,
-  Col,
-  Divider
+  Col
 } from 'antd';
 import {
   EditOutlined,
@@ -27,21 +27,18 @@ import api from '../../api/axios';
 import './InstructorAssignments.css';
 
 const { Option } = Select;
-const { Title, Paragraph, Text } = Typography;
+const { Title, Text } = Typography;
 
 export default function AssignmentSubmissions() {
   const [courses, setCourses] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [subs, setSubs] = useState([]);
   const [meta, setMeta] = useState(null);
-
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
-
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [loadingAssignments, setLoadingAssignments] = useState(false);
   const [loadingSubs, setLoadingSubs] = useState(false);
-
   const [editingId, setEditingId] = useState(null);
   const [grades, setGrades] = useState({});
 
@@ -75,13 +72,13 @@ export default function AssignmentSubmissions() {
       api.get(`/assignments/${selectedAssignment}`),
       api.get(`/assignments/${selectedAssignment}/submissions`)
     ])
-    .then(([mRes, sRes]) => {
-      setMeta(mRes.data);
-      setSubs(sRes.data);
-      setGrades(Object.fromEntries(sRes.data.map(s => [s.id, s.score])));
-    })
-    .catch(() => message.error('Failed to load submissions'))
-    .finally(() => setLoadingSubs(false));
+      .then(([mRes, sRes]) => {
+        setMeta(mRes.data);
+        setSubs(sRes.data);
+        setGrades(Object.fromEntries(sRes.data.map(s => [s.id, s.score])));
+      })
+      .catch(() => message.error('Failed to load submissions'))
+      .finally(() => setLoadingSubs(false));
   }, [selectedAssignment]);
 
   // Save grade
@@ -114,7 +111,7 @@ export default function AssignmentSubmissions() {
     }
   };
 
-  // Download
+  // Download file
   const onDownloadFile = async fileUrl => {
     try {
       const blob = await fetchFileBlob(fileUrl);
@@ -144,22 +141,12 @@ export default function AssignmentSubmissions() {
       dataIndex: 'fileUrl',
       key: 'fileUrl',
       render: url =>
-        url
-          ? (
-            <Space size="small">
-              <Button
-                icon={<EyeOutlined />}
-                type="link"
-                onClick={() => onViewFile(url)}
-              />
-              <Button
-                icon={<DownloadOutlined />}
-                type="link"
-                onClick={() => onDownloadFile(url)}
-              />
-            </Space>
-          )
-          : <Text type="secondary">—</Text>
+        url ? (
+          <Space size="small">
+            <Button icon={<EyeOutlined />} type="link" onClick={() => onViewFile(url)} />
+            <Button icon={<DownloadOutlined />} type="link" onClick={() => onDownloadFile(url)} />
+          </Space>
+        ) : <Text type="secondary">—</Text>
     },
     {
       title: 'Score',
@@ -196,93 +183,95 @@ export default function AssignmentSubmissions() {
   ];
 
   return (
-    <>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={24}>
+    <div className="instructor-assignments">
+      <Row gutter={[16, 16]}>
+        <Col xs={24}>
           <Title level={2}>Grade Assignment Submissions</Title>
         </Col>
-      </Row>
 
-      <Card className="form-card" style={{ marginBottom: 24 }}>
-        <Form layout="inline">
-          <Form.Item label="Course">
-            <Select
-              style={{ width: 240 }}
-              placeholder="Select course"
-              loading={loadingCourses}
-              value={selectedCourse}
-              onChange={setSelectedCourse}
-            >
-              {courses.map(c => (
-                <Option key={c.courseId} value={c.courseId}>
-                  {c.courseName}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label="Assignment">
-            <Select
-              style={{ width: 280 }}
-              placeholder="Select assignment"
-              loading={loadingAssignments}
-              value={selectedAssignment}
-              onChange={setSelectedAssignment}
-              disabled={!selectedCourse}
-            >
-              {assignments.map(a => (
-                <Option key={a.id} value={a.id}>
-                  {a.title} (due {dayjs(a.dueDate).format('MMM D')})
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Form>
-      </Card>
+        <Col xs={24}>
+          <Card className="form-card">
+            <Form layout="vertical">
+              <Row gutter={16}>
+                <Col xs={24} sm={12} md={8} lg={6}>
+                  <Form.Item label="Course">
+                    <Select
+                      placeholder="Select course"
+                      loading={loadingCourses}
+                      value={selectedCourse}
+                      onChange={setSelectedCourse}
+                    >
+                      {courses.map(c => (
+                        <Option key={c.courseId} value={c.courseId}>
+                          {c.courseName}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
 
-      {meta && (
-        <Card className="table-card" style={{ marginBottom: 24 }} title="Assignment Details">
-          <Descriptions bordered column={1} size="small">
-            <Descriptions.Item label="Title">{meta.title}</Descriptions.Item>
-            <Descriptions.Item label="Description">{meta.description || '—'}</Descriptions.Item>
-            <Descriptions.Item label="Due Date">
-              {dayjs(meta.dueDate).format('MMM D, YYYY HH:mm')}
-            </Descriptions.Item>
-            <Descriptions.Item label="Total Points">{meta.totalPoints}</Descriptions.Item>
-            {meta.attachmentUrl && (
-              <Descriptions.Item label="Attachment">
-                <Space>
-                  <Button icon={<EyeOutlined />} onClick={() => onViewFile(meta.attachmentUrl)}>
-                    View
-                  </Button>
-                  <Button icon={<DownloadOutlined />} onClick={() => onDownloadFile(meta.attachmentUrl)}>
-                    Download
-                  </Button>
-                </Space>
-              </Descriptions.Item>
-            )}
-          </Descriptions>
-        </Card>
-      )}
+                <Col xs={24} sm={12} md={10} lg={8}>
+                  <Form.Item label="Assignment">
+                    <Select
+                      placeholder="Select assignment"
+                      loading={loadingAssignments}
+                      value={selectedAssignment}
+                      onChange={setSelectedAssignment}
+                      disabled={!selectedCourse}
+                    >
+                      {assignments.map(a => (
+                        <Option key={a.id} value={a.id}>
+                          {a.title} (due {dayjs(a.dueDate).format('MMM D')})
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+        </Col>
 
-      <Card className="table-card">
-        {loadingSubs ? (
-          <div className="drawer-spin"><Spin /></div>
-        ) : (
-          <Table
-            rowKey="id"
-            dataSource={subs}
-            columns={columns}
-            pagination={false}
-            bordered
-            size="middle"
-            locale={{
-              emptyText: selectedAssignment
-                ? 'No submissions yet'
-                : 'Please select an assignment'
-            }}
-          />
+        {meta && (
+          <Col xs={24} md={12}>
+            <Card className="table-card" title="Assignment Details">
+              <Descriptions bordered column={1} size="small">
+                <Descriptions.Item label="Title">{meta.title}</Descriptions.Item>
+                <Descriptions.Item label="Description">{meta.description || '—'}</Descriptions.Item>
+                <Descriptions.Item label="Due Date">{dayjs(meta.dueDate).format('MMM D, YYYY HH:mm')}</Descriptions.Item>
+                <Descriptions.Item label="Total Points">{meta.totalPoints}</Descriptions.Item>
+                {meta.attachmentUrl && (
+                  <Descriptions.Item label="Attachment">
+                    <Space>
+                      <Button icon={<EyeOutlined />} onClick={() => onViewFile(meta.attachmentUrl)}>View</Button>
+                      <Button icon={<DownloadOutlined />} onClick={() => onDownloadFile(meta.attachmentUrl)}>Download</Button>
+                    </Space>
+                  </Descriptions.Item>
+                )}
+              </Descriptions>
+            </Card>
+          </Col>
         )}
-      </Card>
-    </>
+
+        <Col xs={24}>
+          <Card className="table-card">
+            {loadingSubs ? (
+              <div className="drawer-spin"><Spin /></div>
+            ) : (
+              <Table
+                rowKey="id"
+                dataSource={subs}
+                columns={columns}
+                pagination={false}
+                bordered
+                size="middle"
+                scroll={{ x: '100%' }}
+              />
+            )}
+          </Card>
+        </Col>
+      </Row>
+    </div>
   );
 }
+

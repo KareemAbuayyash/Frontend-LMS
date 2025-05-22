@@ -116,8 +116,15 @@ export default function QuizSubmissions() {
   return (
     <div className="quiz-submissions-page">
       <Card title="Select Quiz" className="quiz-table-card">
-        <Row gutter={16} className="top-controls">
-          <Col xs={24} sm={12}>
+        <Row
+          gutter={16}
+          className="top-controls"
+          style={{
+            flexDirection: window.innerWidth < 500 ? 'column' : undefined,
+            gap: window.innerWidth < 500 ? 8 : undefined,
+          }}
+        >
+          <Col xs={24} sm={12} style={window.innerWidth < 500 ? { marginBottom: 8 } : {}}>
             <Select
               placeholder="Select a course"
               loading={loadingCourses}
@@ -125,6 +132,7 @@ export default function QuizSubmissions() {
               value={selectedCourse}
               allowClear
               style={{ width: '100%' }}
+              dropdownStyle={window.innerWidth < 500 ? { minWidth: 200 } : {}}
             >
               {courses.map(c => (
                 <Option key={c.courseId} value={c.courseId}>
@@ -142,6 +150,7 @@ export default function QuizSubmissions() {
               disabled={!selectedCourse}
               allowClear
               style={{ width: '100%' }}
+              dropdownStyle={window.innerWidth < 500 ? { minWidth: 200 } : {}}
             >
               {quizzes.map(q => (
                 <Option key={q.id} value={q.id}>
@@ -157,25 +166,31 @@ export default function QuizSubmissions() {
         <Card
           className="submissions-table-card"
           title={`Submissions: ${quizDetails?.title || ''}`}
+          bodyStyle={window.innerWidth < 500 ? { padding: 8 } : {}}
         >
-          <Table
-            dataSource={subs}
-            columns={subColumns}
-            rowKey="id"
-            loading={loadingSubs}
-            pagination={{ pageSize: 8 }}
-          />
+          <div style={{ overflowX: window.innerWidth < 500 ? 'auto' : 'visible' }}>
+            <Table
+              dataSource={subs}
+              columns={subColumns}
+              rowKey="id"
+              loading={loadingSubs}
+              pagination={{ pageSize: 8 }}
+              scroll={window.innerWidth < 500 ? { x: 600 } : {}}
+              size={window.innerWidth < 500 ? 'small' : 'middle'}
+            />
+          </div>
         </Card>
       )}
 
       <Drawer
         title={`Answers: ${currentRecord?.studentName}`}
         visible={drawerVisible}
-        width={600}
+        width={window.innerWidth < 500 ? '100vw' : 600}
         onClose={() => setDrawerVisible(false)}
+        bodyStyle={window.innerWidth < 500 ? { padding: 8 } : {}}
       >
-        <div className="drawer-content">
-          <h3>{quizDetails?.title}</h3>
+        <div className="drawer-content" style={window.innerWidth < 500 ? { padding: 4 } : {}}>
+          <h3 style={window.innerWidth < 500 ? { fontSize: 16 } : {}}>{quizDetails?.title}</h3>
           <ol>
             {quizDetails?.questions.map((q, i) => {
               const raw = currentRecord?.answers[i] ?? '';
