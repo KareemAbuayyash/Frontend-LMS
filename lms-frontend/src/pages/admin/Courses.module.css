@@ -44,16 +44,35 @@
 }
 
 .searchBox input:focus {
-  border-color: #6a5acd;
+  border-color: #e3cce4;
   box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
 }
 
+/* Update dropdown styles */
 .toolbar select {
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #fff;
-  flex: 0 0 160px;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fff;
+    flex: 0 0 160px;
+}
+
+.toolbar select option {
+    padding: 8px;
+}
+
+/* Hover state for all options */
+.toolbar select option:hover {
+    background-color: #e3cce4 !important;
+    color: #333 !important;
+}
+
+/* Selected/active state */
+.toolbar select option:checked,
+.toolbar select option:focus,
+.toolbar select option:active {
+    background-color: #e3cce4 !important;
+    color: #333 !important;
 }
 
 .btn.primary {
@@ -62,7 +81,7 @@
   gap: 0.4rem;
   padding: 0.6rem 1rem;
   border: none;
-  background: linear-gradient(90deg, #6a5acd, #836fff);
+  background: #644191;  /* Changed from gradient */
   color: #fff;
   border-radius: 6px;
   cursor: pointer;
@@ -70,7 +89,7 @@
 }
 
 .btn.primary:hover {
-  opacity: 0.9;
+  background: #7a4fb3;
 }
 
 /* ——— Table & borders ——— */
@@ -86,7 +105,7 @@
 }
 
 .coursesTable thead {
-  background: #672072;
+  background: #644191;  /* Changed from #672072 */
   color: #fff;
 }
 
@@ -100,12 +119,12 @@
 
 /* BODY ROWS & hover */
 .coursesTable tbody tr {
-  background: #f4e3f6;
+  background: #f4e3f5;  /* Changed from #f4e3f6 */
   transition: background 0.2s;
 }
 
 .coursesTable tbody tr:hover {
-  background: #8f8b8b;
+  background: #e3cce4;  /* Changed from #f4e3f8 */
 }
 
 .coursesTable td {
@@ -131,7 +150,7 @@
   justify-content: center;
   font-size: 1.1rem;
   margin: 0 0.25rem;
-  color: #4f46e5;
+  color: #644191;  /* Updated from #4f46e5 */
   border: none;
   background: none;
   cursor: pointer;
@@ -139,11 +158,11 @@
 }
 
 .iconBtn:hover {
-  color: #6366f1;
+  color: #7a4fb3;  /* Updated from #6366f1 */
 }
 
 .iconBtn.trash:hover {
-  color: tomato;
+  color: #7a4fb3;  /* Changed from tomato */
 }
 
 /* Empty / loading state */

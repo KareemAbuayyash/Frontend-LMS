@@ -13,7 +13,7 @@
 /* ------------------------------------------------------------------
    SIDEBAR
 ------------------------------------------------------------------- */
-.sidebar            { width: 250px; background:#672072; color:#eef2ff; display:flex; flex-direction:column; transition:width .3s ease; }
+.sidebar            { width: 250px; background:#644191; color:#eef2ff; display:flex; flex-direction:column; transition:width .3s ease; }
 .sidebar.collapsed  { width: 70px; }
 
 /* ── header (logo + toggle) ─────────────────────────────────────── */
@@ -23,7 +23,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-bottom: 1px solid #a285a6;
+  border-bottom: 1px solid #7a4fb3;
 }
 
 /* brand */
@@ -62,7 +62,7 @@
 .sidebar-nav        { flex:1; overflow-y:auto; }
 .sidebar-nav a      { display:flex; align-items:center; padding:.75rem 1rem; color:#e0e7ff; text-decoration:none; transition:background .2s; }
 .sidebar-nav a:hover,
-.sidebar-nav a.active { background:#ab91af; }
+.sidebar-nav a.active { background:#7a4fb3; }
 .sidebar-nav a svg  { flex-shrink:0; }
 .sidebar-nav a span { margin-left:.75rem; white-space:nowrap; }
 
@@ -90,7 +90,7 @@
 .connection-dot.offline{ background:#EF4444; }
 
 .dropdown-menu      { position:absolute; top:calc(100% + .5rem); right:0; min-width:180px; background:#fff; border-radius:.5rem; box-shadow:0 4px 12px rgba(0,0,0,.08); padding:.25rem 0; z-index:1000; }
-.dropdown-item      { display:flex; align-items:center; gap:.5rem; width:100%; padding:.75rem 1rem; background:transparent; border:none; font-size:.875rem; color:#374151; cursor:pointer; transition:background .2s; }
+.dropdown-item      { display:flex; align-items:center; gap:.5rem; width:100%; padding:.75rem 1rem; background:transparent; border:none; font-size:.875rem; color:#644191; cursor:pointer; transition:background .2s; }
 .dropdown-item:hover{ background:#f9fafb; }
 
 .notif-menu         { max-width:320px; max-height:60vh; overflow-y:auto; }
