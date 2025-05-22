@@ -85,3 +85,21 @@
     padding: 12px;
   }
 }
+
+@media (max-width: 750px) {
+  .table-card .ant-table-wrapper {
+    overflow-x: auto;
+  }
+  .table-card .ant-table {
+    min-width: 600px;
+  }
+  .table-card .ant-table-thead > tr > th,
+  .table-card .ant-table-tbody > tr > td {
+    padding: 8px 6px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .table-card .ant-table-thead > tr > th {
+    font-size: 14px;
+  }
+}

@@ -1,3 +1,5 @@
+/* src/components/InstructorCourseContent.css */
+
 .instructor-content {
   max-width: 800px;
   margin: 2rem auto;
@@ -5,12 +7,36 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-.instructor-content h1 {
-  text-align: center;
-  color: #1890ff;
-  margin-bottom: 1rem;
-}
-
+/* Make Ant-Design cards span full width on mobile */
 .ant-card {
   border-radius: 8px;
+}
+
+/* Stack the upload form and list on small screens */
+@media (max-width: 900px) {
+  .instructor-content {
+    padding: 0 0.5rem;
+  }
+
+  /* Card headers & bodies become full-width */
+  .ant-card {
+    width: 100% !important;
+  }
+
+  /* Reduce margins between sections */
+  .instructor-content > .ant-card {
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+/* Tweak the List actions to wrap if needed */
+@media (max-width: 850px) {
+  .ant-list-item-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ant-list-item-action > li {
+    margin: 4px 0 !important;
+  }
 }

@@ -30,7 +30,7 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
 
   // collapse on mobile
   useEffect(() => {
-    const mq = window.matchMedia('(max-width:700px)');
+    const mq = window.matchMedia('(max-width:900px)');
     const onChange = e => setCollapsed(e.matches);
     mq.addEventListener('change', onChange);
     onChange(mq);
