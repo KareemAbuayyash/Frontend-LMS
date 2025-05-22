@@ -19,14 +19,23 @@ export default function InstructorDashboard() {
         '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
     },
     header: {
-      backgroundColor: '#EFF6FF',
+      backgroundColor: '#F5F0FF', // Changed from '#EFF6FF' to a light purple
       padding: '24px',
       borderRadius: '8px',
       marginBottom: '24px',
       boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
     },
-    headerTitle: { fontSize: '24px', fontWeight: 'bold', color: '#1E40AF', margin: 0 },
-    headerSubtitle: { fontSize: '16px', color: '#3B82F6', margin: 0 },
+    headerTitle: { 
+      fontSize: '24px', 
+      fontWeight: 'bold', 
+      color: '#644191', // Changed from '#1E40AF' to '#644191'
+      margin: 0 
+    },
+    headerSubtitle: { 
+      fontSize: '16px', 
+      color: '#9B72CF', // Changed from '#3B82F6' to a lighter purple
+      margin: 0 
+    },
 
     statsGrid: {
       display: 'grid',
@@ -84,7 +93,7 @@ export default function InstructorDashboard() {
       width: '32px',
       height: '32px',
       borderRadius: '50%',
-      backgroundColor: '#3B82F6',
+      backgroundColor: '#644191', // Changed from '#3B82F6' to '#644191'
       color: 'white',
       display: 'flex',
       alignItems: 'center',
@@ -94,7 +103,7 @@ export default function InstructorDashboard() {
     },
     enrollmentText: {
       marginLeft: '8px',
-      color: '#2563EB',
+      color: '#644191', // Changed from '#2563EB' to '#644191'
       fontSize: '14px'
     },
 
@@ -114,7 +123,8 @@ export default function InstructorDashboard() {
     }
   }
 
-  const COLORS = ['#3B82F6', '#065F46', '#5B21B6']
+  // Update the pie chart colors array to use a rich red instead of amber/orange
+  const COLORS = ['#1E40AF', '#065F46', '#DC2626'] // Changed from '#F59E0B' to red '#DC2626'
   const [courses, setCourses] = useState([])
   const [totalAssignments, setTotalAssignments] = useState(0)
   const [totalQuizzes, setTotalQuizzes] = useState(0)
@@ -223,9 +233,9 @@ export default function InstructorDashboard() {
           <p style={styles.statLabel({ text: '#065F46' })}>Total Assignments</p>
           <p style={styles.statValue({ text: '#065F46' })}>{totalAssignments}</p>
         </div>
-        <div style={styles.statCard({ bg: '#F5F3FF', text: '#5B21B6' })}>
-          <p style={styles.statLabel({ text: '#5B21B6' })}>Total Quizzes</p>
-          <p style={styles.statValue({ text: '#5B21B6' })}>{totalQuizzes}</p>
+        <div style={styles.statCard({ bg: '#FEF2F2', text: '#DC2626' })}>
+          <p style={styles.statLabel({ text: '#DC2626' })}>Total Quizzes</p>
+          <p style={styles.statValue({ text: '#DC2626' })}>{totalQuizzes}</p>
         </div>
       </div>
 

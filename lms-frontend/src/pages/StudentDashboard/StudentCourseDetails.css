@@ -139,32 +139,22 @@
 }
 
 /* Buttons */
-.download-button,
-.view-button {
-  border: none;
-  padding: 0.5em 1em;
-  margin-right: 0.5em;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
 .download-button {
-  background: #4a90e2;
+  background: #644191; /* Changed from #4a90e2 */
   color: white;
 }
 
 .download-button:hover {
-  background: #357ab8;
+  background: #7a4fb3; /* Changed from #357ab8 */
 }
 
 .view-button {
-  background: #50c878;
+  background: #644191; /* Changed from #50c878 */
   color: white;
 }
 
 .view-button:hover {
-  background: #3aa45a;
+  background: #7a4fb3; /* Changed from #3aa45a */
 }
 
 .error {

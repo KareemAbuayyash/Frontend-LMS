@@ -124,17 +124,18 @@
 }
 
 .btn-submit {
-  background: linear-gradient(135deg, #ff5722, #f44336);
+  background: #644191; /* Changed from linear-gradient */
   color: #fff;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background 0.2s;
 }
 
 .btn-submit:hover {
+  background: #7a4fb3;
   transform: scale(1.03);
 }
 

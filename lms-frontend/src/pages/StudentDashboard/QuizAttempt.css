@@ -45,7 +45,7 @@
 
 .submit-quiz-btn {
   display: block;
-  background: #28a745;
+  background: #644191; /* Changed from #28a745 */
   color: #fff;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -57,7 +57,7 @@
 }
 
 .submit-quiz-btn:hover {
-  background: #218838;
+  background: #7a4fb3; /* Changed from #218838 */
 }
 
 .qa-error {
