@@ -4,7 +4,8 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 // Auth
 import Login from './components/Auth/Login';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import ForgotPassword    from './components/Auth/ForgotPassword';
+import ResetPassword     from './components/Auth/ResetPassword';
 // Layout & Sidebars
 import Layout from './components/Layout/Layout';
 import AdminSidebar from './Sidebar/AdminSidebar';
@@ -43,7 +44,8 @@ export default function App() {
       {/* PUBLIC */}
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
-
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       {/* ADMIN */}
       <Route
         path="/admin/*"

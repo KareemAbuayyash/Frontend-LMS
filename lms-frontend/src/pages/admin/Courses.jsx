@@ -96,13 +96,19 @@ export default function Courses() {
     let arr = [...courses];
 
     if (instructorFilter !== 'ALL') {
-      arr = arr.filter(c => c.courseInstructor.toString() === instructorFilter);
-    }
+  arr = arr.filter(c =>
+    c.courseInstructor != null &&
+    c.courseInstructor.toString() === instructorFilter
+  );
+}
+
     if (search) {
-      const s = search.toLowerCase();
+      const q = search.toLowerCase();
       arr = arr.filter(c =>
-        c.courseName.toLowerCase().includes(s) ||
-        c.courseDescription.toLowerCase().includes(s)
+        c.courseName.toLowerCase().includes(q) ||
+        c.courseDescription.toLowerCase().includes(q) ||
+        c.courseDuration.toLowerCase().includes(q) ||
+        getInsName(c.courseInstructor).toLowerCase().includes(q)
       );
     }
 

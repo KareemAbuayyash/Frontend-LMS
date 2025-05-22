@@ -139,7 +139,7 @@ export default function AdminDashboard() {
   const filteredCourses = recentCourses
     .filter(c =>
       (c.courseName         || '').toLowerCase().includes(courseSearch.toLowerCase()) ||
-      getInsName(c.instructorName).toLowerCase().includes(courseSearch.toLowerCase())
+      (c.instructorName || '').toLowerCase().includes(courseSearch)
     )
     .slice(0, 5);
 
@@ -379,7 +379,7 @@ export default function AdminDashboard() {
                   {filteredCourses.map(c => (
                     <tr key={c.courseId}>
                       <td>{c.courseName}</td>
-                      <td>{getInsName(c.instructorName)}</td>
+                      <td>{c.instructorName}</td>
                       <td style={{ textAlign: 'center' }}>{c.enrollmentCount}</td>
                     </tr>
                   ))}
