@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -10,11 +9,12 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
-      '/api': {
+      // ensure OAuth2 flows get forwarded
+       '/api/oauth2': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
-        rewrite: path => path.replace(/^\/api/, '/api'),
+        rewrite: path => path.replace(/^\/api\/oauth2/, '/oauth2'),
       },
     },
   },

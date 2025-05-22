@@ -1,41 +1,39 @@
-// src/components/Auth/Login.jsx
 import { useState, useEffect } from 'react';
-import { Link, useNavigate }          from 'react-router-dom';
-import api                            from '../../api/axios';
-import { saveTokens, getUserRole }    from '../../utils/auth';
-import { toast }                      from '../../utils/toast';
-import styles                         from './Login.module.css';
-import logo                           from '../../assets/log.png'; // unified logo
-import { FiEye, FiEyeOff }            from 'react-icons/fi';
-import { FcGoogle }                   from 'react-icons/fc';
+import { Link, useNavigate }    from 'react-router-dom';
+import api                       from '../../api/axios';
+import { saveTokens }            from '../../utils/auth';
+import { toast }                 from '../../utils/toast';
+import styles                    from './Login.module.css';
+import logo                      from '../../assets/log.png';
+import { FiEye, FiEyeOff }       from 'react-icons/fi';
+import { FcGoogle }              from 'react-icons/fc';
+
 export default function Login() {
-  // --- remember-me bootstrap ---
   const LS_KEY = 'savedCreds';
   const stored = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+
   const [form, setForm] = useState({
     username: stored?.username || '',
     password: stored?.password || '',
     remember: !!stored?.username,
   });
-
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
   const navigate = useNavigate();
 
-  // persist remember-me
+  // persist “remember me”
   useEffect(() => {
     if (form.remember) {
-      localStorage.setItem(LS_KEY, JSON.stringify({
-        username: form.username,
-        password: form.password,
-      }));
+      localStorage.setItem(
+        LS_KEY,
+        JSON.stringify({ username: form.username, password: form.password })
+      );
     } else {
       localStorage.removeItem(LS_KEY);
     }
   }, [form]);
 
-  // input handler
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
     setForm(f => ({
@@ -44,11 +42,11 @@ export default function Login() {
     }));
   };
 
-  // submit
   const handleSubmit = async e => {
     e.preventDefault();
-    setError('');
+    setError(''); 
     setLoading(true);
+
     try {
       const { data } = await api.post(
         '/auth/login',
@@ -57,27 +55,26 @@ export default function Login() {
       );
 
       saveTokens(data.accessToken, data.refreshToken);
-      localStorage.setItem('username', form.username);
       toast('Login successful', 'success');
 
-      const role = getUserRole();
-      if (role === 'ROLE_ADMIN') {
-        navigate('/admin');
-      } else if (role === 'ROLE_INSTRUCTOR') {
-        navigate('/instructor/dashboard');
-      } else {
-        navigate('/student/dashboard');
-      }
+      const role = localStorage.getItem('userRole');
+      if (role === 'ROLE_ADMIN')         navigate('/admin');
+      else if (role === 'ROLE_INSTRUCTOR') navigate('/instructor/dashboard');
+      else                               navigate('/student/dashboard');
     } catch (err) {
-      console.error(err);
       setError(
-        err.response?.data?.message ??
-        err.response?.data?.errorMessage ??
+        err.response?.data?.message ||
+        err.response?.data?.errorMessage ||
         'Login failed'
       );
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    // go through Vite proxy to /api/oauth2/authorization/google
+    window.location.href = '/api/oauth2/authorization/google';
   };
 
   return (
@@ -86,7 +83,6 @@ export default function Login() {
         <div className={styles.header}>
           <img src={logo} alt="Logo" className={styles.logo} />
         </div>
-
         <h1 className={styles.title}>Sign in</h1>
 
         <label className={styles.label}>
@@ -134,8 +130,7 @@ export default function Login() {
               name="remember"
               checked={form.remember}
               onChange={handleChange}
-            />{' '}
-            Remember me
+            /> Remember me
           </label>
           <Link to="/forgot-password" className={styles.forgot}>
             Forgot Password?
@@ -155,7 +150,7 @@ export default function Login() {
         <button
           type="button"
           className={styles.socialBtn}
-          onClick={() => alert('Google OAuth coming soon!')}
+          onClick={handleGoogleLogin}
         >
           <FcGoogle size={18} /> Sign in with Google
         </button>

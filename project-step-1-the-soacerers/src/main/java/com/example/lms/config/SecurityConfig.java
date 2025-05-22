@@ -1,30 +1,28 @@
 package com.example.lms.config;
 
+import com.example.lms.security.GoogleOAuth2SuccessHandler;
 import com.example.lms.security.JwtAuthenticationFilter;
 import com.example.lms.security.JwtUtil;
-import com.example.lms.security.GoogleOAuth2SuccessHandler;
 import com.example.lms.security.TokenBlacklist;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.*;
+
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -32,74 +30,73 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final UserDetailsService userDetailsService;
-  private final PasswordEncoder passwordEncoder;
-  private final JwtUtil jwtUtil;
-  private final GoogleOAuth2SuccessHandler googleOAuth2SuccessHandler;
-  private final TokenBlacklist tokenBlacklist;
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final GoogleOAuth2SuccessHandler googleOAuth2SuccessHandler;
+    private final TokenBlacklist tokenBlacklist;
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-      .cors().and()
-      .csrf().disable()
-      .authorizeHttpRequests(auth -> auth
-      .requestMatchers(HttpMethod.GET, "/api/content/*/download").permitAll()
-        // allow anyone to fetch static uploads:
-        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-        .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+          .cors().and()
+          .csrf().disable()
+          .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+          .and()
+          .authorizeHttpRequests(auth -> auth
+            // <<< permit all OAuth2 endpoints >>>
+            .requestMatchers("/oauth2/**").permitAll()
+            // public endpoints
+            .requestMatchers(HttpMethod.GET, "/content/*/download").permitAll()
+            .requestMatchers(HttpMethod.GET, "/uploads/**", "/files/**").permitAll()
+            .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+            // everything else requires auth
+            .anyRequest().authenticated()
+          )
+          .exceptionHandling()
+            .authenticationEntryPoint(
+              (req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
+            .accessDeniedHandler(
+              (req, res, ex) -> res.sendError(HttpServletResponse.SC_FORBIDDEN, ex.getMessage()))
+          .and()
+          .oauth2Login()
+            .loginPage("/login")
+            .successHandler(googleOAuth2SuccessHandler)
+          .and()
+          .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        // your existing public endpoints:
-        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        return http.build();
+    }
 
-        // everything else requires authentication
-        .anyRequest().authenticated()
-      )
-      .exceptionHandling()
-        .authenticationEntryPoint((req, rsp, ex) ->
-          rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: " + ex.getMessage()))
-        .accessDeniedHandler((req, rsp, ex) ->
-          rsp.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden: " + ex.getMessage()))
-      .and()
-      .oauth2Login()
-        .loginPage("/login")
-        .successHandler(googleOAuth2SuccessHandler)
-      .and()
-      .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowedOrigins(List.of("http://localhost:5173"));
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setAllowCredentials(true);
 
-    return http.build();
-  }
-  @Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration cfg = new CorsConfiguration();
-    // <-- change this to your Vite URL
-    cfg.setAllowedOrigins(List.of("http://localhost:5173"));  
-    // include OPTIONS so pre-flights can succeed
-    cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));  
-    cfg.setAllowedHeaders(List.of("*"));
-    cfg.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+        src.registerCorsConfiguration("/**", cfg);
+        return src;
+    }
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", cfg);
-    return source;
-}
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil, userDetailsService, tokenBlacklist);
+    }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+        return cfg.getAuthenticationManager();
+    }
 
-  @Bean
-  public JwtAuthenticationFilter jwtAuthenticationFilter() {
-    return new JwtAuthenticationFilter(jwtUtil, userDetailsService, tokenBlacklist);
-  }
-
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-    return configuration.getAuthenticationManager();
-  }
-
-  @Bean
-  public AuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(userDetailsService);
-    provider.setPasswordEncoder(passwordEncoder);
-    return provider;
-  }
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+        p.setUserDetailsService(userDetailsService);
+        p.setPasswordEncoder(passwordEncoder);
+        return p;
+    }
 }
