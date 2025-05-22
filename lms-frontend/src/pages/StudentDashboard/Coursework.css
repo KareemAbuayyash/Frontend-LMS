@@ -80,7 +80,7 @@
 }
 
 .submit-btn {
-  background: #5462e7;
+  background: #644191; /* Changed from #5462e7 */
   color: white;
   border: none;
   padding: 8px 16px;
@@ -92,7 +92,7 @@
 }
 
 .submit-btn:hover {
-  background: #4552d4;
+  background: #7a4fb3; /* Changed from #4552d4 */
 }
 
 /* Modal Styles */
@@ -178,12 +178,12 @@
 }
 
 .submit-button {
-  background: #5462e7;
+  background: #644191; /* Changed from #5462e7 */
   color: white;
 }
 
 .submit-button:hover {
-  background: #4552d4;
+  background: #7a4fb3; /* Changed from #4552d4 */
 }
 
 .cancel-button {

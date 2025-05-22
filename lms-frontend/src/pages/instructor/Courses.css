@@ -18,16 +18,76 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Table styling */
 .ant-table-wrapper {
   background: white;
   border-radius: 8px;
 }
 
+/* Table headers - purple background */
 .ant-table-thead > tr > th {
-  background: #fafafa;
+  background: #644191 !important; /* Purple header background */
+  color: white !important; /* White text for better contrast */
   font-weight: 600;
+}
+
+/* Table rows - pink background */
+.ant-table-tbody > tr > td {
+  background: #f4e3f5 !important; /* Pink background for all cells */
+}
+
+/* Hover state for rows */
+.ant-table-tbody > tr:hover > td {
+  background: #e3cce4 !important; /* Slightly darker pink on hover */
+}
+
+/* Ensure zebra striping is consistent */
+.ant-table-tbody > tr:nth-child(even) > td,
+.ant-table-tbody > tr:nth-child(odd) > td {
+  background: #f4e3f5 !important;
+}
+
+/* Hover effect */
+.ant-table-tbody > tr:hover > td {
+  background: #e3cce4 !important;
 }
 
 .ant-tag {
   font-weight: 500;
-} 
+}
+
+/* Override for link buttons in the courses table */
+.instructor-courses .ant-btn-link {
+  color: #644191; /* Changed from default blue to purple */
+}
+
+.instructor-courses .ant-btn-link:hover {
+  color: #9B72CF; /* Lighter purple on hover */
+}
+
+/* Override pagination styles */
+.ant-pagination .ant-pagination-item-active {
+  border-color: #644191;
+}
+
+.ant-pagination .ant-pagination-item-active a {
+  color: #644191;
+}
+
+.ant-pagination .ant-pagination-item:hover {
+  border-color: #644191;
+}
+
+.ant-pagination .ant-pagination-item:hover a {
+  color: #644191;
+}
+
+.ant-pagination .ant-pagination-item-active:hover {
+  border-color: #644191;
+}
+
+.ant-pagination-prev:hover .ant-pagination-item-link,
+.ant-pagination-next:hover .ant-pagination-item-link {
+  color: #644191;
+  border-color: #644191;
+}

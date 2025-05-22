@@ -7,10 +7,264 @@
 
 .instructor-content h1 {
   text-align: center;
-  color: #1890ff;
+  color: #644191; /* Changed from blue to purple */
   margin-bottom: 1rem;
 }
 
 .ant-card {
   border-radius: 8px;
 }
+
+/* Button styling */
+.ant-btn-primary {
+  background-color: #644191; /* Changed from blue to purple */
+  border-color: #644191;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: #7a4fb3; /* Lighter purple for hover state */
+  border-color: #7a4fb3;
+}
+
+/* Apply hover state to all primary buttons, including the Upload button */
+button.ant-btn-primary:hover {
+  background-color: #7a4fb3 !important;
+  border-color: #7a4fb3 !important;
+}
+
+/* Select File button styling */
+.ant-btn-default:hover,
+.ant-btn-default:focus {
+  color: #644191 !important;
+  border-color: #644191 !important;
+}
+
+/* Ant Design upload button specific styling */
+.ant-upload-select:hover .ant-upload-text,
+.ant-upload-select:hover .anticon {
+  color: #644191;
+}
+
+.ant-upload button:hover,
+.ant-upload-btn:hover,
+input[type="button"]:hover,
+button[type="button"]:hover {
+  color: #644191 !important;
+  border-color: #644191 !important;
+}
+
+/* Text input focus/hover styling */
+.ant-input:hover,
+.ant-input:focus,
+.ant-input-focused,
+textarea:hover,
+textarea:focus {
+  border-color: #644191 !important;
+  box-shadow: 0 0 0 2px rgba(100, 65, 145, 0.2) !important;
+}
+
+/* Text area styling */
+.ant-input-textarea:hover .ant-input,
+.ant-input-textarea .ant-input:hover,
+.ant-input-textarea .ant-input:focus {
+  border-color: #644191 !important;
+  box-shadow: 0 0 0 2px rgba(100, 65, 145, 0.2) !important;
+}
+
+/* Content action buttons (Download, Edit, Delete, View in Course) */
+.content-actions button,
+.content-actions a {
+  color: #644191 !important;
+  border-color: #644191 !important;
+  background-color: white !important;
+}
+
+.content-actions button:hover,
+.content-actions a:hover {
+  color: #7a4fb3 !important;
+  border-color: #7a4fb3 !important;
+  background-color: rgba(100, 65, 145, 0.05) !important;
+}
+
+/* Specific styling for View in Course which might be a different style */
+a.view-course-link {
+  color: #644191 !important;
+}
+
+a.view-course-link:hover {
+  color: #7a4fb3 !important;
+  text-decoration: underline;
+}
+
+/* Fix for icon buttons */
+.content-actions .anticon {
+  color: #644191 !important;
+}
+
+.content-actions button:hover .anticon,
+.content-actions a:hover .anticon {
+  color: #7a4fb3 !important;
+}
+
+/* Content action buttons (Download, Edit, Delete, View in Course) - set default colors */
+.content-actions button,
+.content-actions a,
+.view-course-link,
+button[type="button"],
+.ant-btn-default {
+  color: #644191 !important;
+  border-color: #644191 !important;
+  background-color: white !important;
+}
+
+/* View in Course link styling (specific case) */
+a.view-course-link:not(:hover) {
+  color: #644191 !important;
+}
+
+/* Top action buttons for file management - ensure icons use purple color */
+.ant-btn .anticon,
+a .anticon {
+  color: #644191 !important;
+}
+
+/* Delete button which might use different styling */
+button.ant-btn-dangerous {
+  color: #644191 !important;
+  border-color: #644191 !important;
+}
+
+/* Specific styling for View in Course button */
+a.view-course-link,
+a[href*="course"],
+.view-in-course,
+button.view-course-btn, 
+.view-course-button,
+a:contains("View in Course") {
+  color: #644191 !important;
+  border-color: #644191 !important;
+  background-color: white !important;
+}
+
+a.view-course-link:hover,
+a[href*="course"]:hover,
+.view-in-course:hover,
+button.view-course-btn:hover,
+.view-course-button:hover,
+a:contains("View in Course"):hover {
+  color: #7a4fb3 !important;
+  border-color: #7a4fb3 !important;
+  background-color: rgba(100, 65, 145, 0.05) !important;
+}
+
+/* Override any system styling for "View in Course" */
+a.ant-btn,
+a.ant-btn-default,
+.ant-btn.ant-btn-link {
+  color: #644191 !important;
+  border-color: #644191 !important;
+}
+
+a.ant-btn:hover,
+a.ant-btn-default:hover,
+.ant-btn.ant-btn-link:hover {
+  color: #7a4fb3 !important;
+  border-color: #7a4fb3 !important;
+}
+
+/* Ultra-specific selectors for View in Course button */
+a[href*="course"],
+a[href*="view"],
+.view-in-course,
+a.view-in-course,
+#view-in-course,
+a#view-in-course,
+a:has(span:contains("View in Course")),
+div:has(> a:contains("View in Course")) a,
+button:contains("View in Course"),
+*[data-text="View in Course"],
+.content-actions a:not(.ant-btn),
+.content-actions > a:last-child,
+.ant-space-item > a:last-child {
+  color: #644191 !important;
+  border-color: #644191 !important;
+  background-color: white !important;
+  text-decoration: none !important;
+}
+
+/* Force override any inline styles */
+[style*="color"] {
+  color: #644191 !important;
+}
+
+/* Target very specifically based on the UI layout in the screenshot */
+.ant-card-body a:last-child,
+.ant-card .ant-space a:last-child,
+.content-actions a:nth-last-child(1) {
+  color: #644191 !important;
+}
+
+/* Override Ant Design link button styles - maximum specificity */
+.ant-btn-link,
+.ant-btn.ant-btn-link,
+a.ant-btn.ant-btn-link,
+button.ant-btn.ant-btn-link,
+[class*="ant-btn-link"],
+a[class*="ant-btn-link"] {
+  color: #644191 !important;
+}
+
+/* Force !important on all anchors in the relevant container */
+.ant-card-body a,
+.ant-space-item a,
+.file-actions a {
+  color: #644191 !important;
+}
+
+/* Style for number input fields - purple background by default */
+input[type="number"],
+input[type="text"],
+input[value="1"],
+input.ant-input-number-input,
+.ant-input-number-input,
+input.number-input,
+input#question-number,
+.question-card input,
+.input-number-field,
+input[placeholder*="Numbers"] {
+  transition: background-color 0.2s ease;
+}
+
+/* Keep existing hover and focus states for consistency but add background color */
+input[type="number"]:hover,
+input[type="text"]:hover,
+input[value="1"]:hover,
+input.ant-input-number-input:hover,
+.ant-input-number-input:hover,
+input.number-input:hover,
+input#question-number:hover,
+.question-card input:hover,
+.input-number-field:hover,
+input[placeholder*="Numbers"]:hover {
+  border-color: #644191 !important;
+  box-shadow: 0 0 0 2px rgba(100, 65, 145, 0.2) !important;
+  background-color: rgba(100, 65, 145, 0.05) !important; /* Very subtle purple background on hover */
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+input[value="1"]:focus,
+input.ant-input-number-input:focus,
+.ant-input-number-input:focus,
+input.number-input:focus,
+input#question-number:focus,
+.question-card input:focus,
+.input-number-field:focus,
+input[placeholder*="Numbers"]:focus {
+  border-color: #644191 !important;
+  box-shadow: 0 0 0 2px rgba(100, 65, 145, 0.2) !important;
+  background-color: rgba(100, 65, 145, 0.08) !important; /* Slightly stronger purple background on focus */
+}
+
+

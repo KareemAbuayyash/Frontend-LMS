@@ -85,3 +85,132 @@
     padding: 12px;
   }
 }
+
+/* Input field hover and focus states */
+input:hover,
+input:focus,
+textarea:hover,
+textarea:focus,
+select:hover,
+select:focus,
+.ant-select:hover .ant-select-selector,
+.ant-select-focused .ant-select-selector {
+  border-color: #644191 !important;
+  box-shadow: 0 0 0 2px rgba(100, 65, 145, 0.2) !important;
+}
+
+/* Trash icon color */
+.anticon-delete,
+.anticon-close-circle,
+button.ant-btn-icon-only.ant-btn-dangerous {
+  color: #644191 !important;
+}
+
+.anticon-delete:hover,
+.anticon-close-circle:hover,
+button.ant-btn-icon-only.ant-btn-dangerous:hover {
+  color: #7a4fb3 !important;
+}
+
+/* Delete/trash button styles */
+.delete-btn, 
+.trash-btn,
+button[aria-label="delete"] {
+  color: #644191 !important;
+}
+
+/* Trash icon button styling */
+button[aria-label="delete"],
+.delete-btn,
+.trash-btn {
+  color: #644191 !important;
+  border-color: #644191 !important;
+}
+
+/* Hover states for trash buttons */
+button[aria-label="delete"]:hover,
+.delete-btn:hover,
+.trash-btn:hover {
+  color: #7a4fb3 !important;
+  border-color: #7a4fb3 !important;
+  background-color: rgba(100, 65, 145, 0.05) !important;
+}
+
+/* Number input box styling */
+input[type="number"],
+.question-number-input {
+  border-color: #d9d9d9;
+}
+
+input[type="number"]:hover,
+.question-number-input:hover {
+  border-color: #644191 !important;
+}
+
+input[type="number"]:focus,
+.question-number-input:focus {
+  border-color: #644191 !important;
+  box-shadow: 0 0 0 2px rgba(100, 65, 145, 0.2) !important;
+}
+
+.delete-btn:hover,
+.trash-btn:hover,
+button[aria-label="delete"]:hover {
+  color: #7a4fb3 !important;
+}
+
+/* Make all button hovers purple */
+.ant-btn:hover,
+.ant-btn:focus {
+  color: #644191 !important;
+  border-color: #644191 !important;
+}
+
+/* Make link type buttons purple on hover */
+.ant-btn-link:hover {
+  color: #644191 !important;
+}
+
+/* Special styling for the delete/trash button */
+.ant-btn-link.ant-btn-dangerous {
+  color: #644191 !important;
+  border-color: #644191 !important;
+}
+
+.ant-btn-link.ant-btn-dangerous:hover {
+  color: #7a4fb3 !important;
+  border-color: #7a4fb3 !important;
+  background-color: rgba(100, 65, 145, 0.05) !important;
+}
+
+/* Override the default red danger button color */
+.ant-btn-dangerous.ant-btn-link {
+  color: #644191 !important;
+}
+
+/* Override hover states for table rows */
+.ant-table-tbody > tr:hover > td {
+  background: #e3cce4 !important; 
+}
+
+/* Override for select dropdowns */
+.ant-select-item-option-active:not(.ant-select-item-option-disabled),
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: rgba(100, 65, 145, 0.1) !important;
+}
+
+.ant-select-item-option:hover {
+  background-color: rgba(100, 65, 145, 0.1) !important;
+}
+
+/* Make popconfirm buttons purple */
+.ant-popover .ant-btn:hover,
+.ant-popover .ant-btn-primary {
+  background: #644191 !important;
+  border-color: #644191 !important;
+}
+
+.ant-popover .ant-btn-primary:hover {
+  background: #7a4fb3 !important;
+  border-color: #7a4fb3 !important;
+}

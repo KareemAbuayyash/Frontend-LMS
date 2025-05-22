@@ -11,7 +11,7 @@
 .student-courses h1 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #24292e;
+  color: #000000;
 }
 
 /* Grid of cards */
@@ -34,7 +34,7 @@
 
 .card-title {
   margin: 0 0 0.75rem 0;
-  color: #0366d6;
+  color: #000000; /* Changed from #644191 back to black */
   font-size: 1.1rem;
 }
 
@@ -57,7 +57,7 @@
 }
 
 .view-btn {
-  background: #4a90e2;
+  background: #644191; /* Changed from #4a90e2 */
   color: #fff;
   border: none;
   padding: 0.5em 1em;
@@ -68,7 +68,7 @@
 }
 
 .view-btn:hover {
-  background: #357ab8;
+  background: #7a4fb3; /* Changed from #357ab8 */
 }
 
 /* Loading & error states */
