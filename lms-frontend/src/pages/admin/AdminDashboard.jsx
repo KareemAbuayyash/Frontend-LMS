@@ -28,9 +28,11 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import api from '../../api/axios';
+import { useTranslation } from 'react-i18next';
 import styles from './AdminDashboard.module.css';
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const chartRef = useRef();
 
@@ -119,11 +121,11 @@ export default function AdminDashboard() {
 
   // ─── Chart Data ───────────────────────────────
   const chartData = [
-    { name: 'Users',       value: stats.totalUsers },
-    { name: 'Courses',     value: stats.totalCourses },
-    { name: 'Enrollments', value: stats.totalEnrollments },
-    { name: 'Instructors', value: stats.totalInstructors },
-    { name: 'Students',    value: stats.totalStudents },
+    { name: t('Users'),       value: stats.totalUsers },
+    { name: t('Courses'),     value: stats.totalCourses },
+    { name: t('Enrollments'), value: stats.totalEnrollments },
+    { name: t('Instructors'), value: stats.totalInstructors },
+    { name: t('Students'),    value: stats.totalStudents },
   ];
   const COLORS = ['#4e79a7','#f28e2c','#e15759','#76b7b2','#59a14f'];
 
@@ -182,12 +184,12 @@ export default function AdminDashboard() {
     <div className={`${styles.container} ${dark ? styles.dark : ''}`}>
       {/* Header */}
       <header className={styles.header}>
-        <h1 className={styles.title}>Admin Dashboard</h1>
+        <h1 className={styles.title}>{t('Admin Dashboard')}</h1>
         <div className={styles.headerControls}>
           <button
             className={styles.iconButton}
             onClick={() => setDark(d => !d)}
-            title="Toggle Dark/Light"
+            title={t('Toggle Dark/Light')}
           >
             {dark ? <FaSun/> : <FaMoon/>}
           </button>
@@ -211,7 +213,7 @@ export default function AdminDashboard() {
                 }
               })();
             }}
-            title="Refresh"
+            title={t('Refresh')}
           >
             <FaSyncAlt/>
           </button>
@@ -219,7 +221,7 @@ export default function AdminDashboard() {
       </header>
       {lastUpdated && (
         <div className={styles.subHeader}>
-          Last refreshed: {lastUpdated.toLocaleTimeString()}
+          {t('Last refreshed')}: {lastUpdated.toLocaleTimeString()}
         </div>
       )}
 
@@ -227,23 +229,23 @@ export default function AdminDashboard() {
       <section className={styles.statsGrid}>
         <div className={styles.card}>
           <FaUsers className={styles.iconUser}/>
-          <div><h2>{stats.totalUsers}</h2><p>Users</p></div>
+          <div><h2>{stats.totalUsers}</h2><p>{t('Users')}</p></div>
         </div>
         <div className={styles.card}>
           <FaBook className={styles.iconCourse}/>
-          <div><h2>{stats.totalCourses}</h2><p>Courses</p></div>
+          <div><h2>{stats.totalCourses}</h2><p>{t('Courses')}</p></div>
         </div>
         <div className={styles.card}>
           <FaClipboardList className={styles.iconEnroll}/>
-          <div><h2>{stats.totalEnrollments}</h2><p>Enrollments</p></div>
+          <div><h2>{stats.totalEnrollments}</h2><p>{t('Enrollments')}</p></div>
         </div>
         <div className={styles.card}>
           <FaChalkboardTeacher className={styles.iconInstructor}/>
-          <div><h2>{stats.totalInstructors}</h2><p>Instructors</p></div>
+          <div><h2>{stats.totalInstructors}</h2><p>{t('Instructors')}</p></div>
         </div>
         <div className={styles.card}>
           <FaUserGraduate className={styles.iconStudent}/>
-          <div><h2>{stats.totalStudents}</h2><p>Students</p></div>
+          <div><h2>{stats.totalStudents}</h2><p>{t('Students')}</p></div>
         </div>
       </section>
 
@@ -252,11 +254,11 @@ export default function AdminDashboard() {
         {/* Overview */}
         <section className={styles.chartSection}>
           <div className={styles.listHeader}>
-            <h2 className={styles.sectionTitle}>Overview</h2>
+            <h2 className={styles.sectionTitle}>{t('Overview')}</h2>
             <button
               className={styles.iconButton}
               onClick={exportChartPNG}
-              title="Download Chart"
+              title={t('Download Chart')}
             >
               <FaChartBar/>
             </button>
@@ -278,7 +280,12 @@ export default function AdminDashboard() {
                   ))}
                 </Pie>
                 <Tooltip formatter={v => v.toLocaleString()}/>
-                <Legend icon={<FaCircle/>} verticalAlign="bottom" height={36}/>
+                <Legend
+                  icon={<FaCircle/>}
+                  verticalAlign="bottom"
+                  height={36}
+                  formatter={value => t(value)}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -287,18 +294,18 @@ export default function AdminDashboard() {
         {/* Recent Users */}
         <section className={styles.listSection}>
           <div className={styles.listHeader}>
-            <h2 className={styles.sectionTitle}>Recent Users</h2>
+            <h2 className={styles.sectionTitle}>{t('Recent Users')}</h2>
             <div className={styles.listHeaderControls}>
               <input
                 className={styles.searchInput}
-                placeholder="Search users…"
+                placeholder={t('Search users…')}
                 value={userSearch}
                 onChange={e => setUserSearch(e.target.value)}
               />
               <button
                 className={styles.iconButton}
                 onClick={exportUsersCSV}
-                title="Export CSV"
+                title={t('Export CSV')}
               >
                 <FaDownload/>
               </button>
@@ -306,12 +313,12 @@ export default function AdminDashboard() {
                 className={styles.viewAllBtn}
                 onClick={() => navigate('/admin/users')}
               >
-                View All
+                {t('View All')}
               </button>
             </div>
           </div>
           {!filteredUsers.length
-            ? <div className={styles.noResults}>No matching users.</div>
+            ? <div className={styles.noResults}>{t('No matching users.')}</div>
             : (
               <ul className={styles.userList}>
                 {filteredUsers.map(u => (
@@ -340,19 +347,19 @@ export default function AdminDashboard() {
         <section className={styles.listSection}>
           <div className={styles.listHeader}>
             <h2 className={styles.sectionTitle}>
-              <FaCalendarAlt style={{ marginRight: 8 }}/> Recent Courses
+              <FaCalendarAlt style={{ marginRight: 8 }}/> {t('Recent Courses')}
             </h2>
             <div className={styles.listHeaderControls}>
               <input
                 className={styles.searchInput}
-                placeholder="Search courses…"
+                placeholder={t('Search courses…')}
                 value={courseSearch}
                 onChange={e => setCourseSearch(e.target.value)}
               />
               <button
                 className={styles.iconButton}
                 onClick={exportCoursesCSV}
-                title="Export CSV"
+                title={t('Export CSV')}
               >
                 <FaDownload/>
               </button>
@@ -360,19 +367,19 @@ export default function AdminDashboard() {
                 className={styles.viewAllBtn}
                 onClick={() => navigate('/admin/courses')}
               >
-                View All
+                {t('View All')}
               </button>
             </div>
           </div>
           {!filteredCourses.length
-            ? <div className={styles.noResults}>No matching courses.</div>
+            ? <div className={styles.noResults}>{t('No matching courses.')}</div>
             : (
               <table className={styles.simpleTable}>
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Instructor</th>
-                    <th style={{ textAlign: 'center' }}>Enrolled</th>
+                    <th>{t('Name')}</th>
+                    <th>{t('Instructor')}</th>
+                    <th style={{ textAlign: 'center' }}>{t('Enrolled')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -407,26 +414,26 @@ export default function AdminDashboard() {
       <section className={styles.listSection}>
         <div className={styles.listHeader}>
           <h2 className={styles.sectionTitle}>
-            <FaHistory style={{ marginRight: 8 }}/> System Activity
+            <FaHistory style={{ marginRight: 8 }}/> {t('System Activity')}
           </h2>
           <div className={styles.listHeaderControls}>
             <input
               className={styles.searchInput}
-              placeholder="Search activity…"
+              placeholder={t('Search activity…')}
               value={sysSearch}
               onChange={e => setSysSearch(e.target.value)}
             />
           </div>
         </div>
         {!filteredSystem.length
-          ? <div className={styles.noResults}>No recent activity.</div>
+          ? <div className={styles.noResults}>{t('No recent activity.')}</div>
           : (
             <table className={styles.activityTable}>
               <thead>
                 <tr>
-                  <th>Timestamp</th>
-                  <th>Type</th>
-                  <th>Message</th>
+                  <th>{t('Timestamp')}</th>
+                  <th>{t('Type')}</th>
+                  <th>{t('Message')}</th>
                 </tr>
               </thead>
               <tbody>

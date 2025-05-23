@@ -8,8 +8,11 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts'
+import { useTranslation } from 'react-i18next';
 
 export default function InstructorDashboard() {
+  const { t } = useTranslation();
+
   const styles = {
     container: {
       maxWidth: '1200px',
@@ -75,9 +78,9 @@ export default function InstructorDashboard() {
   const [error, setError] = useState(null)
 
   const statsData = [
-    { name: 'Courses', value: courses.length },
-    { name: 'Assignments', value: totalAssignments },
-    { name: 'Quizzes', value: totalQuizzes }
+    { name: t('Courses'), value: courses.length },
+    { name: t('Assignments'), value: totalAssignments },
+    { name: t('Quizzes'), value: totalQuizzes }
   ]
 
   useEffect(() => {
@@ -125,9 +128,9 @@ export default function InstructorDashboard() {
   if (error) return (
     <div style={styles.container}>
       <div style={{ ...styles.card, padding: '40px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '20px', color: '#DC2626' }}>Error Loading Dashboard</h2>
+        <h2 style={{ fontSize: '20px', color: '#DC2626' }}>{t('Error Loading Dashboard')}</h2>
         <p style={{ color: '#6B7280' }}>{error}</p>
-        <button onClick={() => window.location.reload()} style={{ backgroundColor: '#2563EB', color: 'white', padding: '8px 16px', borderRadius: '4px', border: 'none', marginTop: '16px', cursor: 'pointer' }}>Retry</button>
+        <button onClick={() => window.location.reload()} style={{ backgroundColor: '#2563EB', color: 'white', padding: '8px 16px', borderRadius: '4px', border: 'none', marginTop: '16px', cursor: 'pointer' }}>{t('Retry')}</button>
       </div>
     </div>
   )
@@ -135,27 +138,27 @@ export default function InstructorDashboard() {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h1 style={styles.headerTitle}>Instructor Dashboard</h1>
-        <p style={styles.headerSubtitle}>Welcome back! Here's an overview of your teaching impact.</p>
+        <h1 style={styles.headerTitle}>{t('Instructor Dashboard')}</h1>
+        <p style={styles.headerSubtitle}>{t("Welcome back! Here's an overview of your teaching impact.")}</p>
       </div>
 
       <div style={styles.statsGrid}>
         <div style={styles.statCard({ bg: '#EFF6FF', text: '#1E40AF' })}>
-          <p style={styles.statLabel({ text: '#1E40AF' })}>Your Courses</p>
+          <p style={styles.statLabel({ text: '#1E40AF' })}>{t('Your Courses')}</p>
           <p style={styles.statValue({ text: '#1E40AF' })}>{courses.length}</p>
         </div>
         <div style={styles.statCard({ bg: '#ECFDF5', text: '#065F46' })}>
-          <p style={styles.statLabel({ text: '#065F46' })}>Total Assignments</p>
+          <p style={styles.statLabel({ text: '#065F46' })}>{t('Total Assignments')}</p>
           <p style={styles.statValue({ text: '#065F46' })}>{totalAssignments}</p>
         </div>
         <div style={styles.statCard({ bg: '#FEF2F2', text: '#DC2626' })}>
-          <p style={styles.statLabel({ text: '#DC2626' })}>Total Quizzes</p>
+          <p style={styles.statLabel({ text: '#DC2626' })}>{t('Total Quizzes')}</p>
           <p style={styles.statValue({ text: '#DC2626' })}>{totalQuizzes}</p>
         </div>
       </div>
 
       <div style={styles.card}>
-        <h2 style={styles.cardTitle}>Overview Stats</h2>
+        <h2 style={styles.cardTitle}>{t('Overview Stats')}</h2>
         <div style={styles.chartContainer}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -170,11 +173,11 @@ export default function InstructorDashboard() {
       </div>
 
       <div style={styles.card}>
-        <h2 style={styles.cardTitle}>Your Active Courses</h2>
+        <h2 style={styles.cardTitle}>{t('Your Active Courses')}</h2>
         {courses.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '32px 16px', backgroundColor: '#F9FAFB', borderRadius: '8px' }}>
-            <p style={{ color: '#6B7280' }}>You don't have any courses yet.</p>
-            <p style={{ color: '#2563EB', fontSize: '14px' }}>Create your first course to get started!</p>
+            <p style={{ color: '#6B7280' }}>{t("You don't have any courses yet.")}</p>
+            <p style={{ color: '#2563EB', fontSize: '14px' }}>{t('Create your first course to get started!')}</p>
           </div>
         ) : (
           <ul style={styles.coursesList}>
@@ -182,10 +185,10 @@ export default function InstructorDashboard() {
               <li key={c.courseId} style={styles.courseItem(i % 2 === 0)}>
                 <h3 style={styles.courseTitle}>{c.courseName}</h3>
                 <div style={styles.courseDetails}>
-                  <p style={styles.courseId}>Course ID: {c.courseId}</p>
+                  <p style={styles.courseId}>{t('Course ID')}: {c.courseId}</p>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <span style={styles.enrollmentBadge}>{c.enrollmentCount}</span>
-                    <span style={styles.enrollmentText}>students enrolled</span>
+                    <span style={styles.enrollmentText}>{t('students enrolled')}</span>
                   </div>
                 </div>
               </li>

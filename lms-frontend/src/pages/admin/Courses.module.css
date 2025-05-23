@@ -277,39 +277,39 @@
 
   /* correct label list (9 columns) */
   .coursesTable td:nth-of-type(1):before {
-    content: "Name";
+    content: var(--label-name, "Name");
   }
 
   .coursesTable td:nth-of-type(2):before {
-    content: "Description";
+    content: var(--label-description, "Description");
   }
 
   .coursesTable td:nth-of-type(3):before {
-    content: "Duration";
+    content: var(--label-duration, "Duration");
   }
 
   .coursesTable td:nth-of-type(4):before {
-    content: "Instructor";
+    content: var(--label-instructor, "Instructor");
   }
 
   .coursesTable td:nth-of-type(5):before {
-    content: "Price";
+    content: var(--label-price, "Price");
   }
 
   .coursesTable td:nth-of-type(6):before {
-    content: "Enrolled";
+    content: var(--label-enrolled, "Enrolled");
   }
 
   .coursesTable td:nth-of-type(7):before {
-    content: "Start";
+    content: var(--label-start, "Start");
   }
 
   .coursesTable td:nth-of-type(8):before {
-    content: "End";
+    content: var(--label-end, "End");
   }
 
   .coursesTable td:nth-of-type(9):before {
-    content: "Actions";
+    content: var(--label-actions, "Actions");
   }
 
   /* Actions cell uses flex, no indent */
@@ -318,5 +318,10 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+  }
+
+  .coursesTable td:nth-of-type(9):before {
+    content: none !important;
+    display: none !important;
   }
 }

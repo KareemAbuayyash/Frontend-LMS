@@ -12,30 +12,33 @@ import {
   message
 } from 'antd';
 import api from '../../api/axios';
+import { useTranslation } from 'react-i18next';
 import './QuizSubmissions.css';
 
 const { Option } = Select;
 
 export default function QuizSubmissions() {
-  const [courses, setCourses] = useState([]);
+  const { t } = useTranslation();
+
+  const [courses, setCourses]           = useState([]);
   const [selectedCourse, setSelectedCourse] = useState();
-  const [quizzes, setQuizzes] = useState([]);
+  const [quizzes, setQuizzes]           = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState();
-  const [subs, setSubs] = useState([]);
-  const [quizDetails, setQuizDetails] = useState();
+  const [subs, setSubs]                 = useState([]);
+  const [quizDetails, setQuizDetails]   = useState();
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [currentRecord, setCurrentRecord] = useState();
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [loadingQuizzes, setLoadingQuizzes] = useState(false);
-  const [loadingSubs, setLoadingSubs] = useState(false);
-  const [savingId, setSavingId] = useState();
+  const [loadingSubs, setLoadingSubs]       = useState(false);
+  const [savingId, setSavingId]             = useState();
 
   useEffect(() => {
     api.get('/instructors/courses')
       .then(r => setCourses(r.data))
-      .catch(() => message.error('Failed to load courses'))
+      .catch(() => message.error(t('Failed to load courses')))
       .finally(() => setLoadingCourses(false));
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     setQuizzes([]);
@@ -44,31 +47,31 @@ export default function QuizSubmissions() {
     setLoadingQuizzes(true);
     api.get(`/quizzes/course/${selectedCourse}`)
       .then(r => setQuizzes(r.data))
-      .catch(() => message.error('Failed to load quizzes'))
+      .catch(() => message.error(t('Failed to load quizzes')))
       .finally(() => setLoadingQuizzes(false));
-  }, [selectedCourse]);
+  }, [selectedCourse, t]);
 
   useEffect(() => {
     if (!selectedQuiz) return;
     setLoadingSubs(true);
     api.get(`/submissions/quizzes/${selectedQuiz}`)
       .then(r => setSubs(r.data))
-      .catch(() => message.error('Failed to load submissions'))
+      .catch(() => message.error(t('Failed to load submissions')))
       .finally(() => setLoadingSubs(false));
 
     api.get(`/quizzes/${selectedQuiz}`)
       .then(r => setQuizDetails(r.data))
-      .catch(() => message.error('Failed to load quiz details'));
-  }, [selectedQuiz]);
+      .catch(() => message.error(t('Failed to load quiz details')));
+  }, [selectedQuiz, t]);
 
   const handleScoreChange = (id, score) => {
     setSavingId(id);
     api.put(`/submissions/quizzes/${selectedQuiz}/submissions/${id}/grade`, { score })
       .then(() => {
-        message.success('Score updated');
+        message.success(t('Score updated'));
         setSubs(s => s.map(x => x.id === id ? { ...x, score, graded: true } : x));
       })
-      .catch(() => message.error('Failed to update score'))
+      .catch(() => message.error(t('Failed to update score')))
       .finally(() => setSavingId(null));
   };
 
@@ -77,16 +80,15 @@ export default function QuizSubmissions() {
     : 0;
 
   const subColumns = [
-    // show the student’s display name
-    { title: 'Student', dataIndex: 'studentName', key: 'studentName' },
+    { title: t('Student'), dataIndex: 'studentName', key: 'studentName' },
     {
-      title: 'Submitted At',
+      title: t('Submitted At'),
       dataIndex: 'submissionDate',
       key: 'submissionDate',
       render: d => new Date(d).toLocaleString()
     },
     {
-      title: 'Score',
+      title: t('Score'),
       dataIndex: 'score',
       key: 'score',
       render: (score, rec) => (
@@ -100,14 +102,14 @@ export default function QuizSubmissions() {
       )
     },
     {
-      title: 'Actions',
+      title: t('Actions'),
       key: 'actions',
       render: (_, rec) => (
         <Button onClick={() => {
           setCurrentRecord(rec);
           setDrawerVisible(true);
         }}>
-          View Answers
+          {t('View Answers')}
         </Button>
       )
     }
@@ -115,7 +117,7 @@ export default function QuizSubmissions() {
 
   return (
     <div className="quiz-submissions-page">
-      <Card title="Select Quiz" className="quiz-table-card">
+      <Card title={t('Select Quiz')} className="quiz-table-card">
         <Row
           gutter={16}
           className="top-controls"
@@ -126,7 +128,7 @@ export default function QuizSubmissions() {
         >
           <Col xs={24} sm={12} style={window.innerWidth < 500 ? { marginBottom: 8 } : {}}>
             <Select
-              placeholder="Select a course"
+              placeholder={t('Select a course')}
               loading={loadingCourses}
               onChange={setSelectedCourse}
               value={selectedCourse}
@@ -143,7 +145,7 @@ export default function QuizSubmissions() {
           </Col>
           <Col xs={24} sm={12}>
             <Select
-              placeholder="Select a quiz"
+              placeholder={t('Select a quiz')}
               loading={loadingQuizzes}
               onChange={setSelectedQuiz}
               value={selectedQuiz}
@@ -165,7 +167,7 @@ export default function QuizSubmissions() {
       {selectedQuiz && (
         <Card
           className="submissions-table-card"
-          title={`Submissions: ${quizDetails?.title || ''}`}
+          title={t('Submissions') + ': ' + (quizDetails?.title || '')}
           bodyStyle={window.innerWidth < 500 ? { padding: 8 } : {}}
         >
           <div style={{ overflowX: window.innerWidth < 500 ? 'auto' : 'visible' }}>
@@ -183,14 +185,19 @@ export default function QuizSubmissions() {
       )}
 
       <Drawer
-        title={`Answers: ${currentRecord?.studentName}`}
+        title={t('Answers') + ': ' + (currentRecord?.studentName || '')}
         visible={drawerVisible}
         width={window.innerWidth < 500 ? '100vw' : 600}
         onClose={() => setDrawerVisible(false)}
         bodyStyle={window.innerWidth < 500 ? { padding: 8 } : {}}
       >
-        <div className="drawer-content" style={window.innerWidth < 500 ? { padding: 4 } : {}}>
-          <h3 style={window.innerWidth < 500 ? { fontSize: 16 } : {}}>{quizDetails?.title}</h3>
+        <div
+          className="drawer-content"
+          style={window.innerWidth < 500 ? { padding: 4 } : {}}
+        >
+          <h3 style={window.innerWidth < 500 ? { fontSize: 16 } : {}}>
+            {quizDetails?.title}
+          </h3>
           <ol>
             {quizDetails?.questions.map((q, i) => {
               const raw = currentRecord?.answers[i] ?? '';
@@ -221,16 +228,19 @@ export default function QuizSubmissions() {
               return (
                 <li key={q.id} className={earned === weight ? 'correct' : 'wrong'}>
                   <p>
-                    <strong>Q{i + 1} ({weight} pts):</strong> {q.text}
+                    <strong>
+                      {t('Q')} {i + 1} ({weight} {t('pts')}):
+                    </strong>{' '}
+                    {q.text}
                   </p>
                   <p>
-                    <strong>Their answer:</strong> {studentArr.join(', ')}
+                    <strong>{t('Their answer')}:</strong> {studentArr.join(', ')}
                   </p>
                   <p>
-                    <strong>Correct answer:</strong> {correctArr.join(', ')}
+                    <strong>{t('Correct answer')}:</strong> {correctArr.join(', ')}
                   </p>
                   <p style={{ fontStyle: 'italic' }}>
-                    Earned: {earned} / {weight}
+                    {t('Earned')}: {earned} / {weight}
                   </p>
                 </li>
               );

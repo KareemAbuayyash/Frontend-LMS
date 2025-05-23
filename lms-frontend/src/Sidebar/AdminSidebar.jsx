@@ -1,4 +1,4 @@
-// 📦 src/Sidebar/AdminSidebar.jsx
+// src/Sidebar/AdminSidebar.jsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FiMenu, FiX, FiGrid, FiFileText, FiUser } from 'react-icons/fi';
@@ -11,10 +11,10 @@ export default function AdminSidebar({ collapsed, onToggle }) {
   const { t } = useTranslation();
 
   const NAV = [
-    { label: t('Dashboard'),   to: '/admin',             icon: <FiGrid /> },
-    { label: t('Courses'),     to: '/admin/courses',     icon: <FiFileText /> },
-    { label: t('Users'),       to: '/admin/users',       icon: <FiUser /> },
-    { label: t('Enrollments'), to: '/admin/enrollments', icon: <FiFileText /> },
+    { label: t('Dashboard'),   to: '/admin',             icon: <FiGrid />      },
+    { label: t('Courses'),     to: '/admin/courses',     icon: <FiFileText />  },
+    { label: t('Users'),       to: '/admin/users',       icon: <FiUser />      },
+    { label: t('Enrollments'), to: '/admin/enrollments', icon: <FiFileText />  },
   ];
 
   return (

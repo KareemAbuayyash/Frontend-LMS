@@ -2,21 +2,19 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import ProfilePicture from '../../components/ProfileSettings/ProfilePicture';
 import styles from '../../components/ProfileSettings/ProfileSettings.module.css';
-import { toast } from '../../utils/toast';  // ← import the toast helper
+import { toast } from '../../utils/toast';
+import { useTranslation } from 'react-i18next';
 
 export default function StudentProfileSettings() {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState({
-    username: '',
-    email: '',
-    password: '',
-    photo: null,
-    hobbies: ''
+    username: '', email: '', password: '', photo: null, hobbies: ''
   });
   const [preview, setPreview] = useState(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetch = async () => {
       try {
         const { data: student } = await api.get('/students/me');
         const { data: user }    = await api.get('/users/profile');
@@ -31,11 +29,11 @@ export default function StudentProfileSettings() {
         setPreview(user.profile);
       } catch (err) {
         console.error(err);
-        toast('Failed to load profile', 'error');
+        toast(t('Error fetching profile'), 'error');
       }
     };
-    fetchProfile();
-  }, []);
+    fetch();
+  }, [t]);
 
   const handleChange = e => {
     const { name, value, files } = e.target;
@@ -50,10 +48,8 @@ export default function StudentProfileSettings() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      // update student-specific fields
       await api.put('/students/me', { hobbies: form.hobbies });
 
-      // update user fields + photo
       const data = new FormData();
       data.append('username', form.username);
       data.append('email',    form.email);
@@ -64,75 +60,67 @@ export default function StudentProfileSettings() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      toast('Profile updated!', 'success');  // ← toast instead of alert
+      toast(t('Profile updated!'), 'success');
     } catch (err) {
       console.error(err);
-      toast(err.response?.data?.message || err.message, 'error');
+      toast(err.response?.data?.message || t('Error updating profile'), 'error');
     }
   };
 
-  if (!profile) return <div className={styles.loading}>Loading…</div>;
+  if (!profile) return <div className={styles.loading}>{t('Loading…')}</div>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>Student Profile Settings</h1>
+      <h1 className={styles.heading}>{t('Profile Settings')}</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
-        {/* Avatar */}
         <div className={styles.avatarWrapper}>
-          <ProfilePicture src={preview} alt="Profile" className={styles.avatar} />
+          <ProfilePicture src={preview} alt={t('Profile')} className={styles.avatar}/>
           <label className={styles.photoLabel}>
-            Change Photo
-            <input type="file" name="photo" accept="image/*" onChange={handleChange} />
+            {t('Change Photo')}
+            <input type="file" name="photo" accept="image/*" onChange={handleChange}/>
           </label>
         </div>
 
         {/* User fields */}
         <label>
-          Username
+          {t('Username')}
           <input
-            type="text"
-            name="username"
-            value={form.username}
-            onChange={handleChange}
+            type="text" name="username"
+            value={form.username} onChange={handleChange}
             required
           />
         </label>
 
         <label>
-          Email
+          {t('Email')}
           <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
+            type="email" name="email"
+            value={form.email} onChange={handleChange}
             required
           />
         </label>
 
         <label>
-          New Password
+          {t('New Password')}
           <input
-            type="password"
-            name="password"
+            type="password" name="password"
             value={form.password || ''}
             onChange={handleChange}
-            placeholder="Leave blank to keep current"
+            placeholder={t('Leave blank to keep current')}
           />
         </label>
 
-        {/* Student-specific fields */}
+        {/* Student‐only */}
         <label>
-          Hobbies
+          {t('Hobbies')}
           <input
-            type="text"
-            name="hobbies"
-            value={form.hobbies}
-            onChange={handleChange}
+            type="text" name="hobbies"
+            value={form.hobbies} onChange={handleChange}
           />
         </label>
 
         <button type="submit" className={styles.saveBtn}>
-          Save Changes
+          {t('Save Changes')}
         </button>
       </form>
     </div>

@@ -8,10 +8,13 @@ import {
   FaSearch
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import './StudentDashboard.css';
 
 export default function StudentDashboard() {
+  const { t } = useTranslation();
+
   /* ───── state ───── */
   const [courses,     setCourses]     = useState([]);
   const [assignments, setAssignments] = useState([]);
@@ -51,28 +54,28 @@ export default function StudentDashboard() {
 
       {/* ===== STAT CARDS ===== */}
       <div className="stats-overview">
-        <Stat icon={FaBookOpen}       label="Total Courses"     value={totalCourses} />
-        <Stat icon={FaQuestionCircle} label="Total Quizzes"     value={totalQuizzes} />
-        <Stat icon={FaTasks}          label="Total Assignments" value={totalAssignments} />
-        <Stat icon={FaChartLine}      label="Average Grade"     value={`${avgGrade}%`} />
+        <Stat icon={FaBookOpen} colorKey="Courses" label={t("Total Courses")}     value={totalCourses} />
+        <Stat icon={FaQuestionCircle} colorKey="Quizzes" label={t("Total Quizzes")}     value={totalQuizzes} />
+        <Stat icon={FaTasks} colorKey="Assignments" label={t("Total Assignments")} value={totalAssignments} />
+        <Stat icon={FaChartLine} colorKey="Grade" label={t("Average Grade")}     value={`${avgGrade}%`} />
       </div>
 
       {/* ===== UPCOMING ASSIGNMENTS ===== */}
       <section className="upcoming-assignments">
-        <h2>Upcoming Assignments</h2>
+        <h2>{t("Upcoming Assignments")}</h2>
         <div className="table-wrapper">
           <table className="assignments-table">
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Course</th>
-                <th>Due Date</th>
+                <th>{t("Title")}</th>
+                <th>{t("Course")}</th>
+                <th>{t("Due Date")}</th>
               </tr>
             </thead>
             <tbody>
               {upcoming.length === 0 ? (
                 <tr className="empty">
-                  <td colSpan={3}>Nothing due</td>
+                  <td colSpan={3}>{t("Nothing due")}</td>
                 </tr>
               ) : (
                 upcoming.map(a => (
@@ -91,12 +94,12 @@ export default function StudentDashboard() {
       {/* ===== COURSES TABLE ===== */}
       <section className="courses-section">
         <header className="section-header">
-          <h2>My Courses</h2>
+          <h2>{t("My Courses")}</h2>
           <div className="search-box">
             <FaSearch className="icon" />
             <input
               type="text"
-              placeholder="Search courses…"
+              placeholder={t("Search courses…")}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             />
@@ -107,15 +110,15 @@ export default function StudentDashboard() {
           <table className="courses-table">
             <thead>
               <tr>
-                <th>Course Name</th>
-                <th>Instructor</th>
-                <th>Actions</th>
+                <th>{t("Course Name")}</th>
+                <th>{t("Instructor")}</th>
+                <th>{t("Actions")}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr className="empty">
-                  <td colSpan={3}>Loading…</td>
+                  <td colSpan={3}>{t("Loading…")}</td>
                 </tr>
               ) : (
                 courses
@@ -131,7 +134,7 @@ export default function StudentDashboard() {
                           className="view-course-btn"
                           onClick={() => navigate(`/student/courses/${c.courseId}`)}
                         >
-                          View
+                          {t("View")}
                         </button>
                       </td>
                     </tr>
@@ -147,17 +150,16 @@ export default function StudentDashboard() {
 
 /* ───── stat card helper ───── */
 // eslint-disable-next-line no-unused-vars
-function Stat({ icon: Icon, label, value }) {
+function Stat({ icon: Icon, label, value, colorKey }) {
   const palette = {
     Courses: 'var(--indigo)',
     Quizzes: 'var(--rose)',
     Assignments: 'var(--emerald)',
     Grade: 'var(--indigo)'
   };
-  const key = label.split(' ')[1]; // Courses / Quizzes / Assignments / Grade
   return (
     <div className="stat-card">
-      <Icon className="stat-icon" style={{ color: palette[key] }} />
+      <Icon className="stat-icon" style={{ color: palette[colorKey] }} />
       <div>
         <h3>{label}</h3>
         <p>{value}</p>

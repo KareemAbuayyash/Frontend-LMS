@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import './StudentCourses.css';
 
 export default function StudentCourses() {
+  const { t } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,20 +20,20 @@ export default function StudentCourses() {
         setCourses(data);
       } catch (err) {
         console.error(err);
-        setError('Failed to load courses.');
+        setError(t('Failed to load courses.'));
       } finally {
         setLoading(false);
       }
     }
     fetchCourses();
-  }, []);
+  }, [t]);
 
-  if (loading) return <div className="loading">Loading courses…</div>;
+  if (loading) return <div className="loading">{t('Loading courses…')}</div>;
   if (error)   return <div className="error">{error}</div>;
 
   return (
     <div className="student-courses">
-      <h1>My Courses</h1>
+      <h1>{t('My Courses')}</h1>
 
       <div className="courses-grid">
         {courses.map(course => (
@@ -45,7 +47,7 @@ export default function StudentCourses() {
             )}
 
             <p className="card-instructor">
-              <strong>Instructor:</strong> {course.instructorName || 'N/A'}
+              <strong>{t('Instructor')}:</strong> {course.instructorName || t('N/A')}
             </p>
 
             <div className="card-actions">
@@ -53,7 +55,7 @@ export default function StudentCourses() {
                 className="view-btn"
                 onClick={() => navigate(`/student/courses/${course.courseId}`)}
               >
-                View Course
+                {t('View Course')}
               </button>
             </div>
           </div>

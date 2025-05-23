@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, message } from 'antd';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import './QuizAttempt.css';
 
 export default function QuizAttempt() {
+  const { t } = useTranslation();
   const { quizId } = useParams();
   const [quiz, setQuiz]         = useState(null);
   const [answers, setAnswers]   = useState({});
@@ -42,8 +44,8 @@ export default function QuizAttempt() {
     load();
   }, [quizId]);
 
-  if (loading) return <p className="qa-error">Loading…</p>;
-  if (error)   return <p className="qa-error">{error}</p>;
+  if (loading) return <p className="qa-error">{t('Loading…')}</p>;
+  if (error)   return <p className="qa-error">{t(error)}</p>;
 
   // already submitted? show results
   if (submission) {
@@ -52,7 +54,7 @@ export default function QuizAttempt() {
       <div className="quiz-attempt">
         <h1 className="qa-title">{quiz.title}</h1>
         <p className="qa-overall">
-          Score: <strong>{submission.score}</strong> / <strong>{total}</strong>
+          {t('Score')}: <strong>{submission.score}</strong> / <strong>{total}</strong>
         </p>
         {quiz.questions.map((q,idx)=> {
           const raw  = submission.answers[idx]||'';
@@ -79,20 +81,20 @@ export default function QuizAttempt() {
           return (
             <Card key={q.id} className="qa-block">
               <div className="qa-header">
-                <span className="qa-number">Q{idx+1}.</span>
+                <span className="qa-number">{t('Q{{num}}.', { num: idx+1 })}</span>
                 <span className="qa-text">{q.text}</span>
-                <span className="qa-weight">({q.weight||1} pts)</span>
+                <span className="qa-weight">({q.weight||1} {t('pts')})</span>
               </div>
               <div className="qa-row">
-                <span className="label">Your:</span>
-                <span>{stu.join(', ')||<em>(no answer)</em>}</span>
+                <span className="label">{t('Your')}:</span>
+                <span>{stu.join(', ')||<em>({t('no answer')})</em>}</span>
               </div>
               <div className="qa-row">
-                <span className="label">Correct:</span>
+                <span className="label">{t('Correct')}:</span>
                 <span>{corr.join(', ')}</span>
               </div>
               <div className="qa-row">
-                <span className="label">Earned:</span>
+                <span className="label">{t('Earned')}:</span>
                 <span>{earned} / {q.weight||1}</span>
               </div>
             </Card>
@@ -175,7 +177,7 @@ export default function QuizAttempt() {
                   type="radio"
                   checked={answers[q.id]===v}
                   onChange={()=>handleChange(q,v)}
-                /> {v}
+                /> {t(v)}
               </label>
             ))}
 
@@ -186,7 +188,7 @@ export default function QuizAttempt() {
                   type="radio"
                   checked={answers[q.id]===opt}
                   onChange={()=>handleChange(q,opt)}
-                /> {opt}
+                /> {t(opt)}
               </label>
             ))}
 
@@ -197,7 +199,7 @@ export default function QuizAttempt() {
                   type="checkbox"
                   checked={answers[q.id].includes(opt)}
                   onChange={()=>handleChange(q,opt)}
-                /> {opt}
+                /> {t(opt)}
               </label>
             ))}
 
@@ -206,7 +208,7 @@ export default function QuizAttempt() {
               rows={4}
               value={answers[q.id]}
               onChange={e=>handleChange(q,e.target.value)}
-              placeholder="Your answer…"
+              placeholder={t("Your answer…")}
             />
           )}
         </Card>
@@ -214,15 +216,15 @@ export default function QuizAttempt() {
 
       <div className="pagination-controls">
         <Button onClick={handlePrev} disabled={page===0 || navModeVal!=='FREE'}>
-          Previous
+          {t('Previous')}
         </Button>
         {page<totalPages-1 ? (
           <Button type="primary" onClick={handleNext} disabled={!canNext()}>
-            Next
+            {t('Next')}
           </Button>
         ) : (
           <Button type="primary" onClick={handleSubmit} disabled={!pageComplete}>
-            Submit Quiz
+            {t('Submit Quiz')}
           </Button>
         )}
       </div>

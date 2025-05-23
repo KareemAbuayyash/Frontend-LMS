@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams }                    from 'react-router-dom';
 import { FaFilePdf, FaEye, FaDownload } from 'react-icons/fa';
+import { useTranslation }               from 'react-i18next';
 import api                              from '../../api/axios';
 import './StudentAssignmentDetail.css';
 
 export default function StudentAssignmentDetail() {
+  const { t } = useTranslation();
   const { assignmentId } = useParams();
   const [assignment, setAssignment] = useState(null);
   const [submission, setSubmission] = useState(null);
@@ -67,7 +69,7 @@ export default function StudentAssignmentDetail() {
     }
   };
 
-  if (loading) return <div className="loading">Loading…</div>;
+  if (loading) return <div className="loading">{t('Loading…')}</div>;
 
   // Instructor attachment
   const instrUrl = assignment.attachmentUrl;
@@ -114,7 +116,7 @@ export default function StudentAssignmentDetail() {
       <header className="assignment-header">
         <h1 className="assignment-title">{assignment.title}</h1>
         <span className={`badge ${submission ? 'submitted' : 'pending'}`}>
-          {submission ? 'Submitted' : 'Pending'}
+          {submission ? t('Submitted') : t('Pending')}
         </span>
       </header>
 
@@ -123,13 +125,13 @@ export default function StudentAssignmentDetail() {
       )}
 
       <div className="assignment-meta">
-        <div><strong>Due:</strong> {new Date(assignment.dueDate).toLocaleString()}</div>
-        <div><strong>Points:</strong> {assignment.totalPoints}</div>
+        <div><strong>{t('Due')}:</strong> {new Date(assignment.dueDate).toLocaleString()}</div>
+        <div><strong>{t('Points')}:</strong> {assignment.totalPoints}</div>
       </div>
 
       {instrUrl && (
         <section className="instructor-attachment">
-          <h2>Instructor Attachment</h2>
+          <h2>{t('Instructor Attachment')}</h2>
           <div className="attachment-row">
             <FaFilePdf className="file-icon" />
             <span className="file-name">{instrName}</span>
@@ -145,9 +147,9 @@ export default function StudentAssignmentDetail() {
 
       {submission ? (
         <section className="submission-result">
-          <h2>Your Submission</h2>
+          <h2>{t('Your Submission')}</h2>
           <p className="result-text">
-            {submission.submissionContent || <em>(no text)</em>}
+            {submission.submissionContent || <em>({t('no text')})</em>}
           </p>
           {subUrl && (
             <div className="attachment-row submission-attachment">
@@ -161,14 +163,14 @@ export default function StudentAssignmentDetail() {
               </button>
             </div>
           )}
-          <div className="grade">Score: {grade}</div>
+          <div className="grade">{t('Score')}: {grade}</div>
         </section>
       ) : (
         <section className="submission-form">
-          <h2>Submit Your Work</h2>
+          <h2>{t('Submit Your Work')}</h2>
           <textarea
             className="input-text"
-            placeholder="Enter your answer…"
+            placeholder={t("Enter your answer…")}
             value={content}
             onChange={e => setContent(e.target.value)}
           />
@@ -177,7 +179,7 @@ export default function StudentAssignmentDetail() {
             type="file"
             onChange={e => setFile(e.target.files[0])}
           />
-          <button className="btn-submit" onClick={handleSubmit}>Submit</button>
+          <button className="btn-submit" onClick={handleSubmit}>{t('Submit')}</button>
         </section>
       )}
     </div>

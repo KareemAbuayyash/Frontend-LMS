@@ -1,10 +1,13 @@
+// src/pages/instructor/InstructorCourses.jsx
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Button, Row, Col } from 'antd';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
+import { useTranslation } from 'react-i18next';
 import './Courses.css';
 
-const InstructorCourses = () => {
+export default function InstructorCourses() {
+  const { t } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,7 +20,7 @@ const InstructorCourses = () => {
       const response = await api.get('/instructors/me/courses');
       setCourses(response.data);
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error(t('Error fetching courses'), error);
     } finally {
       setLoading(false);
     }
@@ -25,26 +28,26 @@ const InstructorCourses = () => {
 
   const columns = [
     {
-      title: 'Course Name',
+      title: t('Course Name'),
       dataIndex: 'courseName',
       key: 'courseName',
     },
     {
-      title: 'Course ID',
+      title: t('Course ID'),
       dataIndex: 'courseId',
       key: 'courseId',
     },
     {
-      title: 'Enrolled Students',
+      title: t('Enrolled Students'),
       dataIndex: 'enrollmentCount',
       key: 'enrollmentCount',
     },
     {
-      title: 'Actions',
+      title: t('Actions'),
       key: 'actions',
       render: (_, course) => (
         <Link to={`/instructor/courses/${course.courseId}/content`}>
-          <Button type="link">Manage Content</Button>
+          <Button type="link">{t('Manage Content')}</Button>
         </Link>
       ),
     },
@@ -54,7 +57,7 @@ const InstructorCourses = () => {
     <div className="instructor-courses">
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
-          <h1>My Courses</h1>
+          <h1>{t('My Courses')}</h1>
         </Col>
       </Row>
       <Card>
@@ -63,10 +66,9 @@ const InstructorCourses = () => {
           dataSource={courses}
           loading={loading}
           rowKey="courseId"
+          locale={{ emptyText: t('No courses found') }}
         />
       </Card>
     </div>
   );
-};
-
-export default InstructorCourses;
+}

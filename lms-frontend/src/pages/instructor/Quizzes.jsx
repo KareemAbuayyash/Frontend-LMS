@@ -12,11 +12,14 @@ import {
 } from '@ant-design/icons';
 import api from '../../api/axios';
 import './Quizzes.css';
+import { useTranslation } from 'react-i18next'; // <-- Add this
 
 const { Option } = Select;
 const { Title, Paragraph, Text } = Typography;
 
 export default function InstructorQuizzes() {
+  const { t } = useTranslation(); // <-- Add this
+
   const [courses, setCourses]               = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -38,7 +41,7 @@ export default function InstructorQuizzes() {
   useEffect(() => {
     api.get('/instructors/me/courses')
       .then(r => setCourses(r.data))
-      .catch(() => message.error('Failed to load courses'))
+      .catch(() => message.error(t('Failed to load courses')))
       .finally(() => setLoadingCourses(false));
   }, []);
 
@@ -53,7 +56,7 @@ export default function InstructorQuizzes() {
       const { data } = await api.get(`/quizzes/course/${selectedCourse}`);
       setQuizzes(data);
     } catch {
-      message.error('Failed to load quizzes');
+      message.error(t('Failed to load quizzes'));
     } finally {
       setLoadingQuizzes(false);
     }
@@ -69,7 +72,7 @@ export default function InstructorQuizzes() {
       let cleanedCorrectAnswer = '';
 
       if (q.questionType === 'TRUE_FALSE') {
-        cleanedOptions = ['True', 'False'];
+        cleanedOptions = [t('True'), t('False')];
         cleanedCorrectAnswer = q.correctAnswer || '';
       } else if (q.questionType === 'ESSAY') {
         cleanedOptions = [];
@@ -127,10 +130,10 @@ export default function InstructorQuizzes() {
     try {
       if (editingQuiz) {
         await api.put(`/quizzes/${editingQuiz.id}`, payload);
-        message.success('Quiz updated');
+        message.success(t('Quiz updated'));
       } else {
         await api.post(`/quizzes/course/${selectedCourse}`, payload);
-        message.success('Quiz created');
+        message.success(t('Quiz created'));
       }
       form.resetFields();
       setEditingQuiz(null);
@@ -138,8 +141,7 @@ export default function InstructorQuizzes() {
       // Switch to existing quizzes tab after successful creation/edit
       setActiveTab('existing');
     } catch (e) {
-      console.error('Quiz submission error:', e.response?.data || e.message);
-      message.error(e.response?.data?.message || e.response?.data?.error || 'Save failed');
+      message.error(e.response?.data?.message || e.response?.data?.error || t('Save failed'));
     } finally {
       setSubmitting(false);
     }
@@ -203,21 +205,21 @@ export default function InstructorQuizzes() {
 
   // Table columns
   const columns = [
-    { title: 'Title', dataIndex: 'title', key: 'title' },
+    { title: t('Title'), dataIndex: 'title', key: 'title' },
     {
-      title: 'Questions',
+      title: t('Questions'),
       dataIndex: 'questions',
       key: 'count',
       render: qs => qs?.length || 0
     },
     {
-      title: 'Total Weight',
+      title: t('Total Weight'),
       dataIndex: 'questions',
       key: 'weight',
       render: qs => qs?.reduce((sum, q) => sum + (q.weight || 0), 0) || 0
     },
     {
-      title: 'Actions',
+      title: t('Actions'),
       key: 'actions',
       render: (_, q) => (
         <Space>
@@ -225,24 +227,24 @@ export default function InstructorQuizzes() {
             icon={<EyeOutlined />}
             type="link"
             onClick={() => showDetail(q.id)}
-            title="View Details"
+            title={t("View Details")}
           />
           <Button
             icon={<EditOutlined />}
             type="link"
             onClick={() => startEdit(q)}
-            title="Edit Quiz"
+            title={t("Edit Quiz")}
           />
           <Popconfirm
-            title="Delete this quiz?"
+            title={t("Delete this quiz?")}
             onConfirm={() => deleteQuiz(q.id)}
-            okText="Yes" cancelText="No"
+            okText={t("Yes")} cancelText={t("No")}
           >
             <Button
               icon={<DeleteOutlined />}
               type="link"
               danger
-              title="Delete Quiz"
+              title={t("Delete Quiz")}
             />
           </Popconfirm>
         </Space>
@@ -252,10 +254,10 @@ export default function InstructorQuizzes() {
 
   // Course selection component (shared between tabs)
   const CourseSelector = () => (
-    <Form.Item label="Course" required>
+    <Form.Item label={t("Course")} required>
       <Select
         loading={loadingCourses}
-        placeholder="Select course"
+        placeholder={t("Select course")}
         value={selectedCourse}
         onChange={cid => {
           setSelectedCourse(cid);
@@ -295,7 +297,7 @@ export default function InstructorQuizzes() {
                   icon={<ReloadOutlined />}
                   onClick={cancelEdit}
                 >
-                  Cancel Edit
+                  {t("Cancel Edit")}
                 </Button>
               </Form.Item>
             )}
@@ -304,18 +306,18 @@ export default function InstructorQuizzes() {
               <>
                 <Form.Item
                   name="title"
-                  label="Quiz Title"
-                  rules={[{ required: true, message: 'Please enter quiz title' }]}
+                  label={t("Quiz Title")}
+                  rules={[{ required: true, message: t('Please enter quiz title') }]}
                 >
-                  <Input placeholder="e.g. Midterm Review" />
+                  <Input placeholder={t("e.g. Midterm Review")} />
                 </Form.Item>
 
                 <Row gutter={16}>
                   <Col span={12}>
                     <Form.Item
                       name="pageSize"
-                      label="Questions per Page"
-                      rules={[{ required: true, type:'number', min:1, message: 'Enter valid page size' }]}
+                      label={t("Questions per Page")}
+                      rules={[{ required: true, type:'number', min:1, message: t('Enter valid page size') }]}
                     >
                       <InputNumber min={1} style={{ width:'100%' }} />
                     </Form.Item>
@@ -323,18 +325,18 @@ export default function InstructorQuizzes() {
                   <Col span={12}>
                     <Form.Item
                       name="navigationMode"
-                      label="Navigation Mode"
-                      rules={[{ required: true, message: 'Select navigation mode' }]}
+                      label={t("Navigation Mode")}
+                      rules={[{ required: true, message: t('Select navigation mode') }]}
                     >
                       <Select>
-                        <Option value="FREE">Free Navigation</Option>
-                        <Option value="LINEAR">Linear Navigation</Option>
+                        <Option value="FREE">{t("Free Navigation")}</Option>
+                        <Option value="LINEAR">{t("Linear Navigation")}</Option>
                       </Select>
                     </Form.Item>
                   </Col>
                 </Row>
 
-                <Divider>Questions</Divider>
+                <Divider>{t("Questions")}</Divider>
                 <Form.List name="questions">
                   {(fields, { add, remove }) => (
                     <>
@@ -345,7 +347,7 @@ export default function InstructorQuizzes() {
                           <Card
                             key={key}
                             size="small"
-                            title={`Question ${name + 1}`}
+                            title={t('Question', { number: name + 1 })} // Use interpolation if needed
                             className="question-block"
                             extra={
                               <Button
@@ -361,10 +363,10 @@ export default function InstructorQuizzes() {
                               {...restFieldProps}
                               name={[name, 'text']}
                               fieldKey={[fieldKey, 'text']}
-                              rules={[{ required: true, message: 'Enter question text' }]}
+                              rules={[{ required: true, message: t('Enter question text') }]}
                             >
                               <Input.TextArea 
-                                placeholder="Question text" 
+                                placeholder={t('Question text')} 
                                 rows={2}
                               />
                             </Form.Item>
@@ -375,13 +377,14 @@ export default function InstructorQuizzes() {
                                   {...restFieldProps}
                                   name={[name, 'questionType']}
                                   fieldKey={[fieldKey, 'questionType']}
-                                  rules={[{ required: true, message: 'Select question type' }]}
+                                  label={t('Question Type')}
+                                  rules={[{ required: true, message: t('Select question type') }]}
                                 >
-                                  <Select placeholder="Question Type">
-                                    <Option value="TRUE_FALSE">True/False</Option>
-                                    <Option value="MULTIPLE_CHOICE_SINGLE">Single Choice</Option>
-                                    <Option value="MULTIPLE_CHOICE_MULTIPLE">Multiple Choice</Option>
-                                    <Option value="ESSAY">Essay</Option>
+                                  <Select placeholder={t('Question Type')}>
+                                    <Option value="TRUE_FALSE">{t('True/False')}</Option>
+                                    <Option value="MULTIPLE_CHOICE_SINGLE">{t('Single Choice')}</Option>
+                                    <Option value="MULTIPLE_CHOICE_MULTIPLE">{t('Multiple Choice')}</Option>
+                                    <Option value="ESSAY">{t('Essay')}</Option>
                                   </Select>
                                 </Form.Item>
                               </Col>
@@ -391,10 +394,11 @@ export default function InstructorQuizzes() {
                                   name={[name, 'weight']}
                                   fieldKey={[fieldKey, 'weight']}
                                   initialValue={1}
-                                  rules={[{ required: true, type:'number', min:1, message: 'Enter weight' }]}
+                                  label={t('Points')}
+                                  rules={[{ required: true, type: 'number', min: 1, message: t('Enter weight') }]}
                                 >
-                                  <InputNumber 
-                                    placeholder="Weight" 
+                                  <InputNumber
+                                    placeholder={t('Points')}
                                     style={{ width: '100%' }}
                                   />
                                 </Form.Item>
@@ -409,12 +413,12 @@ export default function InstructorQuizzes() {
                                 if (type === 'TRUE_FALSE') {
                                   return (
                                     <Form.Item
-                                      name={[name,'correctAnswer']}
-                                      rules={[{ required:true, message: 'Select correct answer' }]}
+                                      name={[name, 'correctAnswer']}
+                                      rules={[{ required: true, message: t('Select correct answer') }]}
                                     >
                                       <Radio.Group>
-                                        <Radio value="True">True</Radio>
-                                        <Radio value="False">False</Radio>
+                                        <Radio value="True">{t('True')}</Radio>
+                                        <Radio value="False">{t('False')}</Radio>
                                       </Radio.Group>
                                     </Form.Item>
                                   );
@@ -423,7 +427,7 @@ export default function InstructorQuizzes() {
                                 if (type === 'ESSAY') {
                                   return (
                                     <Typography.Text type="secondary">
-                                      Essay questions will be graded manually
+                                      {t('Essay questions will be graded manually')}
                                     </Typography.Text>
                                   );
                                 }
@@ -437,10 +441,10 @@ export default function InstructorQuizzes() {
                                             <Space key={f.key} align="baseline" style={{ width: '100%' }}>
                                               <Form.Item 
                                                 {...f} 
-                                                rules={[{ required:true, message: 'Enter option text' }]}
+                                                rules={[{ required: true, message: t('Enter option text') }]}
                                                 style={{ flex: 1, marginBottom: 8 }}
                                               >
-                                                <Input placeholder={`Option ${f.name + 1}`} />
+                                                <Input placeholder={t('Option', { number: f.name + 1 })} />
                                               </Form.Item>
                                               <MinusCircleOutlined 
                                                 onClick={() => ro(f.name)}
@@ -455,7 +459,7 @@ export default function InstructorQuizzes() {
                                             icon={<PlusOutlined />}
                                             style={{ marginBottom: 16 }}
                                           >
-                                            Add Option
+                                            {t('Add Option')}
                                           </Button>
                                         </>
                                       )}
@@ -473,7 +477,7 @@ export default function InstructorQuizzes() {
                                             {type === 'MULTIPLE_CHOICE_MULTIPLE' ? (
                                               <Form.Item
                                                 name={[name,'correctAnswers']}
-                                                rules={[{ required:true, type:'array', min:1, message: 'Select correct answers' }]}
+                                                rules={[{ required: true, type:'array', min:1, message: t('Select correct answers') }]}
                                               >
                                                 <Checkbox.Group
                                                   options={validOptions.map(o=>({ label:o, value:o }))}
@@ -482,11 +486,11 @@ export default function InstructorQuizzes() {
                                             ) : (
                                               <Form.Item
                                                 name={[name,'correctAnswer']}
-                                                rules={[{ required:true, message: 'Select correct answer' }]}
+                                                rules={[{ required: true, message: t('Select correct answer') }]}
                                               >
                                                 <Select
-                                                  placeholder="Select correct answer"
-                                                  options={validOptions.map(o=>({ label:o, value:o }))}
+                                                  placeholder={t('Select correct answer')}
+                                                  options={validOptions.map(o => ({ label: o, value: o }))}
                                                 />
                                               </Form.Item>
                                             )}
@@ -509,7 +513,7 @@ export default function InstructorQuizzes() {
                           block
                           icon={<PlusOutlined />}
                         >
-                          Add Question
+                          {t('Add Question')}
                         </Button>
                       </Form.Item>
                     </>
@@ -523,31 +527,8 @@ export default function InstructorQuizzes() {
                     loading={submitting}
                     size="large"
                     block
-                    onClick={() => {
-                      // Validate that we have at least one question
-                      const questions = form.getFieldValue('questions') || [];
-                      if (questions.length === 0) {
-                        message.warning('Please add at least one question');
-                        return;
-                      }
-                      
-                      // Check if all questions have valid data
-                      const hasInvalidQuestion = questions.some(q => {
-                        if (!q || !q.text || !q.questionType) return true;
-                        if (q.questionType === 'MULTIPLE_CHOICE_SINGLE' || q.questionType === 'MULTIPLE_CHOICE_MULTIPLE') {
-                          const validOptions = (q.options || []).filter(opt => opt && opt.trim() !== '');
-                          if (validOptions.length < 2) return true;
-                        }
-                        return false;
-                      });
-                      
-                      if (hasInvalidQuestion) {
-                        message.warning('Please complete all question fields and ensure multiple choice questions have at least 2 options');
-                        return;
-                      }
-                    }}
                   >
-                    {editingQuiz ? 'Update Quiz' : 'Create Quiz'}
+                    {editingQuiz ? t('Update Quiz') : t('Create Quiz')}
                   </Button>
                 </Form.Item>
               </>
@@ -572,14 +553,14 @@ export default function InstructorQuizzes() {
         <Card
           title={
             <Space>
-              <span>Existing Quizzes</span>
+              <span>{t('Existing Quizzes')}</span>
               {selectedCourse && (
                 <Button
                   type="primary"
                   icon={<PlusOutlined />}
                   onClick={() => setActiveTab('create')}
                 >
-                  Create New Quiz
+                  {t('Create New Quiz')}
                 </Button>
               )}
             </Space>
@@ -597,10 +578,10 @@ export default function InstructorQuizzes() {
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => 
-                  `${range[0]}-${range[1]} of ${total} quizzes`
+                showTotal: (total, range) =>
+                  t('PaginationSummary', { start: range[0], end: range[1], total })
               }}
-              scroll={{ x: 'max-content' }} // 👈 Add this line for responsiveness
+              scroll={{ x: 'max-content' }}
             />
           ) : (
             <div style={{ textAlign: 'center', padding: 40, color: '#999' }}>
@@ -615,12 +596,12 @@ export default function InstructorQuizzes() {
   const tabItems = [
     {
       key: 'create',
-      label: editingQuiz ? 'Edit Quiz' : 'Create Quiz',
+      label: editingQuiz ? t('Edit Quiz') : t('Create Quiz'),
       children: <CreateQuizTab />
     },
     {
       key: 'existing',
-      label: 'Existing Quizzes',
+      label: t('Existing Quizzes'),
       children: <ExistingQuizzesTab />
     }
   ];
@@ -629,7 +610,7 @@ export default function InstructorQuizzes() {
     <div className="instructor-quizzes">
       <Row style={{ marginBottom: 24 }}>
         <Col span={24}>
-          <Title level={2}>Quizzes</Title>
+          <Title level={2}>{t("Quizzes")}</Title>
         </Col>
       </Row>
 
@@ -657,19 +638,19 @@ export default function InstructorQuizzes() {
             {/* Header Row */}
             <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
               <Typography.Text>
-                <strong>Per Page:</strong> {detailQuiz.pageSize}
+                <strong>{t('Total Weight')}:</strong> {detailQuiz.questions.reduce((sum, q) => sum + (q.weight || 0), 0)}
               </Typography.Text>
               <Typography.Text>
-                <strong>Mode:</strong> {detailQuiz.navigationMode}
+                <strong>{t('Mode')}:</strong> {detailQuiz.navigationMode}
               </Typography.Text>
               <Typography.Text>
-                <strong>Total Weight:</strong>{' '}
-                {detailQuiz.questions.reduce((sum, q) => sum + (q.weight || 0), 0)}
+                <strong>{t('Per Page')}:</strong> {detailQuiz.pageSize}
               </Typography.Text>
             </div>
 
-            {/* Questions Section */}
-            <Divider>Questions ({detailQuiz.questions.length})</Divider>
+            <Divider>
+              {t('Questions')} ({detailQuiz.questions.length})
+            </Divider>
             {detailQuiz.questions.map((q, idx) => (
               <Card
                 key={idx}
@@ -678,28 +659,28 @@ export default function InstructorQuizzes() {
                 bodyStyle={{ padding: '12px 16px', backgroundColor: '#fafafa' }}
               >
                 <Typography.Title level={5}>
-                  Q{idx + 1}. {q.text}
+                  {t('QuestionNumber', { number: idx + 1 })}. {q.text}
                 </Typography.Title>
 
-                {/* meta: type, #options, weight */}
                 <div style={{ display: 'flex', gap: '1rem', marginBottom: 8 }}>
                   <Typography.Text type="secondary">
-                    Type: {q.questionType.replace(/_/g, ' ')}
+                    {t('Weight')}: {q.weight}
                   </Typography.Text>
                   {q.options?.length > 0 && (
                     <Typography.Text type="secondary">
-                      {q.options.length} option{q.options.length > 1 ? 's' : ''}
+                      {t('options')}: {q.options.length}
                     </Typography.Text>
                   )}
                   <Typography.Text type="secondary">
-                    Weight: {q.weight}
+                    {t('Type')}: {t(q.questionType.replace(/_/g, ' '))}
                   </Typography.Text>
                 </div>
 
-                {/* options list */}
                 {q.options?.length > 0 && (
                   <>
-                    <Typography.Text strong>Options:</Typography.Text>
+                    <Typography.Text strong>
+                      {t('Options:')}
+                    </Typography.Text>
                     <ul style={{ margin: '4px 0 8px 16px' }}>
                       {q.options.map((opt, i) => (
                         <li key={i}>{opt}</li>
@@ -708,11 +689,10 @@ export default function InstructorQuizzes() {
                   </>
                 )}
 
-                {/* answer */}
                 {q.questionType !== 'ESSAY' && (
                   <>
                     <Typography.Text strong>
-                      Answer{q.questionType === 'MULTIPLE_CHOICE_MULTIPLE' ? 's' : ''}:
+                      {t('Answer')}:
                     </Typography.Text>{' '}
                     <Typography.Text>{q.correctAnswer}</Typography.Text>
                   </>
@@ -721,7 +701,7 @@ export default function InstructorQuizzes() {
             ))}
           </>
         ) : (
-          <Typography.Text>No details available</Typography.Text>
+          <Typography.Text>{t('No details available')}</Typography.Text>
         )}
       </Drawer>
     </div>

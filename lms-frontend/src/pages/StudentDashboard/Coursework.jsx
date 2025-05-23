@@ -1,10 +1,13 @@
 // src/pages/student/Coursework.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation }    from 'react-router-dom';
+import { useTranslation }              from 'react-i18next';
 import api                              from '../../api/axios';
 import './Coursework.css';
 
 export default function Coursework() {
+  const { t } = useTranslation();
+
   const [coursework, setCoursework] = useState([]);
   const [loading,    setLoading]    = useState(true);
   const [error,      setError]      = useState(null);
@@ -45,15 +48,15 @@ export default function Coursework() {
     }
   }, [refresh, preselectId, navigate, location.pathname]);
 
-  if (loading) return <div className="loading">Loading coursework…</div>;
-  if (error)   return <div className="error">{error}</div>;
+  if (loading) return <div className="loading">{t('Loading coursework…')}</div>;
+  if (error)   return <div className="error">{t(error)}</div>;
 
   return (
     <div className="coursework-container">
-      <h1>Coursework</h1>
+      <h1>{t('Coursework')}</h1>
 
       {coursework.length === 0 ? (
-        <div className="no-coursework">No assignments found.</div>
+        <div className="no-coursework">{t('No assignments found.')}</div>
       ) : (
         <div className="coursework-list">
           {coursework.map(item => (
@@ -68,9 +71,8 @@ export default function Coursework() {
             >
               <div className="coursework-header">
                 <h3>{item.title}</h3>
-                {/* Always show “Submitted” badge (or drop it completely) */}
                 {item.submitted && (
-                  <span className="status submitted">Submitted</span>
+                  <span className="status submitted">{t('Submitted')}</span>
                 )}
               </div>
 
@@ -87,7 +89,7 @@ export default function Coursework() {
                     (new Date(item.dueDate) < new Date() ? 'overdue' : '')
                   }
                 >
-                  Due: {new Date(item.dueDate).toLocaleDateString()}
+                  {t('Due')}: {new Date(item.dueDate).toLocaleDateString()}
                 </p>
               )}
             </div>

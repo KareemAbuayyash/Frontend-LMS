@@ -9,9 +9,11 @@ import {
   FiSearch,
   FiDownload
 } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import './Enrollments.css';
 
 export default function Enrollments() {
+  const { t, i18n } = useTranslation();
   const [enrollments, setEnrollments] = useState([]);
   const [students, setStudents]       = useState([]);
   const [courses, setCourses]         = useState([]);
@@ -51,6 +53,17 @@ export default function Enrollments() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Set responsive table label variables on language change
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--label-enrollment-id', `"${t('Enrollment ID')}"`);
+    root.style.setProperty('--label-student', `"${t('Student')}"`);
+    root.style.setProperty('--label-courses', `"${t('Courses')}"`);
+    root.style.setProperty('--label-date', `"${t('Date')}"`);
+    root.style.setProperty('--label-completed', `"${t('Completed')}"`);
+    root.style.setProperty('--label-actions', `"${t('Actions')}"`);
+  }, [t, i18n.language]);
+
   // Filter by student or course selection
   const displayed = useMemo(() => {
     return enrollments.filter(e => {
@@ -73,7 +86,13 @@ export default function Enrollments() {
 
   // Export enrollments to CSV
   const exportEnrollmentsCSV = () => {
-    const header = ['Enrollment ID','Student','Courses','Date','Completed'];
+    const header = [
+      t('Enrollment ID'),
+      t('Student'),
+      t('Courses'),
+      t('Date'),
+      t('Completed')
+    ];
     const rows = displayed.map(e => {
       const student = students.find(s => s.id === e.studentId);
       const studentName = student?.username || e.studentId;
@@ -114,7 +133,7 @@ export default function Enrollments() {
   };
 
   const handleDelete = async id => {
-    if (!window.confirm('Really delete this enrollment?')) return;
+    if (!window.confirm(t('Really delete this enrollment?'))) return;
     try {
       await api.delete(`/enrollments/${id}`);
       setEnrollments(es => es.filter(e => e.enrollmentId !== id));
@@ -143,7 +162,7 @@ export default function Enrollments() {
           <FiSearch className="icon" />
           <input
             type="text"
-            placeholder="Filter by student…"
+            placeholder={t("Filter by student…")}
             value={studentFilter}
             onChange={e => setStudentFilter(e.target.value)}
           />
@@ -153,15 +172,15 @@ export default function Enrollments() {
           value={courseFilter}
           onChange={e => setCourseFilter(e.target.value)}
         >
-          <option value="">All Courses</option>
+          <option value="">{t("All Courses")}</option>
           {courses.map(c => (
             <option key={c.courseId} value={c.courseId}>{c.courseName}</option>
           ))}
         </select>
         <button className="btn primary" onClick={openModal}>
-          <FiPlus /> New Enrollment
+          <FiPlus /> {t("New Enrollment")}
         </button>
-        <button className="icon-btn" onClick={exportEnrollmentsCSV} title="Export CSV">
+        <button className="icon-btn" onClick={exportEnrollmentsCSV} title={t("Export CSV")}>
           <FiDownload />
         </button>
       </div>
@@ -170,19 +189,19 @@ export default function Enrollments() {
         <table className="enrollments-table">
           <thead>
             <tr>
-              <th>Enrollment ID</th>
-              <th>Student</th>
-              <th>Courses</th>
-              <th>Date</th>
-              <th>Completed</th>
-              <th>Actions</th>
+              <th>{t("Enrollment ID")}</th>
+              <th>{t("Student")}</th>
+              <th>{t("Courses")}</th>
+              <th>{t("Date")}</th>
+              <th>{t("Completed")}</th>
+              <th>{t("Actions")}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr className="empty"><td colSpan={6}>Loading…</td></tr>
+              <tr className="empty"><td colSpan={6}>{t("Loading…")}</td></tr>
             ) : displayed.length === 0 ? (
-              <tr className="empty"><td colSpan={6}>No enrollments found.</td></tr>
+              <tr className="empty"><td colSpan={6}>{t("No enrollments found.")}</td></tr>
             ) : displayed.map(e => {
               const student = students.find(s => s.id === e.studentId);
               const courseNames = e.courseIds
@@ -209,7 +228,7 @@ export default function Enrollments() {
       {modalOpen && (
         <div className="modal-backdrop" onClick={closeModal}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <h3>{editing ? 'Edit Enrollment' : 'New Enrollment'}</h3>
+            <h3>{editing ? t('Edit Enrollment') : t('New Enrollment')}</h3>
             <form onSubmit={handleSave}>
               <div className="grid2">
                 <select
@@ -217,7 +236,7 @@ export default function Enrollments() {
                   value={form.studentId}
                   onChange={e => handleChange('studentId', Number(e.target.value))}
                 >
-                  <option value="">Select student</option>
+                  <option value="">{t("Select student")}</option>
                   {students.map(s => (
                     <option key={s.id} value={s.id}>{s.username}</option>
                   ))}
@@ -250,13 +269,15 @@ export default function Enrollments() {
                     type="checkbox"
                     checked={form.completed}
                     onChange={e => handleChange('completed', e.target.checked)}
-                  /> Completed
+                  /> {t("Completed")}
                 </label>
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="btn" onClick={closeModal}>Cancel</button>
-                <button type="submit" className="btn primary"><FiCheck /> {editing ? 'Update' : 'Create'}</button>
+                <button type="button" className="btn" onClick={closeModal}>{t("Cancel")}</button>
+                <button type="submit" className="btn primary">
+                  <FiCheck /> {editing ? t("Update") : t("Create")}
+                </button>
               </div>
             </form>
           </div>

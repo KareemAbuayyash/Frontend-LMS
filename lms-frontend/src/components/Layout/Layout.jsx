@@ -1,11 +1,10 @@
-// 📦 src/components/Layout/Layout.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FiBell, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import { clearTokens } from '../../utils/auth';
 import api from '../../api/axios';
-import './Layout.css';
 import { useTranslation } from 'react-i18next';
+import './Layout.css';
 
 export default function Layout({ showSidebar = true, SidebarComponent = null, children }) {
   const [collapsed,    setCollapsed]    = useState(false);
@@ -17,12 +16,11 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t, i18n } = useTranslation();
   const username = localStorage.getItem('username') || 'User';
 
   // derive base role path: 'admin' or 'instructor' or 'student'
   const base = pathname.split('/')[1];
-
-  const { t, i18n } = useTranslation();
 
   // update text direction on language change
   useEffect(() => {
@@ -35,15 +33,6 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
     ping();
     const id = setInterval(ping, 10000);
     return () => clearInterval(id);
-  }, []);
-
-  // collapse on mobile
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width:900px)');
-    const onChange = e => setCollapsed(e.matches);
-    mq.addEventListener('change', onChange);
-    onChange(mq);
-    return () => mq.removeEventListener('change', onChange);
   }, []);
 
   // unread count
@@ -115,7 +104,10 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
             </button>
             {showUserMenu && (
               <div className="dropdown-menu user-menu">
-                <button className="dropdown-item" onClick={() => { navigate(`/${base}/settings`); setShowUserMenu(false); }}>
+                <button
+                  className="dropdown-item"
+                  onClick={() => { navigate(`/${base}/settings`); setShowUserMenu(false); }}
+                >
                   <FiSettings /> {t('Settings')}
                 </button>
                 <button className="dropdown-item" onClick={logout}>

@@ -1,3 +1,4 @@
+// src/pages/instructor/InstructorCourseContent.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Card, Form, Input, Button, Upload, List,
@@ -9,22 +10,24 @@ import {
 } from '@ant-design/icons';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
+import { useTranslation } from 'react-i18next';
 import './InstructorCourseContent.css';
 
 export default function InstructorCourseContent() {
+  const { t } = useTranslation();
   const { courseId } = useParams();
-  const [contents, setContents] = useState([]);
+
+  const [contents, setContents]             = useState([]);
   const [loadingContents, setLoadingContents] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [instructorId, setInstructorId] = useState(null);
+  const [uploading, setUploading]           = useState(false);
+  const [instructorId, setInstructorId]     = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
-  // New: for editing
-  const [editVisible, setEditVisible] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  // Edit modal state
+  const [editVisible, setEditVisible]       = useState(false);
+  const [editingItem, setEditingItem]       = useState(null);
   const [editForm] = Form.useForm();
-
-  const [form] = Form.useForm();
+  const [form]     = Form.useForm();
 
   // 1️⃣ Fetch instructor profile
   useEffect(() => {
@@ -33,34 +36,38 @@ export default function InstructorCourseContent() {
         const { data } = await api.get('/instructors/me');
         setInstructorId(data.id);
       } catch {
-        message.error('Failed to load your profile');
+        message.error(t('Failed to load your profile'));
       } finally {
         setLoadingProfile(false);
       }
     })();
-  }, []);
+  }, [t]);
 
   // 2️⃣ Load existing content
   useEffect(() => {
     fetchContents();
-  }, [courseId]);
+  }, [courseId, t]);
 
-  async function fetchContents() {
+  const fetchContents = async () => {
     setLoadingContents(true);
     try {
       const { data } = await api.get(`/content/course/${courseId}`);
       setContents(data);
     } catch {
-      message.error('Could not load course content');
+      message.error(t('Could not load course content'));
     } finally {
       setLoadingContents(false);
     }
-  }
+  };
 
   // 3️⃣ Upload new content
   const onFinish = async values => {
-    if (loadingProfile) return message.warning('Still loading your profile…');
-    if (!instructorId) return message.error('Cannot identify you — please log in again');
+    if (loadingProfile) {
+      return message.warning(t('Still loading your profile…'));
+    }
+    if (!instructorId) {
+      return message.error(t('Cannot identify you — please log in again'));
+    }
 
     const fd = new FormData();
     fd.append('title', values.title);
@@ -74,11 +81,11 @@ export default function InstructorCourseContent() {
       await api.post('/content/upload', fd, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      message.success('Content uploaded!');
+      message.success(t('Content uploaded!'));
       form.resetFields();
       fetchContents();
     } catch (err) {
-      message.error(err.response?.data || 'Upload failed');
+      message.error(err.response?.data || t('Upload failed'));
     } finally {
       setUploading(false);
     }
@@ -93,7 +100,6 @@ export default function InstructorCourseContent() {
       const url = window.URL.createObjectURL(res.data);
       const a = document.createElement('a');
       a.href = url;
-      // parse filename
       let filename = item.title;
       const disp = res.headers['content-disposition'];
       if (disp) {
@@ -106,7 +112,7 @@ export default function InstructorCourseContent() {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      message.error('Download failed');
+      message.error(t('Download failed'));
     }
   };
 
@@ -114,30 +120,30 @@ export default function InstructorCourseContent() {
   const handleDelete = async id => {
     try {
       await api.delete(`/content/${id}`);
-      message.success('Content deleted');
+      message.success(t('Content deleted'));
       fetchContents();
     } catch {
-      message.error('Delete failed');
+      message.error(t('Delete failed'));
     }
   };
 
-  // ——————————————————————————
   // ✏️ Open Edit modal
   const openEdit = item => {
     setEditingItem(item);
     editForm.setFieldsValue({
       title: item.title,
       description: item.description,
-      files: []   // reset file list
+      files: []
     });
     setEditVisible(true);
   };
+
   // ✏️ Submit Edit
   const handleEdit = async values => {
     const fd = new FormData();
     fd.append('title', values.title);
     if (values.description) fd.append('description', values.description);
-    if (values.files && values.files[0]) {
+    if (values.files?.[0]) {
       fd.append('files', values.files[0].originFileObj);
     }
 
@@ -146,11 +152,11 @@ export default function InstructorCourseContent() {
       await api.put(`/content/${editingItem.id}`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      message.success('Content updated');
+      message.success(t('Content updated'));
       setEditVisible(false);
       fetchContents();
     } catch {
-      message.error('Update failed');
+      message.error(t('Update failed'));
     } finally {
       setUploading(false);
     }
@@ -163,39 +169,39 @@ export default function InstructorCourseContent() {
   return (
     <div className="instructor-content">
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Col><h1>Upload Course Content</h1></Col>
+        <Col><h1>{t('Upload Course Content')}</h1></Col>
       </Row>
 
       {/* Upload form */}
-      <Card title="New Content">
+      <Card title={t('New Content')}>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             name="title"
-            label="Title"
-            rules={[{ required: true, message: 'Please enter a title' }]}
+            label={t('Title')}
+            rules={[{ required: true, message: t('Please enter a title') }]}
           >
-            <Input placeholder="e.g. Week 3 Slides" />
+            <Input placeholder={t('e.g. Week 3 Slides')} />
           </Form.Item>
 
-          <Form.Item name="description" label="Description">
-            <Input.TextArea rows={3} placeholder="Optional description…" />
+          <Form.Item name="description" label={t('Description')}>
+            <Input.TextArea rows={3} placeholder={t('Optional description…')} />
           </Form.Item>
 
           <Form.Item
             name="files"
-            label="File"
+            label={t('File')}
             valuePropName="fileList"
             getValueFromEvent={({ fileList }) => fileList}
-            rules={[{ required: true, message: 'Please select a file' }]}
+            rules={[{ required: true, message: t('Please select a file') }]}
           >
             <Upload beforeUpload={() => false} maxCount={1}>
-              <Button icon={<UploadOutlined />}>Select File</Button>
+              <Button icon={<UploadOutlined />}>{t('Select File')}</Button>
             </Upload>
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={uploading} block>
-              Upload
+              {t('Upload')}
             </Button>
           </Form.Item>
         </Form>
@@ -203,7 +209,7 @@ export default function InstructorCourseContent() {
 
       {/* Existing list */}
       <Card
-        title="Existing Content"
+        title={t('Existing Content')}
         style={{ marginTop: 24 }}
         loading={loadingContents}
       >
@@ -218,7 +224,7 @@ export default function InstructorCourseContent() {
                   icon={<DownloadOutlined />}
                   onClick={() => handleDownload(item)}
                 >
-                  Download
+                  {t('Download')}
                 </Button>,
                 <Button
                   key="edit"
@@ -226,21 +232,21 @@ export default function InstructorCourseContent() {
                   icon={<EditOutlined />}
                   onClick={() => openEdit(item)}
                 >
-                  Edit
+                  {t('Edit')}
                 </Button>,
                 <Popconfirm
                   key="delete"
-                  title="Delete this content?"
+                  title={t('Delete this content?')}
                   onConfirm={() => handleDelete(item.id)}
-                  okText="Yes"
-                  cancelText="No"
+                  okText={t('Yes')}
+                  cancelText={t('No')}
                 >
                   <Button type="link" danger icon={<DeleteOutlined />}>
-                    Delete
+                    {t('Delete')}
                   </Button>
                 </Popconfirm>,
                 <Link key="view" to={`/instructor/courses/${courseId}`}>
-                  View in Course
+                  {t('View in Course')}
                 </Link>
               ]}
             >
@@ -255,10 +261,10 @@ export default function InstructorCourseContent() {
 
       {/* Edit Modal */}
       <Modal
-        title="Edit Content"
+        title={t('Edit Content')}
         open={editVisible}
         onCancel={() => setEditVisible(false)}
-        okText="Save"
+        okText={t('Save')}
         onOk={() => editForm.submit()}
         confirmLoading={uploading}
       >
@@ -269,24 +275,24 @@ export default function InstructorCourseContent() {
         >
           <Form.Item
             name="title"
-            label="Title"
-            rules={[{ required: true }]}
+            label={t('Title')}
+            rules={[{ required: true, message: t('Please enter a title') }]}
           >
             <Input />
           </Form.Item>
 
-          <Form.Item name="description" label="Description">
+          <Form.Item name="description" label={t('Description')}>
             <Input.TextArea rows={3} />
           </Form.Item>
 
           <Form.Item
             name="files"
-            label="Replace File"
+            label={t('Replace File')}
             valuePropName="fileList"
             getValueFromEvent={({ fileList }) => fileList}
           >
             <Upload beforeUpload={() => false} maxCount={1}>
-              <Button icon={<UploadOutlined />}>Choose New File</Button>
+              <Button icon={<UploadOutlined />}>{t('Choose New File')}</Button>
             </Upload>
           </Form.Item>
         </Form>

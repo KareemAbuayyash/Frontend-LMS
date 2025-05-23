@@ -10,9 +10,22 @@ import {
   FiXCircle,
   FiDownload
 } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import './Users.css';
 
 export default function Users() {
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--label-username', `"${t('Username')}"`);
+    root.style.setProperty('--label-email', `"${t('Email')}"`);
+    root.style.setProperty('--label-role', `"${t('Role')}"`);
+    root.style.setProperty('--label-profile', `"${t('Profile')}"`);
+    root.style.setProperty('--label-password', `"${t('Password')}"`);
+    root.style.setProperty('--label-actions', `"${t('Actions')}"`);
+  }, [t, i18n.language]);
+
   /* ────────────────── state ────────────────── */
   const [users, setUsers]           = useState([]);
   const [loading, setLoading]       = useState(true);
@@ -181,21 +194,21 @@ export default function Users() {
           <FiSearch className="icon" />
           <input
             type="text"
-            placeholder="Search users…"
+            placeholder={t("Search users…")}
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
         </div>
         <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
-          <option value="ALL">All Roles</option>
-          <option value="ADMIN">ADMIN</option>
-          <option value="INSTRUCTOR">INSTRUCTOR</option>
-          <option value="STUDENT">STUDENT</option>
+          <option value="ALL">{t("All Roles")}</option>
+          <option value="ADMIN">{t("ADMIN")}</option>
+          <option value="INSTRUCTOR">{t("INSTRUCTOR")}</option>
+          <option value="STUDENT">{t("STUDENT")}</option>
         </select>
         <button className="btn primary" onClick={openModal}>
-          <FiPlus /> Add User
+          <FiPlus /> {t("Add User")}
         </button>
-        <button className="icon-btn" onClick={exportUsersCSV} title="Export CSV">
+        <button className="icon-btn" onClick={exportUsersCSV} title={t("Export CSV")}>
           <FiDownload />
         </button>
       </div>
@@ -206,27 +219,27 @@ export default function Users() {
           <thead>
             <tr>
               <th onClick={() => changeSort('username')}>
-                Username{sortField==='username'?(sortDir==='asc'?' ▲':' ▼'):''}
+                {t("Username")}{sortField==='username'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th onClick={() => changeSort('email')}>
-                Email{sortField==='email'?(sortDir==='asc'?' ▲':' ▼'):''}
+                {t("Email")}{sortField==='email'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th onClick={() => changeSort('role')}>
-                Role{sortField==='role'?(sortDir==='asc'?' ▲':' ▼'):''}
+                {t("Role")}{sortField==='role'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
               <th onClick={() => changeSort('profile')}>
-                Profile{sortField==='profile'?(sortDir==='asc'?' ▲':' ▼'):''}
+                {t("Profile")}{sortField==='profile'?(sortDir==='asc'?' ▲':' ▼'):''}
               </th>
-              <th>Password</th>
-              <th>Actions</th>
+              <th>{t("Password")}</th>
+              <th>{t("Actions")}</th>
             </tr>
           </thead>
 
           <tbody>
             {loading ? (
-              <tr className="empty"><td colSpan={6}>Loading…</td></tr>
+              <tr className="empty"><td colSpan={6}>{t("Loading…")}</td></tr>
             ) : displayed.length === 0 ? (
-              <tr className="empty"><td colSpan={6}>No users found.</td></tr>
+              <tr className="empty"><td colSpan={6}>{t("No users found.")}</td></tr>
             ) : displayed.map(u => (
               <tr key={u.userId}>
                 {editingId === u.userId ? (
@@ -264,27 +277,27 @@ export default function Users() {
       {modalOpen && (
         <div className="modal-backdrop" onClick={closeModal}>
           <div className="modal" onClick={e=>e.stopPropagation()}>
-            <h3>New User</h3>
+            <h3>{t("New User")}</h3>
             <form onSubmit={handleAdd}>
               <div className="grid2">
-                <input required placeholder="Username" value={newUser.username} onChange={e=>setNewUser(n=>({...n,username:e.target.value}))} />
-                <input required type="email" placeholder="Email" value={newUser.email} onChange={e=>setNewUser(n=>({...n,email:e.target.value}))} />
+                <input required placeholder={t("Username")} value={newUser.username} onChange={e=>setNewUser(n=>({...n,username:e.target.value}))} />
+                <input required type="email" placeholder={t("Email")} value={newUser.email} onChange={e=>setNewUser(n=>({...n,email:e.target.value}))} />
               </div>
               <div className="grid2">
-                <input required placeholder="Name" value={newUser.name} onChange={e=>setNewUser(n=>({...n,name:e.target.value}))} />
-                <input required type="password" placeholder="Password" value={newUser.password} onChange={e=>setNewUser(n=>({...n,password:e.target.value}))} />
+                <input required placeholder={t("Name")} value={newUser.name} onChange={e=>setNewUser(n=>({...n,name:e.target.value}))} />
+                <input required type="password" placeholder={t("Password")} value={newUser.password} onChange={e=>setNewUser(n=>({...n,password:e.target.value}))} />
               </div>
               <div className="grid2">
                 <select required value={newUser.role} onChange={e=>setNewUser(n=>({...n,role:e.target.value}))}>
-                  <option value="ADMIN">ADMIN</option>
-                  <option value="INSTRUCTOR">INSTRUCTOR</option>
-                  <option value="STUDENT">STUDENT</option>
+                  <option value="ADMIN">{t("ADMIN")}</option>
+                  <option value="INSTRUCTOR">{t("INSTRUCTOR")}</option>
+                  <option value="STUDENT">{t("STUDENT")}</option>
                 </select>
-                <input placeholder="Profile URL" value={newUser.profile} onChange={e=>setNewUser(n=>({...n,profile:e.target.value}))} />
+                <input placeholder={t("Profile URL")} value={newUser.profile} onChange={e=>setNewUser(n=>({...n,profile:e.target.value}))} />
               </div>
               <div className="modal-actions">
-                <button type="button" className="btn" onClick={closeModal}>Cancel</button>
-                <button type="submit" className="btn primary">Create</button>
+                <button type="button" className="btn" onClick={closeModal}>{t("Cancel")}</button>
+                <button type="submit" className="btn primary">{t("Create")}</button>
               </div>
             </form>
           </div>

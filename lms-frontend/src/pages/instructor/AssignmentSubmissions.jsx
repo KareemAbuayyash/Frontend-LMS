@@ -24,31 +24,34 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api from '../../api/axios';
+import { useTranslation } from 'react-i18next';
 import './InstructorAssignments.css';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
 
 export default function AssignmentSubmissions() {
-  const [courses, setCourses] = useState([]);
-  const [assignments, setAssignments] = useState([]);
-  const [subs, setSubs] = useState([]);
-  const [meta, setMeta] = useState(null);
+  const { t } = useTranslation();
+
+  const [courses, setCourses]               = useState([]);
+  const [assignments, setAssignments]      = useState([]);
+  const [subs, setSubs]                     = useState([]);
+  const [meta, setMeta]                     = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
-  const [loadingCourses, setLoadingCourses] = useState(true);
-  const [loadingAssignments, setLoadingAssignments] = useState(false);
-  const [loadingSubs, setLoadingSubs] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [grades, setGrades] = useState({});
+  const [loadingCourses, setLoadingCourses]           = useState(true);
+  const [loadingAssignments, setLoadingAssignments]   = useState(false);
+  const [loadingSubs, setLoadingSubs]                 = useState(false);
+  const [editingId, setEditingId]                     = useState(null);
+  const [grades, setGrades]                           = useState({});
 
   // Load courses
   useEffect(() => {
     api.get('/instructors/me/courses')
       .then(r => setCourses(r.data))
-      .catch(() => message.error('Failed to load courses'))
+      .catch(() => message.error(t('Failed to load courses')))
       .finally(() => setLoadingCourses(false));
-  }, []);
+  }, [t]);
 
   // Load assignments when course changes
   useEffect(() => {
@@ -56,9 +59,9 @@ export default function AssignmentSubmissions() {
     setLoadingAssignments(true);
     api.get(`/assignments/course/${selectedCourse}`)
       .then(r => setAssignments(r.data))
-      .catch(() => message.error('Failed to load assignments'))
+      .catch(() => message.error(t('Failed to load assignments')))
       .finally(() => setLoadingAssignments(false));
-  }, [selectedCourse]);
+  }, [selectedCourse, t]);
 
   // Load assignment details + submissions
   useEffect(() => {
@@ -77,41 +80,37 @@ export default function AssignmentSubmissions() {
         setSubs(sRes.data);
         setGrades(Object.fromEntries(sRes.data.map(s => [s.id, s.score])));
       })
-      .catch(() => message.error('Failed to load submissions'))
+      .catch(() => message.error(t('Failed to load submissions')))
       .finally(() => setLoadingSubs(false));
-  }, [selectedAssignment]);
+  }, [selectedAssignment, t]);
 
   // Save grade
   const saveGrade = id => {
     api.put(`/submissions/assignments/${id}/grade`, { score: grades[id] })
       .then(() => {
-        message.success('Grade saved');
+        message.success(t('Grade saved'));
         setSubs(ss => ss.map(x => x.id === id ? { ...x, score: grades[id] } : x));
         setEditingId(null);
       })
-      .catch(() => message.error('Save failed'));
+      .catch(() => message.error(t('Save failed')));
   };
 
-  // Fetch file as blob
+  // Helpers for viewing/downloading blobs
   const fetchFileBlob = async fileUrl => {
     const base = api.defaults.baseURL.replace(/\/api\/?$/, '');
     const url = fileUrl.startsWith('http') ? fileUrl : `${base}${fileUrl}`;
     const resp = await api.get(url, { responseType: 'blob', skipToast: true });
     return resp.data;
   };
-
-  // View in new tab
   const onViewFile = async fileUrl => {
     try {
       const blob = await fetchFileBlob(fileUrl);
       const blobUrl = URL.createObjectURL(blob);
       window.open(blobUrl, '_blank');
     } catch {
-      message.error('Unable to load file');
+      message.error(t('Unable to load file'));
     }
   };
-
-  // Download file
   const onDownloadFile = async fileUrl => {
     try {
       const blob = await fetchFileBlob(fileUrl);
@@ -123,33 +122,39 @@ export default function AssignmentSubmissions() {
       a.click();
       a.remove();
     } catch {
-      message.error('Unable to download file');
+      message.error(t('Unable to download file'));
     }
   };
 
   const columns = [
-    { title: 'Student', dataIndex: 'studentName', key: 'studentName' },
+    { title: t('Student'), dataIndex: 'studentName', key: 'studentName' },
     {
-      title: 'Submitted',
+      title: t('Submitted'),
       dataIndex: 'submissionDate',
       key: 'submissionDate',
       render: d => dayjs(d).format('MMM D, YYYY HH:mm')
     },
-    { title: 'Answer', dataIndex: 'submissionContent', key: 'submissionContent' },
+    { title: t('Answer'), dataIndex: 'submissionContent', key: 'submissionContent' },
     {
-      title: 'File',
+      title: t('File'),
       dataIndex: 'fileUrl',
       key: 'fileUrl',
       render: url =>
         url ? (
           <Space size="small">
-            <Button icon={<EyeOutlined />} type="link" onClick={() => onViewFile(url)} />
-            <Button icon={<DownloadOutlined />} type="link" onClick={() => onDownloadFile(url)} />
+            <Button icon={<EyeOutlined />} type="link" onClick={() => onViewFile(url)}>
+              {t('View')}
+            </Button>
+            <Button icon={<DownloadOutlined />} type="link" onClick={() => onDownloadFile(url)}>
+              {t('Download')}
+            </Button>
           </Space>
-        ) : <Text type="secondary">—</Text>
+        ) : (
+          <Text type="secondary">—</Text>
+        )
     },
     {
-      title: 'Score',
+      title: t('Score'),
       key: 'score',
       render: (_, row) => {
         const isEdit = editingId === row.id;
@@ -186,7 +191,7 @@ export default function AssignmentSubmissions() {
     <div className="instructor-assignments">
       <Row gutter={[16, 16]}>
         <Col xs={24}>
-          <Title level={2}>Grade Assignment Submissions</Title>
+          <Title level={2}>{t('Grade Assignment Submissions')}</Title>
         </Col>
 
         <Col xs={24}>
@@ -194,9 +199,9 @@ export default function AssignmentSubmissions() {
             <Form layout="vertical">
               <Row gutter={16}>
                 <Col xs={24} sm={12} md={8} lg={6}>
-                  <Form.Item label="Course">
+                  <Form.Item label={t('Course')}>
                     <Select
-                      placeholder="Select course"
+                      placeholder={t('Select course')}
                       loading={loadingCourses}
                       value={selectedCourse}
                       onChange={setSelectedCourse}
@@ -211,9 +216,9 @@ export default function AssignmentSubmissions() {
                 </Col>
 
                 <Col xs={24} sm={12} md={10} lg={8}>
-                  <Form.Item label="Assignment">
+                  <Form.Item label={t('Assignment')}>
                     <Select
-                      placeholder="Select assignment"
+                      placeholder={t('Select assignment')}
                       loading={loadingAssignments}
                       value={selectedAssignment}
                       onChange={setSelectedAssignment}
@@ -221,7 +226,7 @@ export default function AssignmentSubmissions() {
                     >
                       {assignments.map(a => (
                         <Option key={a.id} value={a.id}>
-                          {a.title} (due {dayjs(a.dueDate).format('MMM D')})
+                          {a.title} ({dayjs(a.dueDate).format('MMM D')})
                         </Option>
                       ))}
                     </Select>
@@ -234,17 +239,27 @@ export default function AssignmentSubmissions() {
 
         {meta && (
           <Col xs={24} md={12}>
-            <Card className="table-card" title="Assignment Details">
+            <Card className="table-card" title={t('Assignment Details')}>
               <Descriptions bordered column={1} size="small">
-                <Descriptions.Item label="Title">{meta.title}</Descriptions.Item>
-                <Descriptions.Item label="Description">{meta.description || '—'}</Descriptions.Item>
-                <Descriptions.Item label="Due Date">{dayjs(meta.dueDate).format('MMM D, YYYY HH:mm')}</Descriptions.Item>
-                <Descriptions.Item label="Total Points">{meta.totalPoints}</Descriptions.Item>
+                <Descriptions.Item label={t('Title')}>{meta.title}</Descriptions.Item>
+                <Descriptions.Item label={t('Description')}>
+                  {meta.description || '—'}
+                </Descriptions.Item>
+                <Descriptions.Item label={t('Due Date')}>
+                  {dayjs(meta.dueDate).format('MMM D, YYYY HH:mm')}
+                </Descriptions.Item>
+                <Descriptions.Item label={t('Total Points')}>
+                  {meta.totalPoints}
+                </Descriptions.Item>
                 {meta.attachmentUrl && (
-                  <Descriptions.Item label="Attachment">
+                  <Descriptions.Item label={t('Attachment')}>
                     <Space>
-                      <Button icon={<EyeOutlined />} onClick={() => onViewFile(meta.attachmentUrl)}>View</Button>
-                      <Button icon={<DownloadOutlined />} onClick={() => onDownloadFile(meta.attachmentUrl)}>Download</Button>
+                      <Button onClick={() => onViewFile(meta.attachmentUrl)}>
+                        {t('View')}
+                      </Button>
+                      <Button onClick={() => onDownloadFile(meta.attachmentUrl)}>
+                        {t('Download')}
+                      </Button>
                     </Space>
                   </Descriptions.Item>
                 )}
@@ -274,4 +289,3 @@ export default function AssignmentSubmissions() {
     </div>
   );
 }
-

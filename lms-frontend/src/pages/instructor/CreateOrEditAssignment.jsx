@@ -13,12 +13,14 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api from '../../api/axios';
+import { useTranslation } from 'react-i18next';
 import './InstructorAssignments.css';
 
 const { Option } = Select;
 const { Title, Paragraph, Text } = Typography;
 
 export default function CreateOrEditAssignment() {
+  const { t } = useTranslation();
   const [courses, setCourses]               = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [assignments, setAssignments]       = useState([]);
@@ -33,18 +35,18 @@ export default function CreateOrEditAssignment() {
   const [activeAssignment, setActiveAssignment] = useState(null);
   const [loadingDetail, setLoadingDetail]   = useState(false);
 
-  // 1️⃣ Load courses
+  // Load courses
   useEffect(() => {
     api.get('/instructors/me/courses')
       .then(r => setCourses(r.data))
-      .catch(() => message.error('Failed to load courses'))
+      .catch(() => message.error(t('Failed to load courses')))
       .finally(() => setLoadingCourses(false));
-  }, []);
+  }, [t]);
 
-  // 2️⃣ Reload assignments when course changes
+  // Reload assignments when course changes
   useEffect(() => {
     if (selectedCourse) reloadAssignments();
-  }, [selectedCourse]);
+  }, [selectedCourse, t]);
 
   const reloadAssignments = async () => {
     setLoadingAssignments(true);
@@ -55,16 +57,16 @@ export default function CreateOrEditAssignment() {
         dueDate: dayjs(a.dueDate).format('MMM D, YYYY HH:mm')
       })));
     } catch {
-      message.error('Failed to load assignments');
+      message.error(t('Failed to load assignments'));
     } finally {
       setLoadingAssignments(false);
     }
   };
 
-  // 3️⃣ Create or update
+  // Create or update
   const onFinish = async values => {
     if (!selectedCourse) {
-      return message.warning('Please select a course first');
+      return message.warning(t('Please select a course first'));
     }
     setSubmitting(true);
 
@@ -86,27 +88,27 @@ export default function CreateOrEditAssignment() {
           fd,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
-        message.success('Assignment updated');
+        message.success(t('Assignment updated'));
       } else {
         await api.post(
           `/assignments/course/${selectedCourse}`,
           fd,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
-        message.success('Assignment created');
+        message.success(t('Assignment created'));
       }
 
       form.resetFields();
       setEditing(null);
       await reloadAssignments();
     } catch (e) {
-      message.error(e.response?.data?.message || 'Save failed');
+      message.error(e.response?.data?.message || t('Save failed'));
     } finally {
       setSubmitting(false);
     }
   };
 
-  // 4️⃣ Edit
+  // Edit
   const onEdit = rec => {
     setEditing(rec);
     form.setFieldsValue({
@@ -118,24 +120,24 @@ export default function CreateOrEditAssignment() {
     });
   };
 
-  // 5️⃣ Delete
+  // Delete
   const onDelete = async id => {
     try {
       await api.delete(`/assignments/${id}`);
-      message.success('Assignment deleted');
+      message.success(t('Assignment deleted'));
       await reloadAssignments();
     } catch {
-      message.error('Delete failed');
+      message.error(t('Delete failed'));
     }
   };
 
-  // 6️⃣ Cancel edit
+  // Cancel edit
   const onCancelEdit = () => {
     setEditing(null);
     form.resetFields();
   };
 
-  // 7️⃣ View details drawer
+  // View details drawer
   const onView = async id => {
     setDrawerVisible(true);
     setLoadingDetail(true);
@@ -143,13 +145,13 @@ export default function CreateOrEditAssignment() {
       const { data } = await api.get(`/assignments/${id}`);
       setActiveAssignment(data);
     } catch {
-      message.error('Failed to load details');
+      message.error(t('Failed to load details'));
     } finally {
       setLoadingDetail(false);
     }
   };
 
-  // 8️⃣ File helpers
+  // File helpers
   const fetchFileBlob = async fileUrl => {
     const base = api.defaults.baseURL.replace(/\/api\/?$/, '');
     const url = fileUrl.startsWith('http') ? fileUrl : `${base}${fileUrl}`;
@@ -162,7 +164,7 @@ export default function CreateOrEditAssignment() {
       const blobUrl = URL.createObjectURL(blob);
       window.open(blobUrl, '_blank');
     } catch {
-      message.error('Unable to load file');
+      message.error(t('Unable to load file'));
     }
   };
   const onDownloadFile = async url => {
@@ -176,44 +178,29 @@ export default function CreateOrEditAssignment() {
       a.click();
       a.remove();
     } catch {
-      message.error('Unable to download file');
+      message.error(t('Unable to download file'));
     }
   };
 
-  // Table columns (no Download button here)
+  // Table columns
   const columns = [
-    { title: 'Title', dataIndex: 'title', key: 'title' },
-    { title: 'Due',   dataIndex: 'dueDate', key: 'dueDate' },
-    { title: 'Points',dataIndex: 'totalPoints', key: 'totalPoints' },
+    { title: t('Title'), dataIndex: 'title', key: 'title' },
+    { title: t('Due'),   dataIndex: 'dueDate', key: 'dueDate' },
+    { title: t('Points'),dataIndex: 'totalPoints', key: 'totalPoints' },
     {
-      title: 'Actions',
+      title: t('Actions'),
       key: 'actions',
       render: (_, rec) => (
         <Space size="middle">
-          {/* View details drawer */}
-          <Button
-            icon={<EyeOutlined />}
-            type="link"
-            onClick={() => onView(rec.id)}
-          />
-          {/* Edit */}
-          <Button
-            icon={<EditOutlined />}
-            type="link"
-            onClick={() => onEdit(rec)}
-          />
-          {/* Delete */}
+          <Button icon={<EyeOutlined />} type="link" onClick={() => onView(rec.id)} />
+          <Button icon={<EditOutlined />} type="link" onClick={() => onEdit(rec)} />
           <Popconfirm
-            title="Delete this assignment?"
+            title={t('Delete this assignment?')}
             onConfirm={() => onDelete(rec.id)}
-            okText="Yes"
-            cancelText="No"
+            okText={t('Yes')}
+            cancelText={t('No')}
           >
-            <Button
-              icon={<DeleteOutlined />}
-              type="link"
-              danger
-            />
+            <Button icon={<DeleteOutlined />} type="link" danger />
           </Popconfirm>
         </Space>
       )
@@ -226,7 +213,7 @@ export default function CreateOrEditAssignment() {
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={24}>
           <Title level={2}>
-            {editing ? 'Edit Assignment' : 'Create Assignment'}
+            {editing ? t('Edit Assignment') : t('Create Assignment')}
           </Title>
         </Col>
       </Row>
@@ -236,10 +223,10 @@ export default function CreateOrEditAssignment() {
         <Col xs={24} lg={10}>
           <Card bordered className="form-card">
             <Form layout="inline" style={{ marginBottom: 16 }}>
-              <Form.Item label="Course">
+              <Form.Item label={t('Course')}>
                 <Select
                   style={{ width: 240 }}
-                  placeholder="Select course"
+                  placeholder={t('Select course')}
                   loading={loadingCourses}
                   value={selectedCourse}
                   onChange={cid => {
@@ -257,11 +244,8 @@ export default function CreateOrEditAssignment() {
               </Form.Item>
               {editing && (
                 <Form.Item>
-                  <Button
-                    icon={<ReloadOutlined />}
-                    onClick={onCancelEdit}
-                  >
-                    Cancel
+                  <Button icon={<ReloadOutlined />} onClick={onCancelEdit}>
+                    {t('Cancel')}
                   </Button>
                 </Form.Item>
               )}
@@ -278,19 +262,19 @@ export default function CreateOrEditAssignment() {
                 >
                   <Form.Item
                     name="title"
-                    label="Title"
+                    label={t('Title')}
                     rules={[{ required: true }]}
                   >
                     <Input
                       prefix={<FileAddOutlined />}
-                      placeholder="Assignment title"
+                      placeholder={t('Assignment title')}
                     />
                   </Form.Item>
 
-                  <Form.Item name="description" label="Description">
+                  <Form.Item name="description" label={t('Description')}>
                     <Input.TextArea
                       rows={3}
-                      placeholder="Optional description"
+                      placeholder={t('Optional description')}
                     />
                   </Form.Item>
 
@@ -298,7 +282,7 @@ export default function CreateOrEditAssignment() {
                     <Col span={12}>
                       <Form.Item
                         name="dueDate"
-                        label="Due Date"
+                        label={t('Due Date')}
                         rules={[{ required: true }]}
                       >
                         <DatePicker
@@ -310,7 +294,7 @@ export default function CreateOrEditAssignment() {
                     <Col span={12}>
                       <Form.Item
                         name="totalPoints"
-                        label="Total Points"
+                        label={t('Total Points')}
                         rules={[{ required: true, type: 'number', min: 1 }]}
                       >
                         <InputNumber
@@ -323,16 +307,13 @@ export default function CreateOrEditAssignment() {
 
                   <Form.Item
                     name="file"
-                    label={editing ? 'Replace Attachment' : 'Attachment'}
+                    label={editing ? t('Replace Attachment') : t('Attachment')}
                     valuePropName="file"
                   >
-                    <Upload
-                      maxCount={1}
-                      beforeUpload={() => false}
-                    >
+                    <Upload maxCount={1} beforeUpload={() => false}>
                       <Button>
                         <FileAddOutlined />{' '}
-                        {editing ? 'Replace file' : 'Select file'}
+                        {editing ? t('Replace file') : t('Select file')}
                       </Button>
                     </Upload>
                   </Form.Item>
@@ -345,8 +326,8 @@ export default function CreateOrEditAssignment() {
                       block
                     >
                       {editing
-                        ? 'Save Changes'
-                        : 'Create Assignment'}
+                        ? t('Save Changes')
+                        : t('Create Assignment')}
                     </Button>
                   </Form.Item>
                 </Form>
@@ -360,7 +341,7 @@ export default function CreateOrEditAssignment() {
           <Card
             bordered
             className="table-card"
-            title="Existing Assignments"
+            title={t('Existing Assignments')}
           >
             <Table
               rowKey="id"
@@ -374,9 +355,9 @@ export default function CreateOrEditAssignment() {
         </Col>
       </Row>
 
-      {/* Detail Drawer (with both View & Download) */}
+      {/* Detail Drawer */}
       <Drawer
-        title={activeAssignment?.title || 'Loading…'}
+        title={activeAssignment?.title || t('Loading…')}
         width={360}
         onClose={() => setDrawerVisible(false)}
         open={drawerVisible}
@@ -386,15 +367,15 @@ export default function CreateOrEditAssignment() {
         ) : activeAssignment ? (
           <>
             <Paragraph>
-              <Text strong>Description:</Text><br/>
+              <Text strong>{t('Description:')}</Text><br/>
               {activeAssignment.description || '—'}
             </Paragraph>
             <Paragraph>
-              <Text strong>Due Date:</Text><br/>
+              <Text strong>{t('Due Date:')}</Text><br/>
               {dayjs(activeAssignment.dueDate).format('MMM D, YYYY HH:mm')}
             </Paragraph>
             <Paragraph>
-              <Text strong>Total Points:</Text><br/>
+              <Text strong>{t('Total Points:')}</Text><br/>
               {activeAssignment.totalPoints}
             </Paragraph>
             {activeAssignment.attachmentUrl && (
@@ -403,19 +384,19 @@ export default function CreateOrEditAssignment() {
                   icon={<EyeOutlined />}
                   onClick={() => onViewFile(activeAssignment.attachmentUrl)}
                 >
-                  View File
+                  {t('View File')}
                 </Button>
                 <Button
                   icon={<DownloadOutlined />}
                   onClick={() => onDownloadFile(activeAssignment.attachmentUrl)}
                 >
-                  Download File
+                  {t('Download File')}
                 </Button>
               </Space>
             )}
           </>
         ) : (
-          <Text>No details available</Text>
+          <Text>{t('No details available')}</Text>
         )}
       </Drawer>
     </>

@@ -10,9 +10,11 @@ import {
   FiXCircle,
   FiDownload
 } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import styles from './Courses.module.css';
 
 export default function Courses() {
+  const { t, i18n } = useTranslation();
   const [courses, setCourses]               = useState([]);
   const [instructors, setInstructors]       = useState([]);
   const [enrollmentCounts, setEnrollmentCounts] = useState({});
@@ -256,6 +258,18 @@ export default function Courses() {
   }
 };
 
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--label-name', `"${t('Name')}"`);
+    root.style.setProperty('--label-description', `"${t('Description')}"`);
+    root.style.setProperty('--label-duration', `"${t('Duration')}"`);
+    root.style.setProperty('--label-instructor', `"${t('Instructor')}"`);
+    root.style.setProperty('--label-price', `"${t('Price')}"`);
+    root.style.setProperty('--label-enrolled', `"${t('Enrolled')}"`);
+    root.style.setProperty('--label-start', `"${t('Start')}"`);
+    root.style.setProperty('--label-end', `"${t('End')}"`);
+    root.style.setProperty('--label-actions', `"${t('Actions')}"`);
+  }, [t, i18n.language]);
 
   return (
     <div className={styles.coursesPage}>
@@ -264,7 +278,7 @@ export default function Courses() {
           <FiSearch className={styles.icon}/>
           <input
             type="text"
-            placeholder="Search courses…"
+            placeholder={t("Search courses…")}
             value={search}
             onChange={e=>setSearch(e.target.value)}
           />
@@ -273,7 +287,7 @@ export default function Courses() {
           value={instructorFilter}
           onChange={e=>setInstructorFilter(e.target.value)}
         >
-          <option value="ALL">All Instructors</option>
+          <option value="ALL">{t("All Instructors")}</option>
           {instructors.map(ins=>(
             <option key={ins.id} value={ins.id.toString()}>
               {ins.username}
@@ -281,9 +295,9 @@ export default function Courses() {
           ))}
         </select>
         <button className={`${styles.btn} ${styles.primary}`} onClick={openModal}>
-          <FiPlus/> Add Course
+          <FiPlus/> {t("Add Course")}
         </button>
-        <button className={styles.iconBtn} onClick={exportCoursesCSV} title="Export CSV">
+        <button className={styles.iconBtn} onClick={exportCoursesCSV} title={t("Export CSV")}>
           <FiDownload/>
         </button>
       </div>
@@ -293,31 +307,31 @@ export default function Courses() {
           <thead>
             <tr>
               <th onClick={()=>changeSort('courseName')}>
-                Name {sortField==='courseName' ? (sortDir==='asc' ? '▲' : '▼') : ''}
+                {t("Name")} {sortField==='courseName' ? (sortDir==='asc' ? '▲' : '▼') : ''}
               </th>
-              <th>Description</th>
-              <th>Duration</th>
+              <th>{t("Description")}</th>
+              <th>{t("Duration")}</th>
               <th onClick={()=>changeSort('instructor')}>
-                Instructor {sortField==='instructor' ? (sortDir==='asc' ? '▲' : '▼') : ''}
+                {t("Instructor")} {sortField==='instructor' ? (sortDir==='asc' ? '▲' : '▼') : ''}
               </th>
               <th onClick={()=>changeSort('price')}>
-                Price {sortField==='price' ? (sortDir==='asc' ? '▲' : '▼') : ''}
+                {t("Price")} {sortField==='price' ? (sortDir==='asc' ? '▲' : '▼') : ''}
               </th>
               <th style={{textAlign:'center'}} onClick={()=>changeSort('enrollmentCount')}>
-                Enrolled {sortField==='enrollmentCount' ? (sortDir==='asc' ? '▲' : '▼') : ''}
+                {t("Enrolled")} {sortField==='enrollmentCount' ? (sortDir==='asc' ? '▲' : '▼') : ''}
               </th>
               <th onClick={()=>changeSort('start')}>
-                Start {sortField==='start' ? (sortDir==='asc' ? '▲' : '▼') : ''}
+                {t("Start")} {sortField==='start' ? (sortDir==='asc' ? '▲' : '▼') : ''}
               </th>
-              <th>End</th>
-              <th>Actions</th>
+              <th>{t("End")}</th>
+              <th>{t("Actions")}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr className={styles.empty}><td colSpan={9}>Loading…</td></tr>
+              <tr className={styles.empty}><td colSpan={9}>{t("Loading…")}</td></tr>
             ) : displayed.length === 0 ? (
-              <tr className={styles.empty}><td colSpan={9}>No courses found.</td></tr>
+              <tr className={styles.empty}><td colSpan={9}>{t("No courses found.")}</td></tr>
             ) : displayed.map(c => (
               <tr key={c.courseId}>
                 {editingId === c.courseId ? (
@@ -328,7 +342,7 @@ export default function Courses() {
                     <td>
                       <select className={styles.inlineEdit} value={draft.courseInstructor}
                         onChange={e=>setDraft(d=>({...d,courseInstructor:e.target.value}))}>
-                        <option value="">-- select instructor --</option>
+                        <option value="">{t("-- select instructor --")}</option>
                         {instructors.map(ins=>(
                           <option key={ins.id} value={ins.id.toString()}>{ins.username}</option>
                         ))}
@@ -368,25 +382,25 @@ export default function Courses() {
       {modalOpen && (
         <div className={styles.modalBackdrop} onClick={closeModal}>
           <div className={styles.modal} onClick={e=>e.stopPropagation()}>
-            <h3>New Course</h3>
+            <h3>{t("New Course")}</h3>
             <form onSubmit={handleAdd}>
               <div className={styles.grid2}>
-                <input required placeholder="Name" value={newCourse.courseName} onChange={e=>setNewCourse(n=>({...n,courseName:e.target.value}))}/>
+                <input required placeholder={t("Name")} value={newCourse.courseName} onChange={e=>setNewCourse(n=>({...n,courseName:e.target.value}))}/>
                 <select required value={newCourse.courseInstructor} onChange={e=>setNewCourse(n=>({...n,courseInstructor:e.target.value}))}>
-                  <option value="">-- select instructor --</option>
+                  <option value="">{t("-- select instructor --")}</option>
                   {instructors.map(ins=>(
                     <option key={ins.id} value={ins.id.toString()}>{ins.username}</option>
                   ))}
                 </select>
-                <input required placeholder="Duration"      value={newCourse.courseDuration} onChange={e=>setNewCourse(n=>({...n,courseDuration:e.target.value}))}/>
-                <input required type="number" placeholder="Price" value={newCourse.coursePrice}      onChange={e=>setNewCourse(n=>({...n,coursePrice:e.target.value}))}/>
-                <input required type="date"   placeholder="Start Date" value={newCourse.courseStartDate} onChange={e=>setNewCourse(n=>({...n,courseStartDate:e.target.value}))}/>
-                <input required type="date"   placeholder="End Date"   value={newCourse.courseEndDate}   onChange={e=>setNewCourse(n=>({...n,courseEndDate:e.target.value}))}/>
+                <input required placeholder={t("Duration")} value={newCourse.courseDuration} onChange={e=>setNewCourse(n=>({...n,courseDuration:e.target.value}))}/>
+                <input required type="number" placeholder={t("Price")} value={newCourse.coursePrice} onChange={e=>setNewCourse(n=>({...n,coursePrice:e.target.value}))}/>
+                <input required type="date" placeholder={t("Start Date")} value={newCourse.courseStartDate} onChange={e=>setNewCourse(n=>({...n,courseStartDate:e.target.value}))}/>
+                <input required type="date" placeholder={t("End Date")} value={newCourse.courseEndDate} onChange={e=>setNewCourse(n=>({...n,courseEndDate:e.target.value}))}/>
               </div>
-              <textarea required placeholder="Description" value={newCourse.courseDescription} onChange={e=>setNewCourse(n=>({...n,courseDescription:e.target.value}))}/>
+              <textarea required placeholder={t("Description")} value={newCourse.courseDescription} onChange={e=>setNewCourse(n=>({...n,courseDescription:e.target.value}))}/>
               <div className={styles.modalActions}>
-                <button type="button" className={styles.btn} onClick={closeModal}>Cancel</button>
-                <button type="submit" className={`${styles.btn} ${styles.primary}`}>Create</button>
+                <button type="button" className={styles.btn} onClick={closeModal}>{t("Cancel")}</button>
+                <button type="submit" className={`${styles.btn} ${styles.primary}`}>{t("Create")}</button>
               </div>
             </form>
           </div>

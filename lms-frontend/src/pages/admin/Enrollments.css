@@ -51,8 +51,8 @@
 .btn.primary {
   display: inline-flex;
   align-items: center;
-  gap: .4rem;
-  padding: .6rem 1rem;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
   border: none;
   background: #644191;  /* Changed from gradient */
   color: #fff;
@@ -93,11 +93,11 @@
 
 /* Body rows & hover */
 .enrollments-table tbody tr {
-  background: #f4e3f5;  /* Changed from #F4E3F6 */
+  background: #f4e3f5;  /* Match Courses */
   transition: background .2s;
 }
 .enrollments-table tbody tr:hover {
-  background: #e3cce4;  /* Changed from #f4e3f8 */
+  background: #e3cce4;  /* Match Courses */
 }
 .enrollments-table td {
   padding: .75rem 1rem;
@@ -115,12 +115,12 @@
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
-  margin: 0 .25rem;
+  margin: 0 0.25rem;
   color: #644191;
   border: none;
   background: none;
   cursor: pointer;
-  transition: color .2s;
+  transition: color 0.2s;
 }
 .icon-btn:hover {
   color: #7a4fb3;
@@ -194,7 +194,7 @@
     left: -9999px;
   }
   .enrollments-table tr {
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 6px;
     margin-bottom: 1rem;
     padding: 0.75rem 1rem;
@@ -214,15 +214,20 @@
     padding-right: 1rem;
     white-space: nowrap;
     font-weight: bold;
+    color: #555;
     pointer-events: none;
   }
-  .enrollments-table td:nth-of-type(1):before { content: "Enrollment ID"; }
-  .enrollments-table td:nth-of-type(2):before { content: "Student"; }
-  .enrollments-table td:nth-of-type(3):before { content: "Courses"; }
-  .enrollments-table td:nth-of-type(4):before { content: "Date"; }
-  .enrollments-table td:nth-of-type(5):before { content: "Completed"; }
-  .enrollments-table td:nth-of-type(6):before { content: "Actions"; }
+  .enrollments-table td:nth-of-type(1):before { content: var(--label-enrollment-id, "Enrollment ID"); }
+  .enrollments-table td:nth-of-type(2):before { content: var(--label-student, "Student"); }
+  .enrollments-table td:nth-of-type(3):before { content: var(--label-courses, "Courses"); }
+  .enrollments-table td:nth-of-type(4):before { content: var(--label-date, "Date"); }
+  .enrollments-table td:nth-of-type(5):before { content: var(--label-completed, "Completed"); }
+  .enrollments-table td:nth-of-type(6):before { content: var(--label-actions, "Actions"); }
 
+  .enrollments-table td:nth-of-type(6):before {
+    content: none !important;
+    display: none !important;
+  }
   .enrollments-table td:nth-of-type(6) {
     padding-left: 1rem;
     display: flex;

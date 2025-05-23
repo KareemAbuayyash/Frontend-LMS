@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import ProfilePicture from '../../components/ProfileSettings/ProfilePicture';
 import styles from '../../components/ProfileSettings/ProfileSettings.module.css';
-import { toast } from '../../utils/toast'; // ← import toast helper
+import { toast } from '../../utils/toast';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminProfileSettings() {
-  const [user, setUser]       = useState(null);
-  const [form, setForm]       = useState({
-    username: '',
-    email: '',
-    password: '',
-    photo: null,
+  const { t } = useTranslation();
+  const [user, setUser] = useState(null);
+  const [form, setForm] = useState({
+    username: '', email: '', password: '', photo: null,
   });
   const [preview, setPreview] = useState(null);
 
@@ -24,13 +23,13 @@ export default function AdminProfileSettings() {
       })
       .catch(err => {
         console.error(err);
-        toast('Failed to load your profile', 'error');
+        toast(t('Error fetching profile'), 'error');
       });
-  }, []);
+  }, [t]);
 
   const handleChange = e => {
     const { name, value, files } = e.target;
-    if (name === 'photo' && files[0]) {
+    if (name === 'photo' && files?.[0]) {
       setForm(f => ({ ...f, photo: files[0] }));
       setPreview(URL.createObjectURL(files[0]));
     } else {
@@ -51,62 +50,57 @@ export default function AdminProfileSettings() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      toast('Profile updated!', 'success');
+      toast(t('Profile updated!'), 'success');
     } catch (err) {
       console.error(err);
-      toast(err.response?.data?.message || err.message, 'error');
+      toast(err.response?.data?.message || t('Error updating profile'), 'error');
     }
   };
 
-  if (!user) return <div className={styles.loading}>Loading…</div>;
+  if (!user) return <div className={styles.loading}>{t('Loading…')}</div>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>Admin Profile Settings</h1>
+      <h1 className={styles.heading}>{t('Profile Settings')}</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.avatarWrapper}>
-          <ProfilePicture src={preview} alt="Profile" className={styles.avatar} />
+          <ProfilePicture src={preview} alt={t('Profile')} className={styles.avatar} />
           <label className={styles.photoLabel}>
-            Change Photo
+            {t('Change Photo')}
             <input type="file" name="photo" accept="image/*" onChange={handleChange} />
           </label>
         </div>
 
         <label>
-          Username
+          {t('Username')}
           <input
-            type="text"
-            name="username"
-            value={form.username}
-            onChange={handleChange}
+            type="text" name="username"
+            value={form.username} onChange={handleChange}
             required
           />
         </label>
 
         <label>
-          Email
+          {t('Email')}
           <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
+            type="email" name="email"
+            value={form.email} onChange={handleChange}
             required
           />
         </label>
 
         <label>
-          New Password
+          {t('New Password')}
           <input
-            type="password"
-            name="password"
+            type="password" name="password"
             value={form.password || ''}
             onChange={handleChange}
-            placeholder="Leave blank to keep current"
+            placeholder={t('Leave blank to keep current')}
           />
         </label>
 
         <button type="submit" className={styles.saveBtn}>
-          Save Changes
+          {t('Save Changes')}
         </button>
       </form>
     </div>
