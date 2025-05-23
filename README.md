@@ -102,72 +102,84 @@ Frontend-LMS/
 ├── public/
 │   ├── favicon.ico
 │   └── index.html
-├── src/
-│   ├── api/
-│   │   └── axios.js              # Axios configuration with interceptors
-│   ├── assets/
-│   │   ├── images/               # Static images
-│   │   └── logo.png              # Application logo
-│   ├── components/
-│   │   ├── Auth/
-│   │   │   ├── Login.jsx         # Login component
-│   │   │   ├── Register.jsx      # Registration component
-│   │   │   ├── ForgotPassword.jsx
-│   │   │   └── GoogleAuth.jsx    # Google OAuth integration
-│   │   ├── Layout/
-│   │   │   ├── Header.jsx        # Application header
-│   │   │   ├── Footer.jsx        # Application footer
-│   │   │   └── MainLayout.jsx    # Main layout wrapper
-│   │   ├── ProfileSettings/
-│   │   │   ├── ProfileSettings.jsx
-│   │   │   └── ChangePassword.jsx
-│   │   ├── Toast/
-│   │   │   ├── Toast.jsx         # Toast notification component
-│   │   │   └── ToastContainer.jsx
-│   │   ├── ErrorBoundary.jsx     # Error boundary for error handling
-│   │   └── ProtectedRoute.jsx    # Route protection component
-│   ├── pages/
-│   │   ├── admin/
-│   │   │   ├── AdminDashboard.jsx
-│   │   │   ├── UserManagement.jsx
-│   │   │   ├── CourseManagement.jsx
-│   │   │   └── SystemSettings.jsx
-│   │   ├── instructor/
-│   │   │   ├── InstructorDashboard.jsx
-│   │   │   ├── CourseCreation.jsx
-│   │   │   ├── AssignmentManagement.jsx
-│   │   │   ├── QuizManagement.jsx
-│   │   │   └── StudentProgress.jsx
-│   │   └── StudentDashboard/
-│   │       ├── StudentDashboard.jsx
-│   │       ├── CourseEnrollment.jsx
-│   │       ├── AssignmentSubmission.jsx
-│   │       ├── QuizTaking.jsx
-│   │       └── ProgressTracking.jsx
-│   ├── Sidebar/
-│   │   ├── AdminSidebar.jsx      # Admin navigation sidebar
-│   │   ├── InstructorSidebar.jsx # Instructor navigation sidebar
-│   │   └── StudentSidebar.jsx    # Student navigation sidebar
-│   ├── utils/
-│   │   ├── auth.ts               # Authentication utilities
-│   │   ├── toast.ts              # Toast notification utilities
-│   │   ├── constants.js          # Application constants
-│   │   └── helpers.js            # Helper functions
-│   ├── styles/
-│   │   ├── globals.css           # Global styles
-│   │   └── variables.css         # CSS variables
-│   ├── App.css                   # Main application styles
-│   ├── App.jsx                   # Main application component
-│   ├── index.css                 # Root styles
-│   └── main.jsx                  # Application entry point
-├── .env                          # Environment variables
-├── .env.example                  # Environment variables example
-├── .gitignore                    # Git ignore rules
-├── eslint.config.js              # ESLint configuration
-├── index.html                    # HTML template
-├── package.json                  # Project dependencies and scripts
-├── README.md                     # Project documentation
-└── vite.config.js                # Vite configuration
+📦src
+ ┣ 📂api
+ ┃ ┗ 📜axios.js
+ ┣ 📂assets
+ ┃ ┣ 📜log.png
+ ┃ ┣ 📜logo.png
+ ┃ ┗ 📜react.svg
+ ┣ 📂components
+ ┃ ┣ 📂Auth
+ ┃ ┃ ┣ 📜ForgotPassword.jsx
+ ┃ ┃ ┣ 📜ForgotPassword.module.css
+ ┃ ┃ ┣ 📜Login.jsx
+ ┃ ┃ ┣ 📜Login.module.css
+ ┃ ┃ ┣ 📜LoginSuccess.jsx
+ ┃ ┃ ┣ 📜ResetPassword.jsx
+ ┃ ┃ ┗ 📜ResetPassword.module.css
+ ┃ ┣ 📂Layout
+ ┃ ┃ ┣ 📜Layout.css
+ ┃ ┃ ┗ 📜Layout.jsx
+ ┃ ┣ 📂ProfileSettings
+ ┃ ┃ ┣ 📜ProfilePicture.jsx
+ ┃ ┃ ┣ 📜ProfileSettings.jsx
+ ┃ ┃ ┗ 📜ProfileSettings.module.css
+ ┃ ┣ 📂Toast
+ ┃ ┃ ┣ 📜toast.css
+ ┃ ┃ ┗ 📜ToastProvider.jsx
+ ┃ ┣ 📜ErrorBoundary.jsx
+ ┃ ┗ 📜ProtectedRoute.jsx
+ ┣ 📂pages
+ ┃ ┣ 📂admin
+ ┃ ┃ ┣ 📜AdminDashboard.jsx
+ ┃ ┃ ┣ 📜AdminDashboard.module.css
+ ┃ ┃ ┣ 📜AdminProfileSettings.jsx
+ ┃ ┃ ┣ 📜Courses.jsx
+ ┃ ┃ ┣ 📜Courses.module.css
+ ┃ ┃ ┣ 📜Enrollments.css
+ ┃ ┃ ┣ 📜Enrollments.jsx
+ ┃ ┃ ┣ 📜Users.css
+ ┃ ┃ ┗ 📜Users.jsx
+ ┃ ┣ 📂instructor
+ ┃ ┃ ┣ 📜AssignmentSubmissions.jsx
+ ┃ ┃ ┣ 📜Courses.css
+ ┃ ┃ ┣ 📜Courses.jsx
+ ┃ ┃ ┣ 📜CreateOrEditAssignment.jsx
+ ┃ ┃ ┣ 📜Dashboard.jsx
+ ┃ ┃ ┣ 📜InstructorAssignments.css
+ ┃ ┃ ┣ 📜InstructorCourseContent.css
+ ┃ ┃ ┣ 📜InstructorCourseContent.jsx
+ ┃ ┃ ┣ 📜InstructorProfileSettings.jsx
+ ┃ ┃ ┣ 📜QuizSubmissions.css
+ ┃ ┃ ┣ 📜QuizSubmissions.jsx
+ ┃ ┃ ┣ 📜Quizzes.css
+ ┃ ┃ ┗ 📜Quizzes.jsx
+ ┃ ┗ 📂StudentDashboard
+ ┃ ┃ ┣ 📜Coursework.css
+ ┃ ┃ ┣ 📜Coursework.jsx
+ ┃ ┃ ┣ 📜QuizAttempt.css
+ ┃ ┃ ┣ 📜QuizAttempt.jsx
+ ┃ ┃ ┣ 📜StudentAssignmentDetail.css
+ ┃ ┃ ┣ 📜StudentAssignmentDetails.jsx
+ ┃ ┃ ┣ 📜StudentCourseDetails.css
+ ┃ ┃ ┣ 📜StudentCourseDetails.jsx
+ ┃ ┃ ┣ 📜StudentCourses.css
+ ┃ ┃ ┣ 📜StudentCourses.jsx
+ ┃ ┃ ┣ 📜StudentDashboard.css
+ ┃ ┃ ┣ 📜StudentDashboard.jsx
+ ┃ ┃ ┗ 📜StudentProfileSettings.jsx
+ ┣ 📂Sidebar
+ ┃ ┣ 📜AdminSidebar.jsx
+ ┃ ┣ 📜InstructorSidebar.jsx
+ ┃ ┗ 📜StudentSidebar.jsx
+ ┣ 📂utils
+ ┃ ┣ 📜auth.ts
+ ┃ ┗ 📜toast.ts
+ ┣ 📜App.css
+ ┣ 📜App.jsx
+ ┣ 📜index.css
+ ┗ 📜main.jsx
 ```
 
 ## 🔐 Authentication & Authorization
