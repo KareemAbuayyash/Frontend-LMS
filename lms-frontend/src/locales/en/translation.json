@@ -288,10 +288,10 @@
   "Failed to load courses.": "Failed to load courses.",
   "N/A": "N/A",
   "View Course": "View Course",
-  "Total Courses": "إجمالي المقررات",
-  "Average Grade": "المعدل",
-  "Upcoming Assignments": "الواجبات القادمة",
-  "Nothing due": "لا يوجد مهام مستحقة"
+  "Total Courses": "Total Courses",
+  "Average Grade": "Average Grade",
+  "Upcoming Assignments": "Upcoming Assignments",
+  "Nothing due": "Nothing due"
 
 
 }
