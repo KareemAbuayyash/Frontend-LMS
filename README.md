@@ -10,6 +10,7 @@ A modern, responsive Learning Management System frontend built with React. This 
 - 📚 Course management and oversight
 - 📝 Enrollment management
 - ⚙️ System-wide settings and configuration
+![alt text](image.png)
 
 ### For Instructors
 - 🎓 Course creation and management
@@ -17,6 +18,7 @@ A modern, responsive Learning Management System frontend built with React. This 
 - 🧪 Quiz creation and management
 - 📖 Course content management
 - 📈 Student progress tracking and analytics
+![alt text](image-1.png)
 
 ### For Students
 - 🏠 Dashboard with enrolled courses and upcoming assignments
@@ -24,6 +26,7 @@ A modern, responsive Learning Management System frontend built with React. This 
 - 📝 Assignment submission and tracking
 - 🧪 Quiz taking and results
 - 📊 Progress tracking and achievements
+![alt text](image-2.png)
 
 ## 🛠️ Tech Stack
 
