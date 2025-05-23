@@ -86,6 +86,16 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
       )}
       <div className="main-content">
         <header className="topbar">
+          <div className="navbar-brand">
+            <span className="navbar-logo">
+              <img
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f393.png"
+                alt="LMS"
+                className="navbar-logo-img"
+              />
+            </span>
+            <span className="navbar-title">LMS</span>
+          </div>
           <div className="topbar-icons">
             <span className={`connection-dot ${online ? 'online' : 'offline'}`} />
             <button className="icon-btn" onClick={toggleNotif}>
@@ -145,6 +155,14 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
           </div>
         </header>
         <div className="page-wrapper">{children}</div>
+        <footer className="footer">
+          <div className="footer-content">
+            <div className="footer-copy">
+              LMS &copy; {new Date().getFullYear()}<br />
+              Owner app: Kareem Abuayyash, Marah Demes, Christine Ateeq
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
