@@ -1,9 +1,11 @@
+// 📦 src/components/Layout/Layout.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FiBell, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import { clearTokens } from '../../utils/auth';
 import api from '../../api/axios';
 import './Layout.css';
+import { useTranslation } from 'react-i18next';
 
 export default function Layout({ showSidebar = true, SidebarComponent = null, children }) {
   const [collapsed,    setCollapsed]    = useState(false);
@@ -19,6 +21,13 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
 
   // derive base role path: 'admin' or 'instructor' or 'student'
   const base = pathname.split('/')[1];
+
+  const { t, i18n } = useTranslation();
+
+  // update text direction on language change
+  useEffect(() => {
+    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+  }, [i18n.language]);
 
   // ping health
   useEffect(() => {
@@ -84,18 +93,19 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
           <div className="topbar-icons">
             <span className={`connection-dot ${online ? 'online' : 'offline'}`} />
             <button className="icon-btn" onClick={toggleNotif}>
-              <FiBell />{unread > 0 && <span className="badge-count">{unread}</span>}
+              <FiBell />
+              {unread > 0 && <span className="badge-count">{unread}</span>}
             </button>
             {showNotif && (
               <div className="dropdown-menu notif-menu">
                 {notifs.length
                   ? notifs.map((n,i) => (
-                      <div key={i} className={`dropdown-item notif-item ${!n.read?'new-email':''}`}>
+                      <div key={i} className={`dropdown-item notif-item ${!n.read ? 'new-email' : ''}`}>
                         <span className="subject">{n.subject}</span>
                         <span className="message">{n.message}</span>
                       </div>
                     ))
-                  : <div className="dropdown-item">No notifications</div>
+                  : <div className="dropdown-item">{t('No notifications')}</div>
                 }
               </div>
             )}
@@ -106,13 +116,23 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
             {showUserMenu && (
               <div className="dropdown-menu user-menu">
                 <button className="dropdown-item" onClick={() => { navigate(`/${base}/settings`); setShowUserMenu(false); }}>
-                  <FiSettings /> Settings
+                  <FiSettings /> {t('Settings')}
                 </button>
                 <button className="dropdown-item" onClick={logout}>
-                  <FiLogOut /> Log out
+                  <FiLogOut /> {t('Log out')}
                 </button>
               </div>
             )}
+
+            {/* Language switcher */}
+            <select
+              value={i18n.language}
+              onChange={e => i18n.changeLanguage(e.target.value)}
+              style={{ marginLeft: '0.5rem', padding: '0.25rem' }}
+            >
+              <option value="en">EN</option>
+              <option value="ar">العربية</option>
+            </select>
           </div>
         </header>
         <div className="page-wrapper">{children}</div>
