@@ -48,13 +48,19 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const { data } = await api.post(
+      const response = await api.post(
         '/auth/login',
         { username: form.username, password: form.password },
         { skipToast: true }
       );
 
+      const { data } = response;
       saveTokens(data.accessToken, data.refreshToken);
+
+      const { data: user } = await api.get('/users/profile');
+      localStorage.setItem('username', user.username);
+      localStorage.setItem('profile', user.profile); // user.profile should be the image URL
+
       toast('Login successful', 'success');
 
       const role = localStorage.getItem('userRole');

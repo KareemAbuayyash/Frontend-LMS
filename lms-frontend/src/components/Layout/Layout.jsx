@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiBell, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiBell, FiUser, FiSettings, FiLogOut, FiGlobe } from 'react-icons/fi';
 import { clearTokens } from '../../utils/auth';
 import api from '../../api/axios';
 import { useTranslation } from 'react-i18next';
 import './Layout.css';
+import ProfilePicture from '../ProfileSettings/ProfilePicture'; // adjust path if needed
 
 export default function Layout({ showSidebar = true, SidebarComponent = null, children }) {
   const [collapsed,    setCollapsed]    = useState(false);
@@ -18,6 +19,7 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
   const { pathname } = useLocation();
   const { t, i18n } = useTranslation();
   const username = localStorage.getItem('username') || 'User';
+  const profilePic = localStorage.getItem('profile') || null; // Save profile URL in localStorage after login/profile update
 
   // derive base role path: 'admin' or 'instructor' or 'student'
   const base = pathname.split('/')[1];
@@ -72,6 +74,11 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
     }
   };
 
+  // Language toggle handler
+  const toggleLang = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'ar' : 'en');
+  };
+
   return (
     <div className="layout">
       {showSidebar && SidebarComponent && (
@@ -99,8 +106,28 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
               </div>
             )}
 
+            {/* Language switcher as icon */}
+            <button className="icon-btn" onClick={toggleLang} title={t('Switch language')}>
+              <FiGlobe />
+            </button>
+
+            {/* User info: avatar + name */}
             <button className="profile-btn" onClick={toggleUser}>
-              <FiUser /><span className="user-name">{username}</span>
+              <span className="profile-info">
+                {profilePic ? (
+                  <ProfilePicture
+                    src={profilePic}
+                    alt={username}
+                    className="avatar"
+                    username={username}
+                  />
+                ) : (
+                  <span className="avatar">
+                    {username[0]?.toUpperCase()}
+                  </span>
+                )}
+                <span className="user-name">{username}</span>
+              </span>
             </button>
             {showUserMenu && (
               <div className="dropdown-menu user-menu">
@@ -115,16 +142,6 @@ export default function Layout({ showSidebar = true, SidebarComponent = null, ch
                 </button>
               </div>
             )}
-
-            {/* Language switcher */}
-            <select
-              value={i18n.language}
-              onChange={e => i18n.changeLanguage(e.target.value)}
-              style={{ marginLeft: '0.5rem', padding: '0.25rem' }}
-            >
-              <option value="en">EN</option>
-              <option value="ar">العربية</option>
-            </select>
           </div>
         </header>
         <div className="page-wrapper">{children}</div>

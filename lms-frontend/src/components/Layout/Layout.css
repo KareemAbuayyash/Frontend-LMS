@@ -283,3 +283,58 @@
 .dropdown-menu.notif-menu .dropdown-item.new-email:hover {
   background-color: #b2ebf2;
 }
+
+/* Add to Layout.css */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #644191;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(100,65,145,0.08);
+  border: 2px solid #ede9fe;
+  transition: box-shadow 0.2s;
+}
+.user-name {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #22223b;
+  margin-left: 0.25rem;
+  margin-right: 0.5rem;
+  letter-spacing: 0.01em;
+  transition: color 0.2s;
+}
+
+/* profile button */
+.profile-btn {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.profile-btn:hover, .profile-btn:focus {
+  background: #f3f4f6;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .user-name {
+    display: none;
+  }
+}
