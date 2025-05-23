@@ -10,6 +10,7 @@ A modern, responsive Learning Management System frontend built with React. This 
 - 📚 Course management and oversight
 - 📝 Enrollment management
 - ⚙️ System-wide settings and configuration
+
 ![alt text](image.png)
 
 ### For Instructors
@@ -18,7 +19,27 @@ A modern, responsive Learning Management System frontend built with React. This 
 - 🧪 Quiz creation and management
 - 📖 Course content management
 - 📈 Student progress tracking and analytics
+
 ![alt text](image-1.png)
+
+### Quiz Management
+  Create and manage quizzes with flexible question types and navigation modes:
+
+![alt text](<Screenshot 2025-05-23 150430.png>)
+
+![alt text](<Screenshot 2025-05-23 150613.png>)
+
+### Assignment Management
+  Create assignments and grade student submissions:
+
+![alt text](<Screenshot 2025-05-23 150733.png>)
+
+![alt text](<Screenshot 2025-05-23 150705.png>)
+
+## Quiz Submissions Review
+  Review and analyze student quiz performance:
+
+![alt text](<Screenshot 2025-05-23 150954.png>)
 
 ### For Students
 - 🏠 Dashboard with enrolled courses and upcoming assignments
@@ -26,7 +47,16 @@ A modern, responsive Learning Management System frontend built with React. This 
 - 📝 Assignment submission and tracking
 - 🧪 Quiz taking and results
 - 📊 Progress tracking and achievements
+
 ![alt text](image-2.png)
+
+### Interactive Quiz Taking
+  Take quizzes with various question types and immediate feedback:
+
+  ![alt text](<Screenshot 2025-05-23 150912.png>)
+
+  ![alt text](<Screenshot 2025-05-23 150923.png>)
+
 
 ## 🛠️ Tech Stack
 
@@ -188,6 +218,8 @@ Frontend-LMS/
 ## 🔐 Authentication & Authorization
 
 The system supports multiple authentication methods:
+
+![alt text](<Screenshot 2025-05-23 150227.png>)
 
 ### Login Methods
 - **Username/Password**: Traditional login with email and password
